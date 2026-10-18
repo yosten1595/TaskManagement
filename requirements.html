@@ -516,7 +516,7 @@
 
 <!-- ── Cover ── -->
 <div class="cover">
-  <p class="cover-eyebrow">製品要件定義書 · v1.2</p>
+  <p class="cover-eyebrow">製品要件定義書 · v1.3</p>
   <h1 class="cover-title">TaskBoard<br>タスク管理アプリケーション 要件定義書</h1>
   <p style="color:var(--fg-sub);font-size:15px;max-width:55ch;margin-bottom:20px;line-height:1.7;">
     付箋やメモ帳で管理していたタスクをデジタル化し、期限・優先度・進捗をチーム全員がひと目で把握できる Web アプリケーションの提案資料です。
@@ -530,6 +530,41 @@
 </div>
 
 <div class="doc">
+
+  <!-- 用語解説 -->
+  <section class="section">
+    <div class="section-header">
+      <span class="section-num" style="color:var(--fg-muted)">用語</span>
+      <h2 class="section-title">この書類で使う言葉の解説</h2>
+    </div>
+    <p style="margin-bottom:20px;">パソコン操作に慣れていない方のために、この書類で繰り返し出てくる言葉を事前に説明します。</p>
+    <div class="nonfunc-grid">
+      <div class="nonfunc-item">
+        <div class="nonfunc-title"><span class="nonfunc-icon">📋</span>ボード</div>
+        <div class="nonfunc-body">プロジェクトや用途ごとに作る「作業スペース」。例えば「ECサイト開発」「日常タスク」のように使い分ける。アプリを開いたホーム画面に一覧で並ぶ。</div>
+      </div>
+      <div class="nonfunc-item">
+        <div class="nonfunc-title"><span class="nonfunc-icon">🗂️</span>カンバンボード</div>
+        <div class="nonfunc-body">付箋をホワイトボードに貼り並べて進捗を管理する手法をデジタル化したもの。タスクを「未着手」「進行中」「完了」などの列に並べて、状況を一目で確認できる画面。</div>
+      </div>
+      <div class="nonfunc-item">
+        <div class="nonfunc-title"><span class="nonfunc-icon">📑</span>リスト（列）</div>
+        <div class="nonfunc-body">カンバンボードの中にある縦の区切り。「未着手」「進行中」「完了」などの状態を表す。自由に追加したり名前を変えたりできる。</div>
+      </div>
+      <div class="nonfunc-item">
+        <div class="nonfunc-title"><span class="nonfunc-icon">🃏</span>カード</div>
+        <div class="nonfunc-body">リストの中に並ぶ一つひとつのタスク（やること）。付箋1枚に相当する。タイトル・期限・優先度・チェックリストなどの情報を持つことができる。</div>
+      </div>
+      <div class="nonfunc-item">
+        <div class="nonfunc-title"><span class="nonfunc-icon">📝</span>詳細モーダル</div>
+        <div class="nonfunc-body">カードをクリックすると画面の上に重なって表示されるウィンドウ。カードの詳しい情報（説明・期限・チェックリストなど）をここで編集する。「モーダル」＝「画面に重ねて表示する窓」のこと。</div>
+      </div>
+      <div class="nonfunc-item">
+        <div class="nonfunc-title"><span class="nonfunc-icon">🖱️</span>ドラッグ＆ドロップ</div>
+        <div class="nonfunc-body">マウスのボタンを押したままカードを別の列へ移動させる操作。例えば作業が終わったカードを「進行中」から「完了」列へ移すときに使う。スマートフォンでは指でなぞる操作にあたる。</div>
+      </div>
+    </div>
+  </section>
 
   <!-- 00. 現状の課題と解決策 -->
   <section class="section">
@@ -579,66 +614,106 @@
     </div>
   </section>
 
-  <!-- 02. ターゲットユーザー -->
+  <!-- 02. ユースケース -->
   <section class="section">
     <div class="section-header">
       <span class="section-num">02</span>
-      <h2 class="section-title">ターゲットユーザーと課題</h2>
+      <h2 class="section-title">ユースケース一覧</h2>
     </div>
     <div class="hl">
-      このアプリが解決する「痛み」を明確にすることで、機能の優先順位を判断する基準とする。
+      「誰が（アクター）」「何をしたいか」「どう操作するか（主フロー）」をまとめる。全ケースのアクターは <strong>ユーザー</strong>（個人・小規模チームメンバー）。
     </div>
-
-    <div class="subsection">
-      <div class="subsection-title"><span class="subsection-num">2.1</span> ユーザーペルソナ</div>
-      <div class="feature-list">
-        <div class="feature-item">
-          <span class="feature-icon">👩‍💻</span>
-          <div>
-            <div class="feature-name">個人ユーザー（学生・フリーランス）</div>
-            <div class="feature-desc">複数プロジェクトの締め切りを見落としがち。優先度がわかりにくく、何から手をつけるか迷う。</div>
-          </div>
-          <span class="feature-priority p-must">主要</span>
-        </div>
-        <div class="feature-item">
-          <span class="feature-icon">👥</span>
-          <div>
-            <div class="feature-name">小規模チーム（2〜10名）</div>
-            <div class="feature-desc">タスクの担当・状況をメンバー間で共有したいが、重いツールは導入コストが高い。</div>
-          </div>
-          <span class="feature-priority p-should">副次</span>
-        </div>
-      </div>
-    </div>
-
-    <div class="subsection">
-      <div class="subsection-title"><span class="subsection-num">2.2</span> 解決する課題</div>
-      <div class="feature-list">
-        <div class="feature-item">
-          <span class="feature-icon">⏰</span>
-          <div>
-            <div class="feature-name">期限の見落とし</div>
-            <div class="feature-desc">締め切りが近いタスクが埋もれて気づかない。期限切れになって初めて気づく。</div>
-          </div>
-          <span class="feature-priority p-must">Must</span>
-        </div>
-        <div class="feature-item">
-          <span class="feature-icon">📌</span>
-          <div>
-            <div class="feature-name">優先度の曖昧さ</div>
-            <div class="feature-desc">タスクの重要度がわからず、緊急でないものに時間を使いすぎる。</div>
-          </div>
-          <span class="feature-priority p-must">Must</span>
-        </div>
-        <div class="feature-item">
-          <span class="feature-icon">✅</span>
-          <div>
-            <div class="feature-name">進捗の不透明さ</div>
-            <div class="feature-desc">タスクの中に複数の作業が混在して、どこまで終わったかわからない。</div>
-          </div>
-          <span class="feature-priority p-must">Must</span>
-        </div>
-      </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>UC番号</th>
+            <th>ユースケース名</th>
+            <th>事前条件</th>
+            <th>主フロー（概要）</th>
+            <th>後条件（結果）</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>UC-01</code></td>
+            <td>ボードを作成する</td>
+            <td>ホーム画面を開いている</td>
+            <td>①「＋ボード追加」をクリック → ②名前を入力 → ③確定ボタンを押す</td>
+            <td>新しいボードがホーム画面に追加される</td>
+          </tr>
+          <tr>
+            <td><code>UC-02</code></td>
+            <td>ボードを削除・名前変更する</td>
+            <td>ホーム画面にボードが1件以上ある</td>
+            <td>①ボードカードのメニューを開く → ②「名前変更」または「削除」を選ぶ → ③確定</td>
+            <td>ボード名が更新される、または一覧から削除される</td>
+          </tr>
+          <tr>
+            <td><code>UC-03</code></td>
+            <td>リストを追加・削除する</td>
+            <td>カンバンボード画面を開いている</td>
+            <td>①「＋リスト追加」をクリック → ②名前を入力 → ③確定。削除はリストのメニューから「削除」を選ぶ</td>
+            <td>列が追加または削除される</td>
+          </tr>
+          <tr>
+            <td><code>UC-04</code></td>
+            <td>カードを作成する</td>
+            <td>カンバンボード画面にリストが1件以上ある</td>
+            <td>①リスト下部の「＋カード追加」をクリック → ②タイトルを入力 → ③確定</td>
+            <td>新しいカードがリストに追加される</td>
+          </tr>
+          <tr>
+            <td><code>UC-05</code></td>
+            <td>カードをドラッグ&amp;ドロップで移動する</td>
+            <td>カンバンボード上にカードが1枚以上ある</td>
+            <td>①カードをドラッグして移動先リストへドロップする</td>
+            <td>カードが目的のリストの指定位置に移動する</td>
+          </tr>
+          <tr>
+            <td><code>UC-06</code></td>
+            <td>カードの詳細を編集する</td>
+            <td>カンバンボード上にカードが1枚以上ある</td>
+            <td>①カードをクリック → ②詳細モーダルで説明・期限・優先度・ラベルを編集 → ③モーダルを閉じる</td>
+            <td>編集内容がカードに反映・保存される</td>
+          </tr>
+          <tr>
+            <td><code>UC-07</code></td>
+            <td>チェックリストで進捗を管理する</td>
+            <td>カード詳細モーダルを開いている</td>
+            <td>①「＋アイテム追加」でサブタスクを追加 → ②完了したアイテムにチェックを入れる</td>
+            <td>進捗バーが更新され、カード上に「○/○完了」と表示される</td>
+          </tr>
+          <tr>
+            <td><code>UC-08</code></td>
+            <td>期限警告を確認する</td>
+            <td>期限付きカードがボードにある</td>
+            <td>①ボードを開く → ②カードの期限状態（赤・黄・緑）を視認する</td>
+            <td>期限切れ・間近のカードが色で強調表示されている</td>
+          </tr>
+          <tr>
+            <td><code>UC-09</code></td>
+            <td>キーワード検索・フィルタを使う</td>
+            <td>カンバンボード画面を開いている</td>
+            <td>①検索バーにキーワードを入力、またはフィルタ条件を選択 → ②一致するカードが強調表示される</td>
+            <td>条件に合うカードのみが目立って表示される</td>
+          </tr>
+          <tr>
+            <td><code>UC-10</code></td>
+            <td>テンプレートからカードを作成する</td>
+            <td>テンプレートが1件以上保存されている</td>
+            <td>①「テンプレートから追加」を選ぶ → ②一覧からテンプレートを選択 → ③作成されたカードの期限などを必要に応じ編集</td>
+            <td>テンプレートの内容がコピーされた新規カードがリストに追加される</td>
+          </tr>
+          <tr>
+            <td><code>UC-11</code></td>
+            <td>データをエクスポートする</td>
+            <td>ボードが1件以上ある</td>
+            <td>①メニューから「エクスポート」を選ぶ → ②JSON ファイルがダウンロードされる</td>
+            <td>全ボードデータが JSON ファイルとして保存される</td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   </section>
 
@@ -1120,98 +1195,137 @@
     </div>
   </section>
 
-  <!-- 07. データモデル -->
+  <!-- 07. データ機能 -->
   <section class="section">
     <div class="section-header">
       <span class="section-num">07</span>
-      <h2 class="section-title">データモデル（技術仕様）</h2>
+      <h2 class="section-title">データ機能（CRUD仕様）</h2>
     </div>
-    <p>localStorage に JSON 形式で保存する。最上位キーは <code>taskboard_data</code> とする。</p>
+    <div class="hl">
+      アプリが扱う各データに対して実行できる操作（<strong>作成・読み取り・更新・削除</strong>）と、データの保存構造をまとめる。データは <code>localStorage</code> の <code>taskboard_data</code> キーに JSON 形式で保存される。
+    </div>
 
     <div class="subsection" style="margin-top:20px">
-      <div class="subsection-title"><span class="subsection-num">6.1</span> Board</div>
+      <div class="subsection-title"><span class="subsection-num">7.1</span> CRUD操作一覧</div>
       <div class="table-wrap">
         <table>
-          <thead><tr><th>フィールド</th><th>型</th><th>説明</th></tr></thead>
+          <thead>
+            <tr><th>機能ID</th><th>対象データ</th><th>操作</th><th>トリガー（きっかけ）</th><th>説明</th></tr>
+          </thead>
           <tbody>
-            <tr><td><code>id</code></td><td><span class="type-badge">string</span></td><td>一意の識別子（UUID）</td></tr>
-            <tr><td><code>title</code></td><td><span class="type-badge">string</span></td><td>ボード名</td></tr>
-            <tr><td><code>createdAt</code></td><td><span class="type-badge">ISO8601</span></td><td>作成日時</td></tr>
-            <tr><td><code>listIds</code></td><td><span class="type-badge">string[]</span></td><td>リストIDの並び順配列</td></tr>
+            <tr><td><code>DF-01</code></td><td>Board</td><td><span class="type-badge">CREATE</span></td><td>「＋ボード追加」確定</td><td>新しいボードを作成し、ホーム一覧に追加する</td></tr>
+            <tr><td><code>DF-02</code></td><td>Board</td><td><span class="type-badge">READ</span></td><td>ホーム画面を開く</td><td>保存済みボードをすべて一覧表示する</td></tr>
+            <tr><td><code>DF-03</code></td><td>Board</td><td><span class="type-badge">UPDATE</span></td><td>ボード名変更を確定</td><td>ボードのタイトルを更新する</td></tr>
+            <tr><td><code>DF-04</code></td><td>Board</td><td><span class="type-badge">DELETE</span></td><td>「ボードを削除」確定</td><td>ボードと配下の全リスト・カードを削除する</td></tr>
+            <tr><td><code>DF-05</code></td><td>List</td><td><span class="type-badge">CREATE</span></td><td>「＋リスト追加」確定</td><td>指定ボードに新しいリスト（列）を追加する</td></tr>
+            <tr><td><code>DF-06</code></td><td>List</td><td><span class="type-badge">READ</span></td><td>カンバンボード画面を開く</td><td>ボードに属するリストと各カードを表示する</td></tr>
+            <tr><td><code>DF-07</code></td><td>List</td><td><span class="type-badge">UPDATE</span></td><td>リスト名変更 / 順序変更（ドラッグ）</td><td>リストのタイトルまたは並び順を更新する</td></tr>
+            <tr><td><code>DF-08</code></td><td>List</td><td><span class="type-badge">DELETE</span></td><td>「リストを削除」確定</td><td>リストと配下の全カードを削除する</td></tr>
+            <tr><td><code>DF-09</code></td><td>Card</td><td><span class="type-badge">CREATE</span></td><td>「＋カード追加」確定</td><td>指定リストに新しいカードを作成する</td></tr>
+            <tr><td><code>DF-10</code></td><td>Card</td><td><span class="type-badge">READ</span></td><td>カードをクリック</td><td>カードの詳細情報を詳細モーダルに表示する</td></tr>
+            <tr><td><code>DF-11</code></td><td>Card</td><td><span class="type-badge">UPDATE</span></td><td>詳細モーダルで編集 / ドラッグ移動</td><td>タイトル・説明・期限・優先度・ラベル・チェックリスト・所属リストを更新する</td></tr>
+            <tr><td><code>DF-12</code></td><td>Card</td><td><span class="type-badge">DELETE</span></td><td>「カードを削除」確定</td><td>カードを削除する</td></tr>
+            <tr><td><code>DF-13</code></td><td>Template</td><td><span class="type-badge">CREATE</span></td><td>「テンプレートとして保存」確定</td><td>カードの内容（タイトル・説明・優先度・ラベル・チェックリスト）をテンプレートとして保存する</td></tr>
+            <tr><td><code>DF-14</code></td><td>Template</td><td><span class="type-badge">READ</span></td><td>テンプレート一覧を開く</td><td>保存済みテンプレートを一覧表示する</td></tr>
+            <tr><td><code>DF-15</code></td><td>Template</td><td><span class="type-badge">UPDATE</span></td><td>テンプレート編集を確定</td><td>テンプレートの内容を更新する</td></tr>
+            <tr><td><code>DF-16</code></td><td>Template</td><td><span class="type-badge">DELETE</span></td><td>「テンプレートを削除」確定</td><td>テンプレートを削除する</td></tr>
+            <tr><td><code>DF-17</code></td><td>Label</td><td><span class="type-badge">CREATE</span></td><td>ラベル作成を確定</td><td>新しいラベル（名前・色）を作成する</td></tr>
+            <tr><td><code>DF-18</code></td><td>Label</td><td><span class="type-badge">UPDATE</span></td><td>ラベル編集を確定</td><td>ラベルの名前または色を変更する</td></tr>
+            <tr><td><code>DF-19</code></td><td>Label</td><td><span class="type-badge">DELETE</span></td><td>「ラベルを削除」確定</td><td>ラベルを削除し、付与済みカードからも除去する</td></tr>
           </tbody>
         </table>
       </div>
     </div>
 
     <div class="subsection">
-      <div class="subsection-title"><span class="subsection-num">6.2</span> List</div>
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>フィールド</th><th>型</th><th>説明</th></tr></thead>
-          <tbody>
-            <tr><td><code>id</code></td><td><span class="type-badge">string</span></td><td>一意の識別子</td></tr>
-            <tr><td><code>boardId</code></td><td><span class="type-badge">string</span></td><td>所属ボードID</td></tr>
-            <tr><td><code>title</code></td><td><span class="type-badge">string</span></td><td>リスト名</td></tr>
-            <tr><td><code>cardIds</code></td><td><span class="type-badge">string[]</span></td><td>カードIDの並び順配列</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
+      <div class="subsection-title"><span class="subsection-num">7.2</span> データ構造（フィールド定義）</div>
+      <p style="margin-bottom:16px;">各データが持つフィールドの一覧。</p>
 
-    <div class="subsection">
-      <div class="subsection-title"><span class="subsection-num">6.3</span> Card</div>
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>フィールド</th><th>型</th><th>説明</th></tr></thead>
-          <tbody>
-            <tr><td><code>id</code></td><td><span class="type-badge">string</span></td><td>一意の識別子</td></tr>
-            <tr><td><code>listId</code></td><td><span class="type-badge">string</span></td><td>所属リストID</td></tr>
-            <tr><td><code>title</code></td><td><span class="type-badge">string</span></td><td>カードタイトル</td></tr>
-            <tr><td><code>description</code></td><td><span class="type-badge">string</span></td><td>説明文</td></tr>
-            <tr><td><code>dueDate</code></td><td><span class="type-badge">ISO8601?</span></td><td>期限日（任意）</td></tr>
-            <tr><td><code>priority</code></td><td><span class="type-badge">"high"|"mid"|"low"|null</span></td><td>優先度</td></tr>
-            <tr><td><code>labelIds</code></td><td><span class="type-badge">string[]</span></td><td>付与ラベルIDの配列</td></tr>
-            <tr><td><code>checklist</code></td><td><span class="type-badge">CheckItem[]</span></td><td>チェックリスト項目</td></tr>
-            <tr><td><code>warnDays</code></td><td><span class="type-badge">number</span></td><td>期限警告を出す日数（デフォルト: 3）</td></tr>
-            <tr><td><code>createdAt</code></td><td><span class="type-badge">ISO8601</span></td><td>作成日時</td></tr>
-          </tbody>
-        </table>
+      <div style="margin-bottom:20px">
+        <div class="subsection-title" style="font-size:13px;margin-bottom:8px"><span class="subsection-num">Board</span></div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>フィールド</th><th>型</th><th>説明</th></tr></thead>
+            <tbody>
+              <tr><td><code>id</code></td><td><span class="type-badge">string</span></td><td>一意の識別子（UUID）</td></tr>
+              <tr><td><code>title</code></td><td><span class="type-badge">string</span></td><td>ボード名</td></tr>
+              <tr><td><code>createdAt</code></td><td><span class="type-badge">ISO8601</span></td><td>作成日時</td></tr>
+              <tr><td><code>listIds</code></td><td><span class="type-badge">string[]</span></td><td>リストIDの並び順配列</td></tr>
+            </tbody>
+          </table>
+        </div>
       </div>
-    </div>
 
-    <div class="subsection">
-      <div class="subsection-title"><span class="subsection-num">6.4</span> Template</div>
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>フィールド</th><th>型</th><th>説明</th></tr></thead>
-          <tbody>
-            <tr><td><code>id</code></td><td><span class="type-badge">string</span></td><td>一意の識別子</td></tr>
-            <tr><td><code>title</code></td><td><span class="type-badge">string</span></td><td>テンプレート名</td></tr>
-            <tr><td><code>description</code></td><td><span class="type-badge">string</span></td><td>説明文</td></tr>
-            <tr><td><code>priority</code></td><td><span class="type-badge">"high"|"mid"|"low"|null</span></td><td>優先度</td></tr>
-            <tr><td><code>labelIds</code></td><td><span class="type-badge">string[]</span></td><td>付与ラベルIDの配列</td></tr>
-            <tr><td><code>checklist</code></td><td><span class="type-badge">CheckItem[]</span></td><td>チェックリスト項目（doneはすべてfalseでコピー）</td></tr>
-            <tr><td><code>warnDays</code></td><td><span class="type-badge">number</span></td><td>期限警告日数（デフォルト: 3）</td></tr>
-            <tr><td><code>createdAt</code></td><td><span class="type-badge">ISO8601</span></td><td>保存日時</td></tr>
-          </tbody>
-        </table>
+      <div style="margin-bottom:20px">
+        <div class="subsection-title" style="font-size:13px;margin-bottom:8px"><span class="subsection-num">List</span></div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>フィールド</th><th>型</th><th>説明</th></tr></thead>
+            <tbody>
+              <tr><td><code>id</code></td><td><span class="type-badge">string</span></td><td>一意の識別子</td></tr>
+              <tr><td><code>boardId</code></td><td><span class="type-badge">string</span></td><td>所属ボードID</td></tr>
+              <tr><td><code>title</code></td><td><span class="type-badge">string</span></td><td>リスト名</td></tr>
+              <tr><td><code>cardIds</code></td><td><span class="type-badge">string[]</span></td><td>カードIDの並び順配列</td></tr>
+            </tbody>
+          </table>
+        </div>
       </div>
-    </div>
 
-    <div class="subsection">
-      <div class="subsection-title"><span class="subsection-num">6.5</span> Label / CheckItem</div>
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>フィールド</th><th>型</th><th>説明</th></tr></thead>
-          <tbody>
-            <tr><td><code>Label.id</code></td><td><span class="type-badge">string</span></td><td>一意の識別子</td></tr>
-            <tr><td><code>Label.name</code></td><td><span class="type-badge">string</span></td><td>ラベル名</td></tr>
-            <tr><td><code>Label.color</code></td><td><span class="type-badge">#rrggbb</span></td><td>ラベル色</td></tr>
-            <tr><td><code>CheckItem.id</code></td><td><span class="type-badge">string</span></td><td>一意の識別子</td></tr>
-            <tr><td><code>CheckItem.text</code></td><td><span class="type-badge">string</span></td><td>項目テキスト</td></tr>
-            <tr><td><code>CheckItem.done</code></td><td><span class="type-badge">boolean</span></td><td>完了フラグ</td></tr>
-          </tbody>
-        </table>
+      <div style="margin-bottom:20px">
+        <div class="subsection-title" style="font-size:13px;margin-bottom:8px"><span class="subsection-num">Card</span></div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>フィールド</th><th>型</th><th>説明</th></tr></thead>
+            <tbody>
+              <tr><td><code>id</code></td><td><span class="type-badge">string</span></td><td>一意の識別子</td></tr>
+              <tr><td><code>listId</code></td><td><span class="type-badge">string</span></td><td>所属リストID</td></tr>
+              <tr><td><code>title</code></td><td><span class="type-badge">string</span></td><td>カードタイトル</td></tr>
+              <tr><td><code>description</code></td><td><span class="type-badge">string</span></td><td>説明文</td></tr>
+              <tr><td><code>dueDate</code></td><td><span class="type-badge">ISO8601?</span></td><td>期限日（任意）</td></tr>
+              <tr><td><code>priority</code></td><td><span class="type-badge">"high"|"mid"|"low"|null</span></td><td>優先度</td></tr>
+              <tr><td><code>labelIds</code></td><td><span class="type-badge">string[]</span></td><td>付与ラベルIDの配列</td></tr>
+              <tr><td><code>checklist</code></td><td><span class="type-badge">CheckItem[]</span></td><td>チェックリスト項目</td></tr>
+              <tr><td><code>warnDays</code></td><td><span class="type-badge">number</span></td><td>期限警告を出す日数（デフォルト: 3）</td></tr>
+              <tr><td><code>createdAt</code></td><td><span class="type-badge">ISO8601</span></td><td>作成日時</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div style="margin-bottom:20px">
+        <div class="subsection-title" style="font-size:13px;margin-bottom:8px"><span class="subsection-num">Template</span></div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>フィールド</th><th>型</th><th>説明</th></tr></thead>
+            <tbody>
+              <tr><td><code>id</code></td><td><span class="type-badge">string</span></td><td>一意の識別子</td></tr>
+              <tr><td><code>title</code></td><td><span class="type-badge">string</span></td><td>テンプレート名</td></tr>
+              <tr><td><code>description</code></td><td><span class="type-badge">string</span></td><td>説明文</td></tr>
+              <tr><td><code>priority</code></td><td><span class="type-badge">"high"|"mid"|"low"|null</span></td><td>優先度</td></tr>
+              <tr><td><code>labelIds</code></td><td><span class="type-badge">string[]</span></td><td>付与ラベルIDの配列</td></tr>
+              <tr><td><code>checklist</code></td><td><span class="type-badge">CheckItem[]</span></td><td>チェックリスト項目（doneはすべてfalseでコピー）</td></tr>
+              <tr><td><code>warnDays</code></td><td><span class="type-badge">number</span></td><td>期限警告日数（デフォルト: 3）</td></tr>
+              <tr><td><code>createdAt</code></td><td><span class="type-badge">ISO8601</span></td><td>保存日時</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div>
+        <div class="subsection-title" style="font-size:13px;margin-bottom:8px"><span class="subsection-num">Label / CheckItem</span></div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>フィールド</th><th>型</th><th>説明</th></tr></thead>
+            <tbody>
+              <tr><td><code>Label.id</code></td><td><span class="type-badge">string</span></td><td>一意の識別子</td></tr>
+              <tr><td><code>Label.name</code></td><td><span class="type-badge">string</span></td><td>ラベル名</td></tr>
+              <tr><td><code>Label.color</code></td><td><span class="type-badge">#rrggbb</span></td><td>ラベル色</td></tr>
+              <tr><td><code>CheckItem.id</code></td><td><span class="type-badge">string</span></td><td>一意の識別子</td></tr>
+              <tr><td><code>CheckItem.text</code></td><td><span class="type-badge">string</span></td><td>項目テキスト</td></tr>
+              <tr><td><code>CheckItem.done</code></td><td><span class="type-badge">boolean</span></td><td>完了フラグ</td></tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   </section>
@@ -1338,13 +1452,18 @@
         <span class="rev-ver">v1.2</span>
         <span class="rev-desc">機能追加：3.4「警告タイミングのカスタマイズ（タスクごとに何日前か指定、デフォルト3日）」、3.9「タスクテンプレート（定期タスクをワンタップで再作成）」。データモデルに Card.warnDays・Template を追加。</span>
       </div>
+      <div class="rev-item">
+        <span class="rev-date">2026-10-18</span>
+        <span class="rev-ver">v1.3</span>
+        <span class="rev-desc">「02. ユースケース一覧」を新設（旧「ターゲットユーザーと課題」を置き換え）。「07. データ機能（CRUD仕様）」を新設し、旧「データモデル」のフィールド定義を統合・拡充。</span>
+      </div>
     </div>
   </section>
 
 </div>
 
 <footer class="doc-footer">
-  <span>TaskBoard 要件定義書 v1.2</span>
+  <span>TaskBoard 要件定義書 v1.3</span>
   <span>最終更新: 2026-10-18</span>
 </footer>
 
