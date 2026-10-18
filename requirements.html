@@ -516,7 +516,7 @@
 
 <!-- ── Cover ── -->
 <div class="cover">
-  <p class="cover-eyebrow">製品要件定義書 · v1.4</p>
+  <p class="cover-eyebrow">製品要件定義書 · v1.5</p>
   <h1 class="cover-title">TaskBoard<br>タスク管理アプリケーション 要件定義書</h1>
   <p style="color:var(--fg-sub);font-size:15px;max-width:55ch;margin-bottom:20px;line-height:1.7;">
     付箋やメモ帳で管理していたタスクをデジタル化し、期限・優先度・進捗をチーム全員がひと目で把握できる Web アプリケーションの提案資料です。
@@ -525,7 +525,7 @@
     <span><strong>作成日</strong> 2026年10月18日</span>
     <span><strong>ステータス</strong> ドラフト（お客様確認中）</span>
     <span><strong>対象者</strong> 発注担当者・開発チーム</span>
-    <span><strong>技術</strong> HTML · CSS · JavaScript</span>
+    <span><strong>技術</strong> React · Spring Boot · PostgreSQL</span>
   </div>
 </div>
 
@@ -608,8 +608,8 @@
         <dt>アプリ名</dt>      <dd>TaskBoard（タスクボード）</dd>
         <dt>目的</dt>          <dd>個人・小規模チームのタスクを視覚的に管理し、期限・優先度・進捗を一目で把握できるカンバン型ツールを提供する。</dd>
         <dt>主要ユーザー</dt>  <dd>個人の作業管理から2〜10名規模のチームまで対応する汎用型。</dd>
-        <dt>提供形態</dt>      <dd>シングルページ Web アプリ（ブラウザのみで動作。サーバー不要。）</dd>
-        <dt>データ保存</dt>    <dd>ブラウザの localStorage に保存。オフラインでも完全動作する。</dd>
+        <dt>提供形態</dt>      <dd>シングルページ Web アプリ（React フロントエンド + Spring Boot REST API）</dd>
+        <dt>データ保存</dt>    <dd>サーバー側の PostgreSQL に保存。</dd>
       </dl>
     </div>
   </section>
@@ -671,31 +671,38 @@
     </div>
     <div class="stack-list">
       <div class="stack-item">
-        <span class="stack-icon">🌐</span>
+        <span class="stack-icon">⚛️</span>
         <div>
-          <div class="stack-name">HTML5</div>
-          <div class="stack-reason">セマンティックなマークアップ。drag events API を使用したドラッグ&ドロップ実装。</div>
+          <div class="stack-name">フロントエンド：React 19.2.x ＋ TypeScript ＋ Vite 8.x</div>
+          <div class="stack-reason">コンポーネント単位でボード・リスト・カードを構築。Next.js は対象外（SPA 構成）。ビルドは Vite。</div>
         </div>
       </div>
       <div class="stack-item">
-        <span class="stack-icon">🎨</span>
+        <span class="stack-icon">☕</span>
         <div>
-          <div class="stack-name">CSS3（カスタムプロパティ・Grid・Flex）</div>
-          <div class="stack-reason">ライブラリなしで完全なダーク/ライトテーマ対応。レスポンシブレイアウト。</div>
+          <div class="stack-name">バックエンド：Java 25（LTS）＋ Spring Boot 4.1.x</div>
+          <div class="stack-reason">REST API を提供。永続化は Spring Data JPA（Hibernate）、ビルドは Gradle を想定。</div>
         </div>
       </div>
       <div class="stack-item">
-        <span class="stack-icon">⚙️</span>
+        <span class="stack-icon">🐘</span>
         <div>
-          <div class="stack-name">Vanilla JavaScript（ES2020+）</div>
-          <div class="stack-reason">フレームワーク不要。依存ゼロ。クラスベースで設計し、保守しやすい構造にする。</div>
+          <div class="stack-name">データベース：PostgreSQL 18.x</div>
+          <div class="stack-reason">ボード・リスト・カード・テンプレート等を永続化。ローカル開発は Docker Compose で起動。</div>
         </div>
       </div>
       <div class="stack-item">
-        <span class="stack-icon">💾</span>
+        <span class="stack-icon">📌</span>
         <div>
-          <div class="stack-name">localStorage API</div>
-          <div class="stack-reason">サーバー不要でデータを永続化。JSON シリアライズ/デシリアライズで管理。</div>
+          <div class="stack-name">ツールのバージョン方針</div>
+          <div class="stack-reason">各ツールは常に安定版の最新を使用し、LTS があるもの（Java）は最新 LTS を使用する。パッチ番号は構築時に公式サイトで確認する。</div>
+        </div>
+      </div>
+      <div class="stack-item">
+        <span class="stack-icon">🔀</span>
+        <div>
+          <div class="stack-name">ソースコード管理：Git ＋ GitHub</div>
+          <div class="stack-reason">ソースコードのバージョン管理に Git、リモートリポジトリの共有・レビューに GitHub を使用する。</div>
         </div>
       </div>
     </div>
@@ -718,7 +725,7 @@
           <span class="tag">ボード作成・削除</span>
           <span class="tag">リスト追加・削除</span>
           <span class="tag">カード作成・削除</span>
-          <span class="tag">localStorage 保存</span>
+          <span class="tag">API・DB 保存</span>
         </div>
       </div>
       <div class="phase-item">
@@ -798,13 +805,18 @@
         <span class="rev-ver">v1.4</span>
         <span class="rev-desc">並び替え機能を Phase 2 に追加：列内カードのドラッグ&ドロップ並び替え、優先度順ソート（高→中→低）、期限順ソート（近い順）。ソート後も手動並び替え可能。</span>
       </div>
+      <div class="rev-item">
+        <span class="rev-date">2026-10-18</span>
+        <span class="rev-ver">v1.5</span>
+        <span class="rev-desc">技術スタックを変更：React 19.2 + TypeScript + Vite 8 / Java 25 LTS + Spring Boot 4.1 / PostgreSQL 18。localStorage 前提を廃止し、サーバー + DB 保存に変更。ツールのバージョン方針（最新安定版・LTS）とソースコード管理（Git + GitHub）を追加。</span>
+      </div>
     </div>
   </section>
 
 </div>
 
 <footer class="doc-footer">
-  <span>TaskBoard 要件定義書 v1.4</span>
+  <span>TaskBoard 要件定義書 v1.5</span>
   <span>最終更新: 2026-10-18</span>
 </footer>
 
