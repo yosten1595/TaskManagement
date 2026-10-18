@@ -516,7 +516,7 @@
 
 <!-- ── Cover ── -->
 <div class="cover">
-  <p class="cover-eyebrow">製品要件定義書 · v1.3</p>
+  <p class="cover-eyebrow">製品要件定義書 · v1.4</p>
   <h1 class="cover-title">TaskBoard<br>タスク管理アプリケーション 要件定義書</h1>
   <p style="color:var(--fg-sub);font-size:15px;max-width:55ch;margin-bottom:20px;line-height:1.7;">
     付箋やメモ帳で管理していたタスクをデジタル化し、期限・優先度・進捗をチーム全員がひと目で把握できる Web アプリケーションの提案資料です。
@@ -727,7 +727,10 @@
           <span class="phase-period">コア機能</span>
         </div>
         <div class="phase-features">
-          <span class="tag">ドラッグ&ドロップ</span>
+          <span class="tag">ドラッグ&ドロップ（列間移動）</span>
+          <span class="tag">列内カード並び替え</span>
+          <span class="tag">優先度順ソート</span>
+          <span class="tag">期限順ソート</span>
           <span class="tag">カード詳細モーダル</span>
           <span class="tag">期限・警告表示</span>
           <span class="tag">優先度</span>
@@ -790,13 +793,18 @@
         <span class="rev-ver">v1.3</span>
         <span class="rev-desc">「02. ユースケース一覧」を新設（旧「ターゲットユーザーと課題」を置き換え）。「07. データ機能（CRUD仕様）」を新設し、旧「データモデル」のフィールド定義を統合・拡充。</span>
       </div>
+      <div class="rev-item">
+        <span class="rev-date">2026-10-18</span>
+        <span class="rev-ver">v1.4</span>
+        <span class="rev-desc">並び替え機能を Phase 2 に追加：列内カードのドラッグ&ドロップ並び替え、優先度順ソート（高→中→低）、期限順ソート（近い順）。ソート後も手動並び替え可能。</span>
+      </div>
     </div>
   </section>
 
 </div>
 
 <footer class="doc-footer">
-  <span>TaskBoard 要件定義書 v1.3</span>
+  <span>TaskBoard 要件定義書 v1.4</span>
   <span>最終更新: 2026-10-18</span>
 </footer>
 
