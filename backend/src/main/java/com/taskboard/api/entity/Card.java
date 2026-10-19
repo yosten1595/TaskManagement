@@ -51,11 +51,8 @@ public class Card {
 	@Column(name = "created_at", nullable = false, updatable = false)
 	private Instant createdAt = Instant.now();
 
-	@ManyToMany
-	@JoinTable(name = "card_labels",
-		joinColumns = @JoinColumn(name = "card_id"),
-		inverseJoinColumns = @JoinColumn(name = "label_id"))
-	private Set<Label> labels = new HashSet<>();
+	@OneToMany(mappedBy = "card", cascade = CascadeType.ALL, orphanRemoval = true)
+	private Set<CardLabel> labels = new HashSet<>();
 
 	@OneToMany(mappedBy = "card", cascade = CascadeType.ALL, orphanRemoval = true)
 	@OrderBy("position")

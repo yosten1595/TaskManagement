@@ -37,11 +37,8 @@ public class Template {
 	@Column(name = "created_at", nullable = false, updatable = false)
 	private Instant createdAt = Instant.now();
 
-	@ManyToMany
-	@JoinTable(name = "template_labels",
-		joinColumns = @JoinColumn(name = "template_id"),
-		inverseJoinColumns = @JoinColumn(name = "label_id"))
-	private Set<Label> labels = new HashSet<>();
+	@OneToMany(mappedBy = "template", cascade = CascadeType.ALL, orphanRemoval = true)
+	private Set<TemplateLabel> labels = new HashSet<>();
 
 	@OneToMany(mappedBy = "template", cascade = CascadeType.ALL, orphanRemoval = true)
 	@OrderBy("position")
