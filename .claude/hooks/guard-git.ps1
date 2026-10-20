@@ -56,7 +56,7 @@ foreach ($stmt in ($command -split '&&|\|\||;|\r?\n')) {
             if ($i -ge 0 -and $i + 1 -lt $a.Count) { $new = $a[$i + 1] }
         } elseif ($sub -eq 'branch') {
             $pos = @($a | Where-Object { $_ -notmatch '^-' })
-            $skip = $a | Where-Object { $_ -match '^(-[dDmMcClarv]|--(delete|move|copy|list|show-current))$' }
+            $skip = $a | Where-Object { $_ -match '^(-[dDmMcClarv]|--(delete|move|copy|list|show-current|merged|no-merged|contains|no-contains|points-at|sort|format)(=.*)?)$' }
             if (-not $skip -and $pos.Count -gt 0) { $new = $pos[0] }
         }
         if ($new -and $new -notmatch $branchRe) {
