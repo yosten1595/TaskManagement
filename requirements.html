@@ -663,6 +663,130 @@
     </div>
   </section>
 
+  <!-- 07-ER. データモデル（ER図） -->
+  <section class="section">
+    <div class="section-header">
+      <span class="section-num">ER</span>
+      <h2 class="section-title">データモデル（ER 図）</h2>
+    </div>
+    <p style="margin-bottom:20px;">PostgreSQL に保存するテーブルとその関係。「07. データ機能（CRUD仕様）」のフィールド定義を、RDB 向けに正規化したもの。<strong>PK</strong>＝主キー、<strong>FK</strong>＝外部キー、線上の <strong>1</strong> と <strong>N</strong> は 1 対多を表す。</p>
+    <div style="overflow-x:auto;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow-card);padding:16px">
+<svg viewBox="0 0 890 560" role="img" aria-label="ER図" style="width:100%;min-width:640px;max-width:890px;height:auto;display:block;margin:0 auto">
+<rect x="10" y="20" width="180" height="86" rx="5" fill="var(--surface)" stroke="var(--border)"/>
+<path d="M10 46V25a5 5 0 0 1 5-5H185a5 5 0 0 1 5 5V46Z" fill="var(--accent-bg)" stroke="var(--border)"/>
+<text x="20" y="37" font-family="var(--mono)" font-size="12" font-weight="600" fill="var(--accent)">boards</text>
+<text x="20" y="60" font-family="var(--mono)" font-size="11" fill="var(--fg)">id</text>
+<text x="182" y="60" text-anchor="end" font-family="var(--mono)" font-size="10" fill="var(--fg-muted)">PK</text>
+<text x="20" y="80" font-family="var(--mono)" font-size="11" fill="var(--fg)">title</text>
+<text x="20" y="100" font-family="var(--mono)" font-size="11" fill="var(--fg)">created_at</text>
+<rect x="240" y="20" width="180" height="106" rx="5" fill="var(--surface)" stroke="var(--border)"/>
+<path d="M240 46V25a5 5 0 0 1 5-5H415a5 5 0 0 1 5 5V46Z" fill="var(--accent-bg)" stroke="var(--border)"/>
+<text x="250" y="37" font-family="var(--mono)" font-size="12" font-weight="600" fill="var(--accent)">lists</text>
+<text x="250" y="60" font-family="var(--mono)" font-size="11" fill="var(--fg)">id</text>
+<text x="412" y="60" text-anchor="end" font-family="var(--mono)" font-size="10" fill="var(--fg-muted)">PK</text>
+<text x="250" y="80" font-family="var(--mono)" font-size="11" fill="var(--fg)">board_id</text>
+<text x="412" y="80" text-anchor="end" font-family="var(--mono)" font-size="10" fill="var(--fg-muted)">FK</text>
+<text x="250" y="100" font-family="var(--mono)" font-size="11" fill="var(--fg)">title</text>
+<text x="250" y="120" font-family="var(--mono)" font-size="11" fill="var(--fg)">position</text>
+<rect x="470" y="20" width="180" height="206" rx="5" fill="var(--surface)" stroke="var(--border)"/>
+<path d="M470 46V25a5 5 0 0 1 5-5H645a5 5 0 0 1 5 5V46Z" fill="var(--accent-bg)" stroke="var(--border)"/>
+<text x="480" y="37" font-family="var(--mono)" font-size="12" font-weight="600" fill="var(--accent)">cards</text>
+<text x="480" y="60" font-family="var(--mono)" font-size="11" fill="var(--fg)">id</text>
+<text x="642" y="60" text-anchor="end" font-family="var(--mono)" font-size="10" fill="var(--fg-muted)">PK</text>
+<text x="480" y="80" font-family="var(--mono)" font-size="11" fill="var(--fg)">list_id</text>
+<text x="642" y="80" text-anchor="end" font-family="var(--mono)" font-size="10" fill="var(--fg-muted)">FK</text>
+<text x="480" y="100" font-family="var(--mono)" font-size="11" fill="var(--fg)">title</text>
+<text x="480" y="120" font-family="var(--mono)" font-size="11" fill="var(--fg)">description</text>
+<text x="480" y="140" font-family="var(--mono)" font-size="11" fill="var(--fg)">due_date</text>
+<text x="480" y="160" font-family="var(--mono)" font-size="11" fill="var(--fg)">priority</text>
+<text x="480" y="180" font-family="var(--mono)" font-size="11" fill="var(--fg)">warn_days</text>
+<text x="480" y="200" font-family="var(--mono)" font-size="11" fill="var(--fg)">position</text>
+<text x="480" y="220" font-family="var(--mono)" font-size="11" fill="var(--fg)">created_at</text>
+<rect x="700" y="20" width="180" height="126" rx="5" fill="var(--surface)" stroke="var(--border)"/>
+<path d="M700 46V25a5 5 0 0 1 5-5H875a5 5 0 0 1 5 5V46Z" fill="var(--accent-bg)" stroke="var(--border)"/>
+<text x="710" y="37" font-family="var(--mono)" font-size="12" font-weight="600" fill="var(--accent)">check_items</text>
+<text x="710" y="60" font-family="var(--mono)" font-size="11" fill="var(--fg)">id</text>
+<text x="872" y="60" text-anchor="end" font-family="var(--mono)" font-size="10" fill="var(--fg-muted)">PK</text>
+<text x="710" y="80" font-family="var(--mono)" font-size="11" fill="var(--fg)">card_id</text>
+<text x="872" y="80" text-anchor="end" font-family="var(--mono)" font-size="10" fill="var(--fg-muted)">FK</text>
+<text x="710" y="100" font-family="var(--mono)" font-size="11" fill="var(--fg)">text</text>
+<text x="710" y="120" font-family="var(--mono)" font-size="11" fill="var(--fg)">done</text>
+<text x="710" y="140" font-family="var(--mono)" font-size="11" fill="var(--fg)">position</text>
+<rect x="240" y="270" width="180" height="86" rx="5" fill="var(--surface)" stroke="var(--border)"/>
+<path d="M240 296V275a5 5 0 0 1 5-5H415a5 5 0 0 1 5 5V296Z" fill="var(--accent-bg)" stroke="var(--border)"/>
+<text x="250" y="287" font-family="var(--mono)" font-size="12" font-weight="600" fill="var(--accent)">labels</text>
+<text x="250" y="310" font-family="var(--mono)" font-size="11" fill="var(--fg)">id</text>
+<text x="412" y="310" text-anchor="end" font-family="var(--mono)" font-size="10" fill="var(--fg-muted)">PK</text>
+<text x="250" y="330" font-family="var(--mono)" font-size="11" fill="var(--fg)">name</text>
+<text x="250" y="350" font-family="var(--mono)" font-size="11" fill="var(--fg)">color</text>
+<rect x="470" y="270" width="180" height="66" rx="5" fill="var(--surface)" stroke="var(--border)"/>
+<path d="M470 296V275a5 5 0 0 1 5-5H645a5 5 0 0 1 5 5V296Z" fill="var(--accent-bg)" stroke="var(--border)"/>
+<text x="480" y="287" font-family="var(--mono)" font-size="12" font-weight="600" fill="var(--accent)">card_labels</text>
+<text x="480" y="310" font-family="var(--mono)" font-size="11" fill="var(--fg)">card_id</text>
+<text x="642" y="310" text-anchor="end" font-family="var(--mono)" font-size="10" fill="var(--fg-muted)">PK,FK</text>
+<text x="480" y="330" font-family="var(--mono)" font-size="11" fill="var(--fg)">label_id</text>
+<text x="642" y="330" text-anchor="end" font-family="var(--mono)" font-size="10" fill="var(--fg-muted)">PK,FK</text>
+<rect x="10" y="270" width="180" height="66" rx="5" fill="var(--surface)" stroke="var(--border)"/>
+<path d="M10 296V275a5 5 0 0 1 5-5H185a5 5 0 0 1 5 5V296Z" fill="var(--accent-bg)" stroke="var(--border)"/>
+<text x="20" y="287" font-family="var(--mono)" font-size="12" font-weight="600" fill="var(--accent)">template_labels</text>
+<text x="20" y="310" font-family="var(--mono)" font-size="11" fill="var(--fg)">template_id</text>
+<text x="182" y="310" text-anchor="end" font-family="var(--mono)" font-size="10" fill="var(--fg-muted)">PK,FK</text>
+<text x="20" y="330" font-family="var(--mono)" font-size="11" fill="var(--fg)">label_id</text>
+<text x="182" y="330" text-anchor="end" font-family="var(--mono)" font-size="10" fill="var(--fg-muted)">PK,FK</text>
+<rect x="10" y="400" width="180" height="146" rx="5" fill="var(--surface)" stroke="var(--border)"/>
+<path d="M10 426V405a5 5 0 0 1 5-5H185a5 5 0 0 1 5 5V426Z" fill="var(--accent-bg)" stroke="var(--border)"/>
+<text x="20" y="417" font-family="var(--mono)" font-size="12" font-weight="600" fill="var(--accent)">templates</text>
+<text x="20" y="440" font-family="var(--mono)" font-size="11" fill="var(--fg)">id</text>
+<text x="182" y="440" text-anchor="end" font-family="var(--mono)" font-size="10" fill="var(--fg-muted)">PK</text>
+<text x="20" y="460" font-family="var(--mono)" font-size="11" fill="var(--fg)">title</text>
+<text x="20" y="480" font-family="var(--mono)" font-size="11" fill="var(--fg)">description</text>
+<text x="20" y="500" font-family="var(--mono)" font-size="11" fill="var(--fg)">priority</text>
+<text x="20" y="520" font-family="var(--mono)" font-size="11" fill="var(--fg)">warn_days</text>
+<text x="20" y="540" font-family="var(--mono)" font-size="11" fill="var(--fg)">created_at</text>
+<rect x="240" y="400" width="180" height="106" rx="5" fill="var(--surface)" stroke="var(--border)"/>
+<path d="M240 426V405a5 5 0 0 1 5-5H415a5 5 0 0 1 5 5V426Z" fill="var(--accent-bg)" stroke="var(--border)"/>
+<text x="250" y="417" font-family="var(--mono)" font-size="12" font-weight="600" fill="var(--accent)">template_check_items</text>
+<text x="250" y="440" font-family="var(--mono)" font-size="11" fill="var(--fg)">id</text>
+<text x="412" y="440" text-anchor="end" font-family="var(--mono)" font-size="10" fill="var(--fg-muted)">PK</text>
+<text x="250" y="460" font-family="var(--mono)" font-size="11" fill="var(--fg)">template_id</text>
+<text x="412" y="460" text-anchor="end" font-family="var(--mono)" font-size="10" fill="var(--fg-muted)">FK</text>
+<text x="250" y="480" font-family="var(--mono)" font-size="11" fill="var(--fg)">text</text>
+<text x="250" y="500" font-family="var(--mono)" font-size="11" fill="var(--fg)">position</text>
+<line x1="190" y1="63" x2="240" y2="63" stroke="var(--fg-muted)" stroke-width="1.5"/>
+<line x1="420" y1="63" x2="470" y2="63" stroke="var(--fg-muted)" stroke-width="1.5"/>
+<line x1="650" y1="63" x2="700" y2="63" stroke="var(--fg-muted)" stroke-width="1.5"/>
+<line x1="420" y1="303" x2="470" y2="303" stroke="var(--fg-muted)" stroke-width="1.5"/>
+<line x1="190" y1="303" x2="240" y2="303" stroke="var(--fg-muted)" stroke-width="1.5"/>
+<line x1="190" y1="473" x2="240" y2="473" stroke="var(--fg-muted)" stroke-width="1.5"/>
+<text x="194" y="57" text-anchor="start" font-family="var(--mono)" font-size="11" font-weight="600" fill="var(--accent)">1</text>
+<text x="236" y="57" text-anchor="end" font-family="var(--mono)" font-size="11" font-weight="600" fill="var(--accent)">N</text>
+<text x="424" y="57" text-anchor="start" font-family="var(--mono)" font-size="11" font-weight="600" fill="var(--accent)">1</text>
+<text x="466" y="57" text-anchor="end" font-family="var(--mono)" font-size="11" font-weight="600" fill="var(--accent)">N</text>
+<text x="654" y="57" text-anchor="start" font-family="var(--mono)" font-size="11" font-weight="600" fill="var(--accent)">1</text>
+<text x="696" y="57" text-anchor="end" font-family="var(--mono)" font-size="11" font-weight="600" fill="var(--accent)">N</text>
+<text x="424" y="297" text-anchor="start" font-family="var(--mono)" font-size="11" font-weight="600" fill="var(--accent)">1</text>
+<text x="466" y="297" text-anchor="end" font-family="var(--mono)" font-size="11" font-weight="600" fill="var(--accent)">N</text>
+<text x="194" y="297" text-anchor="start" font-family="var(--mono)" font-size="11" font-weight="600" fill="var(--accent)">N</text>
+<text x="236" y="297" text-anchor="end" font-family="var(--mono)" font-size="11" font-weight="600" fill="var(--accent)">1</text>
+<text x="194" y="467" text-anchor="start" font-family="var(--mono)" font-size="11" font-weight="600" fill="var(--accent)">1</text>
+<text x="236" y="467" text-anchor="end" font-family="var(--mono)" font-size="11" font-weight="600" fill="var(--accent)">N</text>
+<line x1="560" y1="226" x2="560" y2="270" stroke="var(--fg-muted)" stroke-width="1.5"/>
+<text x="568" y="240" text-anchor="start" font-family="var(--mono)" font-size="11" font-weight="600" fill="var(--accent)">1</text>
+<text x="568" y="266" text-anchor="start" font-family="var(--mono)" font-size="11" font-weight="600" fill="var(--accent)">N</text>
+<line x1="100" y1="400" x2="100" y2="336" stroke="var(--fg-muted)" stroke-width="1.5"/>
+<text x="108" y="394" text-anchor="start" font-family="var(--mono)" font-size="11" font-weight="600" fill="var(--accent)">1</text>
+<text x="108" y="350" text-anchor="start" font-family="var(--mono)" font-size="11" font-weight="600" fill="var(--accent)">N</text>
+</svg>
+    </div>
+    <ul style="margin:20px 0 0 20px;color:var(--fg-sub);font-size:14px;line-height:1.9">
+      <li><strong>並び順</strong>：配列（<code>listIds</code> / <code>cardIds</code>）ではなく、<code>lists.position</code>・<code>cards.position</code> 列で持つ。</li>
+      <li><strong>カスケード削除</strong>：ボード削除でリスト・カードも削除（DF-04）、リスト削除でカードも削除（DF-08）。ラベル削除時は <code>card_labels</code> / <code>template_labels</code> の紐付けも削除（DF-19）。</li>
+      <li><strong>ラベル・チェックリスト</strong>：カードとラベルは多対多（<code>card_labels</code>）。チェックリストは <code>check_items</code> に分離。テンプレートも同様で、テンプレート側の項目は未完了でコピーするため <code>done</code> を持たない。</li>
+      <li><strong>値の制約</strong>：<code>priority</code> は high / mid / low / NULL、<code>due_date</code> は NULL 可、<code>warn_days</code> の既定値は 3。</li>
+      <li>ユーザー・認証に関するテーブルは現時点の要件に含まれないため設けない（単一ユーザー前提）。</li>
+    </ul>
+  </section>
+
   <!-- 08. 技術スタック -->
   <section class="section">
     <div class="section-header">
@@ -810,14 +934,19 @@
         <span class="rev-ver">v1.5</span>
         <span class="rev-desc">技術スタックを変更：React 19.2 + TypeScript + Vite 8 / Java 25 LTS + Spring Boot 4.1 / PostgreSQL 18。localStorage 前提を廃止し、サーバー + DB 保存に変更。ツールのバージョン方針（最新安定版・LTS）とソースコード管理（Git + GitHub）を追加。</span>
       </div>
+      <div class="rev-item">
+        <span class="rev-date">2026-10-19</span>
+        <span class="rev-ver">v1.6</span>
+        <span class="rev-desc">データモデル（ER 図）を追加。Board・List・Card・Label・CheckItem・Template を PostgreSQL 向けに正規化（並び順は position 列、ラベルは中間テーブル）。</span>
+      </div>
     </div>
   </section>
 
 </div>
 
 <footer class="doc-footer">
-  <span>TaskBoard 要件定義書 v1.5</span>
-  <span>最終更新: 2026-10-18</span>
+  <span>TaskBoard 要件定義書 v1.6</span>
+  <span>最終更新: 2026-10-19</span>
 </footer>
 
 </body>
