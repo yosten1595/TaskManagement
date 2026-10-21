@@ -168,6 +168,54 @@ npm run build
 | GET | `/api/cards/{id}` | カード詳細 |
 | GET | `/actuator/health` | ヘルスチェック（DB 接続状態を含む） |
 
+### API 形式
+
+| 項目 | 内容 |
+| --- | --- |
+| スタイル | REST。リソースは `/api/` 配下、複数形の名詞（`boards`、`cards`） |
+| データ形式 | JSON（`application/json`）。フィールド名は camelCase |
+| ID | UUID 文字列 |
+| 日時 | `createdAt` は UTC の ISO 8601（例: `2026-10-21T12:00:00Z`） |
+| 日付 | `dueDate` は `YYYY-MM-DD`。期限なしは `null` |
+| 優先度 | `priority` は `HIGH` / `MID` / `LOW`。未設定は `null` |
+| 並び順 | 配列は `position` の昇順で返す |
+| 一覧 | ページングなし。該当なしは空配列 `[]` |
+| エラー | Spring 標準のエラー JSON（`status` / `error` / `path` など）。存在しない ID は `404`、`priority` や UUID の形式不正は `400` |
+
+レスポンスの例（`GET /api/boards/{id}`、一部省略）:
+
+```json
+{
+  "id": "0b0f6a52-...",
+  "title": "開発タスク",
+  "createdAt": "2026-10-21T12:00:00Z",
+  "lists": [
+    {
+      "id": "7c1e...",
+      "title": "ToDo",
+      "position": 0,
+      "cards": [
+        {
+          "id": "a3d9...",
+          "listId": "7c1e...",
+          "title": "ログイン画面を作る",
+          "description": null,
+          "dueDate": "2026-10-25",
+          "priority": "HIGH",
+          "warnDays": 3,
+          "position": 0,
+          "createdAt": "2026-10-21T12:00:00Z",
+          "labels": [{ "id": "5b2f...", "name": "frontend", "color": "#3b82f6" }],
+          "checklist": [{ "id": "e801...", "text": "画面設計", "done": true, "position": 0 }]
+        }
+      ]
+    }
+  ]
+}
+```
+
+`GET /api/boards` は `id` / `title` / `createdAt` のみの配列、`GET /api/cards` は上記の `cards` 要素と同じ形の配列を返します。`keyword` はタイトル・説明の部分一致（大文字小文字を区別しない）です。作成・更新・削除 API を追加するときも、この形式に揃えます。
+
 ## データモデル
 
 Board → List → Card の階層に、Label（カードと多対多）、CheckItem（カードのチェックリスト）、Template（定期タスクの雛形）を加えた構成です。並び順は配列ではなく `position` 列で持ちます。ER 図とフィールド定義は [requirements.html](requirements.html) の「データモデル（ER 図）」を参照してください。

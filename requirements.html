@@ -805,7 +805,7 @@
         <span class="stack-icon">☕</span>
         <div>
           <div class="stack-name">バックエンド：Java 25（LTS）＋ Spring Boot 4.1.1</div>
-          <div class="stack-reason">REST API を提供。永続化は Spring Data JPA（Hibernate）、ビルドは Gradle 9.8.1（Gradle Wrapper）。Web・JPA・Validation・Actuator の各 starter、Lombok、PostgreSQL JDBC ドライバを使用（バージョンは Spring Boot の依存管理に従う）。</div>
+          <div class="stack-reason">REST API を提供（JSON 形式・camelCase、ID は UUID、日時は UTC の ISO 8601、エラーは HTTP ステータスコード＋Spring 標準のエラー JSON。詳細は README の「API 形式」）。永続化は Spring Data JPA（Hibernate）、ビルドは Gradle 9.8.1（Gradle Wrapper）。Web・JPA・Validation・Actuator の各 starter、Lombok、PostgreSQL JDBC ドライバを使用（バージョンは Spring Boot の依存管理に従う）。</div>
         </div>
       </div>
       <div class="stack-item">
@@ -942,7 +942,7 @@
       <div class="rev-item">
         <span class="rev-date">2026-10-21</span>
         <span class="rev-ver">v1.7</span>
-        <span class="rev-desc">技術スタックに、環境構築で確定したバージョンを明記（React 19.3.1 / TypeScript 6.0.3 / Vite 8.3.5 / Spring Boot 4.1.1 / Gradle 9.8.1 / PostgreSQL 18 など）。</span>
+        <span class="rev-desc">技術スタックに、環境構築で確定したバージョンを明記（React 19.3.1 / TypeScript 6.0.3 / Vite 8.3.5 / Spring Boot 4.1.1 / Gradle 9.8.1 / PostgreSQL 18 など）。API 形式（JSON・UUID・日時・エラー）の方針を追記。</span>
       </div>
     </div>
   </section>
