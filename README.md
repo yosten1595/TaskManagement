@@ -1,0 +1,195 @@
+# TaskBoard
+
+付箋やメモ帳で管理していたタスクをデジタル化し、期限・優先度・進捗をひと目で把握できる**カンバン型のタスク管理 Web アプリケーション**です。個人の作業管理から 2〜10 名規模のチームまでを想定しています。
+
+- フロントエンド: React のシングルページアプリ（SPA）
+- バックエンド: Spring Boot の REST API
+- データ保存: PostgreSQL（ローカル開発は Docker Compose）
+
+要件の詳細は [requirements.html](requirements.html) と、そこからリンクされている個別ドキュメントにまとめています。
+
+## 解決したい課題
+
+| 現状（付箋・メモ帳） | TaskBoard を使うと |
+| --- | --- |
+| 期限が近づいても気づかず遅延する | 期限が近づくと自動で色が変わる |
+| どれが急ぎか分からない | 優先度・ラベルで重要度が一目で分かる |
+| サブタスクを管理できない | カード内のチェックリストで進捗を管理できる |
+| プロジェクトが増えると混在する | ボードを分けて整理できる |
+| チームで進捗を共有しにくい | カンバンボードで即座に共有できる |
+
+## 主な機能（要件）
+
+| 領域 | 内容 |
+| --- | --- |
+| ボード / リスト / カード | 作成・削除、リストとカードの階層管理 |
+| 並び替え | ドラッグ&ドロップ（列間移動・列内並び替え）、優先度順・期限順ソート |
+| カード詳細 | 期限、優先度（高・中・低）、ラベル、チェックリスト、警告タイミング（既定 3 日前） |
+| テンプレート | 定期タスクをワンタップで再作成 |
+| 検索・フィルタ | キーワード、優先度、リストでの絞り込み |
+| 仕上げ | ダークモード、レスポンシブ、アクセシビリティ |
+
+機能の優先度（Must / Should / Nice）と開発フェーズ（Phase 1〜4）は [requirements.html](requirements.html) の「開発フェーズ」を参照してください。
+
+## 現在の実装状況
+
+Phase 1（基盤構築）の途中です。
+
+| 項目 | 状況 |
+| --- | --- |
+| PostgreSQL（Docker）と JPA エンティティ | 実装済み |
+| 読み取り専用 API（ボード・カードの取得／検索） | 実装済み |
+| 動作確認用テストデータの自動投入 | 実装済み |
+| フロントエンド: ボード一覧、ボード画面、カード検索 | 実装済み |
+| 作成・更新・削除 API と画面、ドラッグ&ドロップ、テンプレート等 | 未実装 |
+
+## 技術スタック
+
+| 区分 | 採用技術 | バージョン |
+| --- | --- | --- |
+| フロントエンド | React / React DOM | 19.3.1 |
+| | TypeScript | 6.0.3 |
+| | Vite | 8.3.5 |
+| | React Router | 7.18.4 |
+| | Oxlint（Lint） | 1.89.0 |
+| | Node.js（動作確認環境） | 24（LTS） |
+| バックエンド | Java（Temurin） | 25（LTS） |
+| | Spring Boot | 4.1.1 |
+| | Gradle（Wrapper） | 9.8.1 |
+| | Spring Data JPA（Hibernate） / Validation / Actuator | Spring Boot の依存管理に従う |
+| データベース | PostgreSQL（Docker イメージ `postgres:18`） | 18 |
+| 管理 | Git / GitHub | — |
+
+バージョンの正は、フロントエンドが `frontend/package-lock.json`、バックエンドが `backend/build.gradle` と `backend/gradle/wrapper/gradle-wrapper.properties` です。変更したら [requirements.html](requirements.html) の「技術スタック」も更新してください。
+
+## ディレクトリ構成
+
+```
+.
+├── backend/              Spring Boot (Gradle) の REST API
+│   └── src/main/java/com/taskboard/api/
+│       ├── controller/   REST コントローラ
+│       ├── service/      検索・取得ロジック
+│       ├── repository/   Spring Data JPA リポジトリ
+│       ├── entity/       JPA エンティティ
+│       ├── dto/          API レスポンス用 DTO
+│       └── seed/         動作確認用テストデータの投入
+├── frontend/             React + TypeScript + Vite の SPA
+│   └── src/              pages / components / api.ts / types.ts
+├── docker-compose.yml    開発用 PostgreSQL
+├── scripts/              開発補助スクリプト（ポート解放など）
+├── requirements.html     製品要件定義書
+├── .github/              Issue / PR テンプレート、ブランチ保護の方針
+├── .claude/              Claude Code 用のフック・スキル
+└── CLAUDE.md             開発ルール（Claude Code 向け）
+```
+
+## ローカルでの起動方法
+
+### 前提
+
+- Docker（Docker Compose）
+- JDK 25
+- Node.js 24 と npm
+
+### ポート
+
+開発サーバーのポートは固定です。フロントエンドは `/api` を `localhost:8080` に転送するため、別ポートでは動作しません。
+
+| 対象 | ポート |
+| --- | --- |
+| バックエンド | 8080 |
+| フロントエンド | 5173 |
+| PostgreSQL（ホスト側） | 5433 |
+
+ポートが使用中の場合は、占有しているプロセスを PID 指定で停止してから起動します。
+
+```powershell
+powershell -NoProfile -File scripts/free-port.ps1 -Port 8080,5173
+```
+
+### 手順
+
+1. データベースを起動する
+
+   ```bash
+   docker compose up -d --wait
+   ```
+
+2. バックエンドを起動する（別ターミナル）
+
+   ```bash
+   cd backend
+   ./gradlew bootRun
+   ```
+
+   `http://localhost:8080/actuator/health` が `UP` になれば起動完了です。`boards` テーブルが空のときだけ、テストデータが自動で投入されます。
+
+3. フロントエンドを起動する（別ターミナル）
+
+   ```bash
+   cd frontend
+   npm install
+   npm run dev
+   ```
+
+   ブラウザで http://localhost:5173 を開きます。
+
+### 設定（環境変数）
+
+| 変数 | 既定値 | 内容 |
+| --- | --- | --- |
+| `DB_URL` | `jdbc:postgresql://localhost:5433/taskboard` | 接続先 DB |
+| `DB_USERNAME` | `taskboard` | DB ユーザー |
+| `DB_PASSWORD` | `taskboard` | DB パスワード |
+| `SEED_ENABLED` | `true` | テストデータの自動投入（本番では `false`） |
+
+### ビルド・テスト・Lint
+
+```bash
+# バックエンド（テストは DB が起動している状態で実行する）
+cd backend && ./gradlew test
+
+# フロントエンド
+cd frontend
+npm run lint
+npm run build
+```
+
+## API（現在提供しているもの）
+
+いずれも読み取り専用（GET）です。
+
+| メソッド | パス | 内容 |
+| --- | --- | --- |
+| GET | `/api/boards` | ボード一覧 |
+| GET | `/api/boards/{id}` | ボード詳細（リスト・カードを含む） |
+| GET | `/api/cards` | カード検索。クエリ: `keyword`、`priority`、`listId`（すべて任意） |
+| GET | `/api/cards/{id}` | カード詳細 |
+| GET | `/actuator/health` | ヘルスチェック（DB 接続状態を含む） |
+
+## データモデル
+
+Board → List → Card の階層に、Label（カードと多対多）、CheckItem（カードのチェックリスト）、Template（定期タスクの雛形）を加えた構成です。並び順は配列ではなく `position` 列で持ちます。ER 図とフィールド定義は [requirements.html](requirements.html) の「データモデル（ER 図）」を参照してください。
+
+## 要件定義ドキュメント
+
+[requirements.html](requirements.html) をブラウザで開くと全体を確認できます。個別ドキュメントは次のとおりです。
+
+| ドキュメント | 内容 |
+| --- | --- |
+| [ユースケース一覧](https://claude.ai/artifact/VQDoDfXs8c4XQJPHq6y9Kq) | UC-01〜UC-11 の全 11 ケース |
+| [画面イメージ（ワイヤーフレーム）](https://claude.ai/artifact/98qWsYAwusGCRU6n7UTruX) | ホーム・カンバンボード・カード詳細モーダルの 3 画面 |
+| [機能要件（詳細）](https://claude.ai/artifact/Bg5GX3uRMtQBGsW9ZtcGhN) | Must / Should / Nice の機能一覧と非機能要件 |
+| [データ機能（CRUD 仕様）](https://claude.ai/artifact/Nx6gUGfXsfoFQc4oUz5Ccj) | DF-01〜DF-19 の CRUD 操作とフィールド定義 |
+
+## 開発ルール
+
+作業は GitHub 上のルールに従います。詳細は [CLAUDE.md](CLAUDE.md) を参照してください。
+
+- **Issue ファースト**: 変更を伴う作業は、先に Issue を作る（`.github/ISSUE_TEMPLATE/` のテンプレートを使用）
+- **ブランチ**: `main` では作業しない。`<type>/<issue番号>-<kebab-case>`（type は `feature` / `fix` / `docs` / `refactor` / `chore` / `test`）。1 Issue = 1 ブランチ = 1 PR
+- **コミット**: 英語の命令形で簡潔に、末尾に `(#12)` の形で Issue 番号を付ける
+- **PR**: 本文に `Closes #<番号>` を入れ、[テンプレート](.github/pull_request_template.md) に沿って書く。マージは人が行う
+- **push**: 作業ブランチのみ。force push は禁止
+- ブランチ保護の設定は [.github/BRANCH_PROTECTION.md](.github/BRANCH_PROTECTION.md) を参照
