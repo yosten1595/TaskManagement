@@ -516,7 +516,7 @@
 
 <!-- ── Cover ── -->
 <div class="cover">
-  <p class="cover-eyebrow">製品要件定義書 · v1.5</p>
+  <p class="cover-eyebrow">製品要件定義書 · v1.7</p>
   <h1 class="cover-title">TaskBoard<br>タスク管理アプリケーション 要件定義書</h1>
   <p style="color:var(--fg-sub);font-size:15px;max-width:55ch;margin-bottom:20px;line-height:1.7;">
     付箋やメモ帳で管理していたタスクをデジタル化し、期限・優先度・進捗をチーム全員がひと目で把握できる Web アプリケーションの提案資料です。
@@ -797,29 +797,29 @@
       <div class="stack-item">
         <span class="stack-icon">⚛️</span>
         <div>
-          <div class="stack-name">フロントエンド：React 19.2.x ＋ TypeScript ＋ Vite 8.x</div>
-          <div class="stack-reason">コンポーネント単位でボード・リスト・カードを構築。Next.js は対象外（SPA 構成）。ビルドは Vite。</div>
+          <div class="stack-name">フロントエンド：React 19.3.1 ＋ TypeScript 6.0.3 ＋ Vite 8.3.5</div>
+          <div class="stack-reason">コンポーネント単位でボード・リスト・カードを構築。Next.js は対象外（SPA 構成）。ビルドは Vite。画面遷移は React Router 7.18.4、Lint は Oxlint 1.89.0、Node.js 24（LTS）で動作確認。</div>
         </div>
       </div>
       <div class="stack-item">
         <span class="stack-icon">☕</span>
         <div>
-          <div class="stack-name">バックエンド：Java 25（LTS）＋ Spring Boot 4.1.x</div>
-          <div class="stack-reason">REST API を提供。永続化は Spring Data JPA（Hibernate）、ビルドは Gradle を想定。</div>
+          <div class="stack-name">バックエンド：Java 25（LTS）＋ Spring Boot 4.1.1</div>
+          <div class="stack-reason">REST API を提供（JSON 形式・camelCase、ID は UUID、日時は UTC の ISO 8601、エラーは HTTP ステータスコード＋Spring 標準のエラー JSON。詳細は README の「API 形式」）。永続化は Spring Data JPA（Hibernate）、ビルドは Gradle 9.8.1（Gradle Wrapper）。Web・JPA・Validation・Actuator の各 starter、Lombok、PostgreSQL JDBC ドライバを使用（バージョンは Spring Boot の依存管理に従う）。</div>
         </div>
       </div>
       <div class="stack-item">
         <span class="stack-icon">🐘</span>
         <div>
-          <div class="stack-name">データベース：PostgreSQL 18.x</div>
-          <div class="stack-reason">ボード・リスト・カード・テンプレート等を永続化。ローカル開発は Docker Compose で起動。</div>
+          <div class="stack-name">データベース：PostgreSQL 18</div>
+          <div class="stack-reason">ボード・リスト・カード・テンプレート等を永続化。ローカル開発は Docker Compose（<code>postgres:18</code> イメージ、ホスト側ポート 5433）で起動。</div>
         </div>
       </div>
       <div class="stack-item">
         <span class="stack-icon">📌</span>
         <div>
           <div class="stack-name">ツールのバージョン方針</div>
-          <div class="stack-reason">各ツールは常に安定版の最新を使用し、LTS があるもの（Java）は最新 LTS を使用する。パッチ番号は構築時に公式サイトで確認する。</div>
+          <div class="stack-reason">各ツールは常に安定版の最新を使用し、LTS があるもの（Java）は最新 LTS を使用する。パッチ番号は構築時に公式サイトで確認し、本セクションに実際に採用したバージョンを記載する（フロントエンドは package-lock.json、バックエンドは build.gradle・gradle-wrapper.properties が正）。</div>
         </div>
       </div>
       <div class="stack-item">
@@ -938,6 +938,11 @@
         <span class="rev-date">2026-10-19</span>
         <span class="rev-ver">v1.6</span>
         <span class="rev-desc">データモデル（ER 図）を追加。Board・List・Card・Label・CheckItem・Template を PostgreSQL 向けに正規化（並び順は position 列、ラベルは中間テーブル）。</span>
+      </div>
+      <div class="rev-item">
+        <span class="rev-date">2026-10-21</span>
+        <span class="rev-ver">v1.7</span>
+        <span class="rev-desc">技術スタックに、環境構築で確定したバージョンを明記（React 19.3.1 / TypeScript 6.0.3 / Vite 8.3.5 / Spring Boot 4.1.1 / Gradle 9.8.1 / PostgreSQL 18 など）。API 形式（JSON・UUID・日時・エラー）の方針を追記。</span>
       </div>
     </div>
   </section>
