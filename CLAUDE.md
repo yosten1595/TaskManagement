@@ -27,11 +27,21 @@
 - PR の作成まではやってよいが、**マージはユーザーが行う**（Claude はマージしない）。
 - ブランチ保護（PR 必須・直接 push 禁止・force push 禁止）を回避・解除する操作をしない。
 
-## 5. 強制の仕組み
+## 5. 開発サーバーのポート
+- 開発サーバーは**必ず既定ポート**で起動する。別ポートでの一時起動はしない（フロントエンドは `/api` を `localhost:8080` へプロキシするため、別ポートでは動作しない）。
+  - バックエンド: **8080** / フロントエンド: **5173**
+- ポートが競合したら、**占有しているプロセスを停止してから**既定ポートで起動する。
+  - 停止は `powershell -NoProfile -File scripts/free-port.ps1 -Port 8080,5173` を使う（PID 指定で停止。Docker 関連は対象外）。
+  - `taskkill /IM java.exe` のようにプロセス名で一括停止しない。アプリのサーバー以外（ローカルの PostgreSQL など）は止めない。
+- `--port` / `-p`、`-Dserver.port`、`SERVER_PORT`、`strictPort: false` などでポートを変えない。
+- 起動手順の詳細は `.claude/skills/dev-servers/SKILL.md`（スキル `dev-servers`）を参照。
+
+## 6. 強制の仕組み
 - `.claude/hooks/guard-git.ps1`（`.claude/settings.json` の PreToolUse フック）が上記のうち機械的に判定できるものをブロックする:
   - main 上での `git commit` / `git push`、main・master を対象とする push
   - force push
   - 命名規則に違反するブランチの作成
   - Issue 番号を含まない `gh pr create`
+- `.claude/hooks/guard-ports.ps1` が、既定以外のポートを指定する開発サーバーの起動コマンド（`--port`、`server.port`、`SERVER_PORT`、`strictPort: false`）をブロックする。
 - フックが拒否した場合は回避せず、ルールに沿ってやり直す（Issue を作る等）。
 - GitHub 側の設定は `.github/BRANCH_PROTECTION.md` を参照。
