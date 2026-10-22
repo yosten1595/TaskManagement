@@ -41,6 +41,19 @@ public class CardCommandService {
 		return CardDto.from(cardRepository.save(card));
 	}
 
+	// 削除後は同一リストの position を 0 から連番に詰め直し、末尾追加時の重複を防ぐ
+	public void delete(UUID id) {
+		Card card = cardRepository.findById(id)
+				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Card not found: " + id));
+		UUID listId = card.getList().getId();
+		cardRepository.delete(card);
+		cardRepository.flush();
+		List<Card> rest = cardRepository.findByListIdOrderByPosition(listId);
+		for (int i = 0; i < rest.size(); i++) {
+			rest.get(i).setPosition(i);
+		}
+	}
+
 	// 指定された ID のラベルが 1 件でも存在しなければ 404
 	private void attachLabels(Card card, Set<UUID> labelIds) {
 		if (labelIds == null || labelIds.isEmpty()) {
