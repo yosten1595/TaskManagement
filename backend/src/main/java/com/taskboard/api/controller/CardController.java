@@ -2,6 +2,7 @@ package com.taskboard.api.controller;
 
 import com.taskboard.api.dto.CardDto;
 import com.taskboard.api.dto.CreateCardRequest;
+import com.taskboard.api.dto.UpdateCardRequest;
 import com.taskboard.api.entity.Priority;
 import com.taskboard.api.service.CardCommandService;
 import com.taskboard.api.service.CardQueryService;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -51,5 +53,10 @@ public class CardController {
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public void delete(@PathVariable UUID id) {
 		cardCommandService.delete(id);
+	}
+
+	@PutMapping("/{id}")
+	public CardDto update(@PathVariable UUID id, @Valid @RequestBody UpdateCardRequest request) {
+		return cardCommandService.update(id, request);
 	}
 }

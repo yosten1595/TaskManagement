@@ -2,6 +2,7 @@ package com.taskboard.api.service;
 
 import com.taskboard.api.dto.CardDto;
 import com.taskboard.api.dto.CreateCardRequest;
+import com.taskboard.api.dto.UpdateCardRequest;
 import com.taskboard.api.entity.Card;
 import com.taskboard.api.entity.CardLabel;
 import com.taskboard.api.entity.Label;
@@ -12,6 +13,7 @@ import com.taskboard.api.repository.TaskListRepository;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -39,6 +41,27 @@ public class CardCommandService {
 		card.setPosition(cardRepository.countByListId(list.getId()));
 		attachLabels(card, request.labelIds());
 		return CardDto.from(cardRepository.save(card));
+	}
+
+	// 所属リストと position は変えない（移動は別機能）。ラベルは指定した集合に置き換える
+	public CardDto update(UUID id, UpdateCardRequest request) {
+		Card card = cardRepository.findById(id)
+				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Card not found: " + id));
+		Set<UUID> labelIds = request.labelIds() == null ? Set.of() : request.labelIds();
+		List<Label> labels = labelRepository.findAllById(labelIds);
+		if (labels.size() != labelIds.size()) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Label not found in: " + labelIds);
+		}
+		card.setTitle(request.title().strip());
+		card.setDescription(request.description() == null || request.description().isBlank() ? null : request.description());
+		card.setDueDate(request.dueDate());
+		card.setPriority(request.priority());
+		card.getLabels().removeIf(cl -> !labelIds.contains(cl.getLabel().getId()));
+		Set<UUID> attached = card.getLabels().stream().map(cl -> cl.getLabel().getId()).collect(Collectors.toSet());
+		labels.stream()
+				.filter(label -> !attached.contains(label.getId()))
+				.forEach(label -> card.getLabels().add(new CardLabel(card, label)));
+		return CardDto.from(card);
 	}
 
 	// 削除後は同一リストの position を 0 から連番に詰め直し、末尾追加時の重複を防ぐ
