@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { createCard } from '../api'
 import type { Label, Priority } from '../types'
+import CardFields from './CardFields'
 
 interface Props {
   listId: string
@@ -29,9 +30,6 @@ export default function AddCardForm({ listId, labels, onCreated }: Props) {
     setOpen(false)
     reset()
   }
-
-  const toggleLabel = (id: string) =>
-    setLabelIds((ids) => (ids.includes(id) ? ids.filter((x) => x !== id) : [...ids, id]))
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -73,38 +71,15 @@ export default function AddCardForm({ listId, labels, onCreated }: Props) {
         onChange={(e) => setTitle(e.target.value)}
         onKeyDown={(e) => e.key === 'Escape' && close()}
       />
-      <div className="add-card-fields">
-        <label>
-          期限
-          <input type="date" value={dueDate} onChange={(e) => setDueDate(e.target.value)} />
-        </label>
-        <label>
-          優先度
-          <select value={priority} onChange={(e) => setPriority(e.target.value as Priority | '')}>
-            <option value="">未設定</option>
-            <option value="HIGH">高</option>
-            <option value="MID">中</option>
-            <option value="LOW">低</option>
-          </select>
-        </label>
-      </div>
-      {labels.length > 0 && (
-        <fieldset className="add-card-labels">
-          <legend>ラベル</legend>
-          {labels.map((label) => (
-            <label key={label.id} className="label-choice">
-              <input
-                type="checkbox"
-                checked={labelIds.includes(label.id)}
-                onChange={() => toggleLabel(label.id)}
-              />
-              <span className="label" style={{ background: label.color }}>
-                {label.name}
-              </span>
-            </label>
-          ))}
-        </fieldset>
-      )}
+      <CardFields
+        labels={labels}
+        dueDate={dueDate}
+        priority={priority}
+        labelIds={labelIds}
+        onDueDateChange={setDueDate}
+        onPriorityChange={setPriority}
+        onLabelIdsChange={setLabelIds}
+      />
       {error && <p className="message error">{error}</p>}
       <div className="add-card-actions">
         <button type="submit" disabled={!title.trim() || submitting}>
