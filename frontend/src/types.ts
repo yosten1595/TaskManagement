@@ -51,3 +51,11 @@ export interface CardSearchParams {
   priority?: Priority
   listId?: string
 }
+
+// カード作成時の入力。title 以外は任意
+export interface NewCard {
+  title: string
+  dueDate?: string
+  priority?: Priority
+  labelIds?: string[]
+}

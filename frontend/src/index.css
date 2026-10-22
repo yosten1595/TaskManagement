@@ -207,7 +207,9 @@ h1 {
   color: var(--accent);
 }
 
-.add-card input {
+.add-card > input,
+.add-card-fields input,
+.add-card-fields select {
   box-sizing: border-box;
   width: 100%;
   padding: 8px 12px;
@@ -248,4 +250,53 @@ h1 {
 .add-card-actions button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+.add-card > input {
+  width: 100%;
+}
+
+.add-card-fields {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.add-card-fields label {
+  display: flex;
+  flex: 1 1 110px;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 12px;
+  color: var(--fg-muted);
+}
+
+.add-card-fields input,
+.add-card-fields select {
+  width: 100%;
+  padding: 6px 8px;
+}
+
+.add-card-labels {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+  margin: 8px 0 0;
+  padding: 0;
+  border: 0;
+  font-size: 12px;
+  color: var(--fg-muted);
+}
+
+.add-card-labels legend {
+  padding: 0;
+  margin-bottom: 2px;
+}
+
+.label-choice {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
 }
