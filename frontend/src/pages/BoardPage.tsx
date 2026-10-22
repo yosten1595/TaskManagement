@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { fetchBoard, searchCards } from '../api'
+import { fetchBoard, fetchLabels, searchCards } from '../api'
 import AddCardForm from '../components/AddCardForm'
 import CardItem from '../components/CardItem'
-import type { BoardDetail, Card, Priority } from '../types'
+import type { BoardDetail, Card, Label, Priority } from '../types'
 
 const SEARCH_DELAY_MS = 300
 
@@ -11,6 +11,7 @@ export default function BoardPage() {
   const { boardId } = useParams<{ boardId: string }>()
   const [board, setBoard] = useState<BoardDetail | null>(null)
   const [cards, setCards] = useState<Card[]>([])
+  const [labels, setLabels] = useState<Label[]>([])
   const [keyword, setKeyword] = useState('')
   const [priority, setPriority] = useState<Priority | ''>('')
   const [error, setError] = useState<string | null>(null)
@@ -23,6 +24,12 @@ export default function BoardPage() {
       .then(setBoard)
       .catch((e: Error) => setError(e.message))
   }, [boardId])
+
+  useEffect(() => {
+    fetchLabels()
+      .then(setLabels)
+      .catch((e: Error) => setError(e.message))
+  }, [])
 
   // 検索条件が変わるたびにカードを検索する。キーワード入力は少し待ってから送る
   useEffect(() => {
@@ -92,7 +99,7 @@ export default function BoardPage() {
               {listCards.map((card) => (
                 <CardItem key={card.id} card={card} />
               ))}
-              <AddCardForm listId={list.id} onCreated={() => setReloadKey((k) => k + 1)} />
+              <AddCardForm listId={list.id} labels={labels} onCreated={() => setReloadKey((k) => k + 1)} />
             </section>
           )
         })}

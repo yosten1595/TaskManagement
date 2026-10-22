@@ -1,4 +1,4 @@
-import type { BoardDetail, BoardSummary, Card, CardSearchParams } from './types'
+import type { BoardDetail, BoardSummary, Card, CardSearchParams, Label, NewCard } from './types'
 
 async function getJson<T>(url: string): Promise<T> {
   const res = await fetch(url)
@@ -21,11 +21,13 @@ export function searchCards({ keyword, priority, listId }: CardSearchParams = {}
   return getJson<Card[]>(`/api/cards${query ? `?${query}` : ''}`)
 }
 
-export async function createCard(listId: string, title: string): Promise<Card> {
+export const fetchLabels = () => getJson<Label[]>('/api/labels')
+
+export async function createCard(listId: string, card: NewCard): Promise<Card> {
   const res = await fetch('/api/cards', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ listId, title }),
+    body: JSON.stringify({ listId, ...card }),
   })
   if (!res.ok) {
     throw new Error(`${res.status} ${res.statusText}`)
