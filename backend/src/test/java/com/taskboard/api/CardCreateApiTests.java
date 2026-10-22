@@ -69,6 +69,48 @@ class CardCreateApiTests {
 				.andExpect(status().isNotFound());
 	}
 
+	@Test
+	void createCardWithDueDatePriorityAndLabels() throws Exception {
+		String listId = firstListId();
+		String labels = mockMvc.perform(get("/api/labels"))
+				.andExpect(status().isOk())
+				.andReturn().getResponse().getContentAsString();
+		String labelId = JsonPath.read(labels, "$[0].id");
+		String labelName = JsonPath.read(labels, "$[0].name");
+
+		String created = mockMvc.perform(post("/api/cards")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content("{\"listId\":\"" + listId + "\",\"title\":\"詳細付き\",\"dueDate\":\"2026-12-31\","
+						+ "\"priority\":\"HIGH\",\"labelIds\":[\"" + labelId + "\"]}"))
+				.andExpect(status().isCreated())
+				.andExpect(jsonPath("$.dueDate", is("2026-12-31")))
+				.andExpect(jsonPath("$.priority", is("HIGH")))
+				.andExpect(jsonPath("$.labels[0].name", is(labelName)))
+				.andReturn().getResponse().getContentAsString();
+
+		String id = JsonPath.read(created, "$.id");
+		mockMvc.perform(get("/api/cards/" + id))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.dueDate", is("2026-12-31")))
+				.andExpect(jsonPath("$.priority", is("HIGH")))
+				.andExpect(jsonPath("$.labels[0].id", is(labelId)));
+	}
+
+	@Test
+	void invalidOptionalFields() throws Exception {
+		String listId = firstListId();
+		String head = "{\"listId\":\"" + listId + "\",\"title\":\"x\",";
+		mockMvc.perform(post("/api/cards").contentType(MediaType.APPLICATION_JSON)
+				.content(head + "\"priority\":\"URGENT\"}"))
+				.andExpect(status().isBadRequest());
+		mockMvc.perform(post("/api/cards").contentType(MediaType.APPLICATION_JSON)
+				.content(head + "\"dueDate\":\"2026/12/31\"}"))
+				.andExpect(status().isBadRequest());
+		mockMvc.perform(post("/api/cards").contentType(MediaType.APPLICATION_JSON)
+				.content(head + "\"labelIds\":[\"00000000-0000-0000-0000-000000000000\"]}"))
+				.andExpect(status().isNotFound());
+	}
+
 	private String firstListId() throws Exception {
 		String boards = mockMvc.perform(get("/api/boards")).andReturn().getResponse().getContentAsString();
 		String boardId = JsonPath.read(boards, "$[0].id");
