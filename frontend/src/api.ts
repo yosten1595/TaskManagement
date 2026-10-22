@@ -20,3 +20,15 @@ export function searchCards({ keyword, priority, listId }: CardSearchParams = {}
   const query = params.toString()
   return getJson<Card[]>(`/api/cards${query ? `?${query}` : ''}`)
 }
+
+export async function createCard(listId: string, title: string): Promise<Card> {
+  const res = await fetch('/api/cards', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ listId, title }),
+  })
+  if (!res.ok) {
+    throw new Error(`${res.status} ${res.statusText}`)
+  }
+  return res.json() as Promise<Card>
+}
