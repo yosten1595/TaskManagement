@@ -300,3 +300,55 @@ h1 {
   gap: 4px;
   cursor: pointer;
 }
+
+.card-select {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 6px;
+  font-size: 12px;
+  color: var(--fg-muted);
+  cursor: pointer;
+}
+
+.card-selected {
+  border-color: var(--crit);
+  box-shadow: 0 0 0 1px var(--crit);
+}
+
+.delete-bar {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.delete-bar .message {
+  margin: 0;
+  font-size: 12px;
+}
+
+.delete-bar button {
+  padding: 8px 16px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--fg);
+  font: inherit;
+  cursor: pointer;
+  box-shadow: 0 1px 4px rgb(0 0 0 / 0.15);
+}
+
+.delete-bar .delete-run {
+  border-color: var(--crit);
+  background: var(--crit);
+  color: #fff;
+}
+
+.delete-bar button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

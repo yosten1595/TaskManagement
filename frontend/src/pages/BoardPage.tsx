@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { fetchBoard, fetchLabels, searchCards } from '../api'
+import { deleteCard, fetchBoard, fetchLabels, searchCards } from '../api'
 import AddCardForm from '../components/AddCardForm'
 import CardItem from '../components/CardItem'
 import type { BoardDetail, Card, Label, Priority } from '../types'
@@ -17,6 +17,11 @@ export default function BoardPage() {
   const [error, setError] = useState<string | null>(null)
   // カード作成後に検索をやり直すためのカウンタ
   const [reloadKey, setReloadKey] = useState(0)
+  // 削除モード: カードを選択してまとめて削除する
+  const [deleteMode, setDeleteMode] = useState(false)
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
+  const [deleting, setDeleting] = useState(false)
+  const [deleteError, setDeleteError] = useState<string | null>(null)
 
   useEffect(() => {
     if (!boardId) return
@@ -58,6 +63,44 @@ export default function BoardPage() {
     return map
   }, [cards])
 
+  const exitDeleteMode = () => {
+    setDeleteMode(false)
+    setSelectedIds(new Set())
+    setDeleteError(null)
+  }
+
+  const toggleSelected = (id: string) =>
+    setSelectedIds((prev) => {
+      const next = new Set(prev)
+      if (next.has(id)) next.delete(id)
+      else next.add(id)
+      return next
+    })
+
+  // 同一リストの position の詰め直しが競合しないよう、1 件ずつ順に削除する
+  const deleteSelected = async () => {
+    if (selectedIds.size === 0) return
+    if (!window.confirm(`選択した ${selectedIds.size} 件のカードを削除しますか？`)) return
+    setDeleting(true)
+    setDeleteError(null)
+    const failed = new Set<string>()
+    for (const id of selectedIds) {
+      try {
+        await deleteCard(id)
+      } catch {
+        failed.add(id)
+      }
+    }
+    setReloadKey((k) => k + 1)
+    setDeleting(false)
+    if (failed.size === 0) {
+      exitDeleteMode()
+    } else {
+      setSelectedIds(failed)
+      setDeleteError(`${failed.size} 件を削除できませんでした`)
+    }
+  }
+
   if (error) return <p className="message error">取得できませんでした: {error}</p>
   if (!board) return <p className="message">読み込み中…</p>
 
@@ -97,12 +140,41 @@ export default function BoardPage() {
                 {list.title} <span className="count">{listCards.length}</span>
               </h2>
               {listCards.map((card) => (
-                <CardItem key={card.id} card={card} />
+                <CardItem
+                  key={card.id}
+                  card={card}
+                  selectable={deleteMode}
+                  selected={selectedIds.has(card.id)}
+                  onToggle={() => toggleSelected(card.id)}
+                />
               ))}
               <AddCardForm listId={list.id} labels={labels} onCreated={() => setReloadKey((k) => k + 1)} />
             </section>
           )
         })}
+      </div>
+
+      <div className="delete-bar">
+        {deleteError && <span className="message error">{deleteError}</span>}
+        {deleteMode ? (
+          <>
+            <button
+              type="button"
+              className="delete-run"
+              disabled={selectedIds.size === 0 || deleting}
+              onClick={deleteSelected}
+            >
+              {selectedIds.size} 件を削除
+            </button>
+            <button type="button" disabled={deleting} onClick={exitDeleteMode}>
+              キャンセル
+            </button>
+          </>
+        ) : (
+          <button type="button" onClick={() => setDeleteMode(true)}>
+            削除
+          </button>
+        )}
       </div>
     </section>
   )

@@ -34,3 +34,10 @@ export async function createCard(listId: string, card: NewCard): Promise<Card> {
   }
   return res.json() as Promise<Card>
 }
+
+export async function deleteCard(id: string): Promise<void> {
+  const res = await fetch(`/api/cards/${id}`, { method: 'DELETE' })
+  if (!res.ok) {
+    throw new Error(`${res.status} ${res.statusText}`)
+  }
+}
