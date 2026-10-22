@@ -143,6 +143,8 @@ export default function BoardPage() {
                 <CardItem
                   key={card.id}
                   card={card}
+                  labels={labels}
+                  onSaved={() => setReloadKey((k) => k + 1)}
                   selectable={deleteMode}
                   selected={selectedIds.has(card.id)}
                   onToggle={() => toggleSelected(card.id)}

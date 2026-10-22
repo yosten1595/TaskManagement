@@ -59,3 +59,12 @@ export interface NewCard {
   priority?: Priority
   labelIds?: string[]
 }
+
+// カード編集時の入力（全項目を置き換える）。null は未設定に戻す
+export interface CardUpdate {
+  title: string
+  description: string | null
+  dueDate: string | null
+  priority: Priority | null
+  labelIds: string[]
+}

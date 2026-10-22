@@ -1,4 +1,4 @@
-import type { BoardDetail, BoardSummary, Card, CardSearchParams, Label, NewCard } from './types'
+import type { BoardDetail, BoardSummary, Card, CardSearchParams, CardUpdate, Label, NewCard } from './types'
 
 async function getJson<T>(url: string): Promise<T> {
   const res = await fetch(url)
@@ -40,4 +40,16 @@ export async function deleteCard(id: string): Promise<void> {
   if (!res.ok) {
     throw new Error(`${res.status} ${res.statusText}`)
   }
+}
+
+export async function updateCard(id: string, card: CardUpdate): Promise<Card> {
+  const res = await fetch(`/api/cards/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(card),
+  })
+  if (!res.ok) {
+    throw new Error(`${res.status} ${res.statusText}`)
+  }
+  return res.json() as Promise<Card>
 }
