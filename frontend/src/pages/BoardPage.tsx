@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { fetchBoard, searchCards } from '../api'
+import AddCardForm from '../components/AddCardForm'
 import CardItem from '../components/CardItem'
 import type { BoardDetail, Card, Priority } from '../types'
 
@@ -13,6 +14,8 @@ export default function BoardPage() {
   const [keyword, setKeyword] = useState('')
   const [priority, setPriority] = useState<Priority | ''>('')
   const [error, setError] = useState<string | null>(null)
+  // カード作成後に検索をやり直すためのカウンタ
+  const [reloadKey, setReloadKey] = useState(0)
 
   useEffect(() => {
     if (!boardId) return
@@ -37,7 +40,7 @@ export default function BoardPage() {
       cancelled = true
       clearTimeout(timer)
     }
-  }, [keyword, priority])
+  }, [keyword, priority, reloadKey])
 
   // 検索 API はボードを指定できないため、このボードのリストに属するカードだけを振り分ける
   const cardsByList = useMemo(() => {
@@ -89,6 +92,7 @@ export default function BoardPage() {
               {listCards.map((card) => (
                 <CardItem key={card.id} card={card} />
               ))}
+              <AddCardForm listId={list.id} onCreated={() => setReloadKey((k) => k + 1)} />
             </section>
           )
         })}
