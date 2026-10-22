@@ -2,11 +2,25 @@ import type { Card, Priority } from '../types'
 
 const PRIORITY_LABEL: Record<Priority, string> = { HIGH: '高', MID: '中', LOW: '低' }
 
-export default function CardItem({ card }: { card: Card }) {
+interface Props {
+  card: Card
+  // 削除モード中のみ、選択用のチェックボックスを表示する
+  selectable?: boolean
+  selected?: boolean
+  onToggle?: () => void
+}
+
+export default function CardItem({ card, selectable = false, selected = false, onToggle }: Props) {
   const doneCount = card.checklist.filter((item) => item.done).length
 
   return (
-    <article className="card">
+    <article className={`card${selected ? ' card-selected' : ''}`}>
+      {selectable && (
+        <label className="card-select">
+          <input type="checkbox" checked={selected} onChange={onToggle} />
+          選択
+        </label>
+      )}
       {card.labels.length > 0 && (
         <div className="card-labels">
           {card.labels.map((label) => (
