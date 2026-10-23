@@ -1,4 +1,4 @@
-import type { BoardDetail, BoardSummary, Card, CardSearchParams, CardUpdate, Label, NewCard } from './types'
+import type { BoardDetail, BoardSummary, Card, CardSearchParams, CardSortKey, CardUpdate, Label, NewCard } from './types'
 
 async function getJson<T>(url: string): Promise<T> {
   const res = await fetch(url)
@@ -65,4 +65,17 @@ export async function moveCard(id: string, listId: string, position: number): Pr
     throw new Error(`${res.status} ${res.statusText}`)
   }
   return res.json() as Promise<Card>
+}
+
+// 並べ替え結果は position に保存され、並べ替え後のカード一覧が返る
+export async function sortList(listId: string, by: CardSortKey): Promise<Card[]> {
+  const res = await fetch(`/api/lists/${listId}/sort`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ by }),
+  })
+  if (!res.ok) {
+    throw new Error(`${res.status} ${res.statusText}`)
+  }
+  return res.json() as Promise<Card[]>
 }

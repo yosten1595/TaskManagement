@@ -68,3 +68,6 @@ export interface CardUpdate {
   priority: Priority | null
   labelIds: string[]
 }
+
+// リスト内のカードを並べ替える基準（バックエンドの CardSortKey に対応）
+export type CardSortKey = 'DUE_DATE' | 'PRIORITY'
