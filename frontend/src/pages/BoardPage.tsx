@@ -13,12 +13,12 @@ import {
 import { arrayMove, sortableKeyboardCoordinates } from '@dnd-kit/sortable'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { deleteCard, fetchBoard, fetchLabels, moveCard, searchCards } from '../api'
+import { deleteCard, fetchBoard, fetchLabels, moveCard, searchCards, sortList } from '../api'
 import AddCardForm from '../components/AddCardForm'
 import CardColumn from '../components/CardColumn'
 import CardItem from '../components/CardItem'
 import SortableCard from '../components/SortableCard'
-import type { BoardDetail, Card, Label, Priority } from '../types'
+import type { BoardDetail, Card, CardSortKey, Label, Priority } from '../types'
 
 const SEARCH_DELAY_MS = 300
 
@@ -186,6 +186,21 @@ export default function BoardPage() {
     }
   }
 
+  // 並べ替えはサーバー側で position に保存される。終わったら全カードを取り直して表示を合わせる
+  const handleSort = async (listId: string, by: CardSortKey) => {
+    setMoveError(null)
+    try {
+      await sortList(listId, by)
+    } catch (e) {
+      setMoveError(`並べ替えできませんでした: ${(e as Error).message}`)
+    }
+    try {
+      setCards(await searchCards())
+    } catch (e) {
+      setError((e as Error).message)
+    }
+  }
+
   const handleDragCancel = () => {
     dragOrigin.current = null
     setActiveCard(null)
@@ -280,6 +295,8 @@ export default function BoardPage() {
                 listId={list.id}
                 title={list.title}
                 cards={listCards}
+                onSort={(by) => handleSort(list.id, by)}
+                sortDisabled={filtering}
                 footer={
                   <AddCardForm listId={list.id} labels={labels} onCreated={() => setReloadKey((k) => k + 1)} />
                 }
