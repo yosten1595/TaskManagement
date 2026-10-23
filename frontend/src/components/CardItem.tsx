@@ -8,14 +8,28 @@ interface Props {
   card: Card
   labels: Label[]
   onSaved: () => void
+  // 編集フォームの開閉を親に知らせる（編集中はドラッグを無効にするため）
+  onEditingChange?: (editing: boolean) => void
   // 削除モード中のみ、選択用のチェックボックスを表示する
   selectable?: boolean
   selected?: boolean
   onToggle?: () => void
 }
 
-export default function CardItem({ card, labels, onSaved, selectable = false, selected = false, onToggle }: Props) {
-  const [editing, setEditing] = useState(false)
+export default function CardItem({
+  card,
+  labels,
+  onSaved,
+  onEditingChange,
+  selectable = false,
+  selected = false,
+  onToggle,
+}: Props) {
+  const [editing, setEditingState] = useState(false)
+  const setEditing = (value: boolean) => {
+    setEditingState(value)
+    onEditingChange?.(value)
+  }
   const doneCount = card.checklist.filter((item) => item.done).length
 
   if (editing) {
