@@ -53,3 +53,16 @@ export async function updateCard(id: string, card: CardUpdate): Promise<Card> {
   }
   return res.json() as Promise<Card>
 }
+
+// position は移動先リスト内での 0 始まりの挿入位置
+export async function moveCard(id: string, listId: string, position: number): Promise<Card> {
+  const res = await fetch(`/api/cards/${id}/move`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ listId, position }),
+  })
+  if (!res.ok) {
+    throw new Error(`${res.status} ${res.statusText}`)
+  }
+  return res.json() as Promise<Card>
+}

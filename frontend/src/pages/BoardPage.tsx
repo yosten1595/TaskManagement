@@ -1,11 +1,34 @@
-import { useEffect, useMemo, useState } from 'react'
+import {
+  closestCorners,
+  DndContext,
+  DragOverlay,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+  type DragOverEvent,
+  type DragStartEvent,
+} from '@dnd-kit/core'
+import { arrayMove, sortableKeyboardCoordinates } from '@dnd-kit/sortable'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { deleteCard, fetchBoard, fetchLabels, searchCards } from '../api'
+import { deleteCard, fetchBoard, fetchLabels, moveCard, searchCards } from '../api'
 import AddCardForm from '../components/AddCardForm'
+import CardColumn from '../components/CardColumn'
 import CardItem from '../components/CardItem'
+import SortableCard from '../components/SortableCard'
 import type { BoardDetail, Card, Label, Priority } from '../types'
 
 const SEARCH_DELAY_MS = 300
+
+// リスト ID → そのリストのカード（position 順）
+type Columns = Record<string, Card[]>
+
+function findContainer(columns: Columns, id: string): string | null {
+  if (id in columns) return id
+  return Object.keys(columns).find((listId) => columns[listId].some((c) => c.id === id)) ?? null
+}
 
 export default function BoardPage() {
   const { boardId } = useParams<{ boardId: string }>()
@@ -62,6 +85,112 @@ export default function BoardPage() {
     }
     return map
   }, [cards])
+
+  // ドラッグ＆ドロップ: ドラッグ中だけ列ごとのカード並びを一時的に持つ。
+  // 絞り込み中は一部のカードしか表示されず、挿入位置が実際の position とずれるので無効にする
+  const filtering = keyword.trim() !== '' || priority !== ''
+  const dragEnabled = !deleteMode && !filtering
+  const baseColumns = useMemo(() => {
+    const record: Columns = {}
+    for (const list of board?.lists ?? []) record[list.id] = cardsByList.get(list.id) ?? []
+    return record
+  }, [board, cardsByList])
+  const [dragColumns, setDragColumns] = useState<Columns | null>(null)
+  const [activeCard, setActiveCard] = useState<Card | null>(null)
+  const [moveError, setMoveError] = useState<string | null>(null)
+  const dragOrigin = useRef<{ listId: string; index: number } | null>(null)
+  const columns = dragColumns ?? baseColumns
+
+  const sensors = useSensors(
+    // 少し動かしてからドラッグ扱いにして、単なるクリック（編集）と区別する
+    useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
+    // Enter はクリックと同じく編集に使うので、キーボードのドラッグは Space で開始・確定する
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+      keyboardCodes: { start: ['Space'], cancel: ['Escape'], end: ['Space'] },
+    }),
+  )
+
+  const handleDragStart = ({ active }: DragStartEvent) => {
+    const id = String(active.id)
+    const listId = findContainer(baseColumns, id)
+    if (!listId) return
+    setMoveError(null)
+    setActiveCard(baseColumns[listId].find((c) => c.id === id) ?? null)
+    dragOrigin.current = { listId, index: baseColumns[listId].findIndex((c) => c.id === id) }
+    setDragColumns(baseColumns)
+  }
+
+  // 別の列の上に来たら、その列の位置にカードを仮挿入する
+  const handleDragOver = ({ active, over }: DragOverEvent) => {
+    if (!over) return
+    setDragColumns((prev) => {
+      if (!prev) return prev
+      const activeId = String(active.id)
+      const from = findContainer(prev, activeId)
+      const to = findContainer(prev, String(over.id))
+      if (!from || !to || from === to) return prev
+      const moving = prev[from].find((c) => c.id === activeId)
+      if (!moving) return prev
+      let index = prev[to].length
+      if (String(over.id) !== to) {
+        const overIndex = prev[to].findIndex((c) => c.id === String(over.id))
+        const translated = active.rect.current.translated
+        const below = translated != null && translated.top > over.rect.top + over.rect.height / 2
+        index = overIndex + (below ? 1 : 0)
+      }
+      return {
+        ...prev,
+        [from]: prev[from].filter((c) => c.id !== activeId),
+        [to]: [...prev[to].slice(0, index), { ...moving, listId: to }, ...prev[to].slice(index)],
+      }
+    })
+  }
+
+  const handleDragEnd = async ({ active, over }: DragEndEvent) => {
+    const origin = dragOrigin.current
+    dragOrigin.current = null
+    setActiveCard(null)
+    const activeId = String(active.id)
+    let next = dragColumns
+    if (next && over) {
+      const listId = findContainer(next, activeId)
+      if (listId) {
+        const oldIndex = next[listId].findIndex((c) => c.id === activeId)
+        const overId = String(over.id)
+        const newIndex = overId === listId ? next[listId].length - 1 : next[listId].findIndex((c) => c.id === overId)
+        if (newIndex >= 0 && oldIndex !== newIndex) {
+          next = { ...next, [listId]: arrayMove(next[listId], oldIndex, newIndex) }
+        }
+      }
+    }
+    const listId = next ? findContainer(next, activeId) : null
+    const index = listId && next ? next[listId].findIndex((c) => c.id === activeId) : -1
+    if (!next || !over || !origin || !listId || (listId === origin.listId && index === origin.index)) {
+      setDragColumns(null)
+      return
+    }
+    setDragColumns(next)
+    try {
+      await moveCard(activeId, listId, index)
+    } catch (e) {
+      setMoveError(`移動できませんでした: ${(e as Error).message}`)
+    }
+    // 成功・失敗どちらでも、サーバー上の並びを取り直して表示を合わせる
+    try {
+      setCards(await searchCards())
+    } catch (e) {
+      setError((e as Error).message)
+    } finally {
+      setDragColumns(null)
+    }
+  }
+
+  const handleDragCancel = () => {
+    dragOrigin.current = null
+    setActiveCard(null)
+    setDragColumns(null)
+  }
 
   const exitDeleteMode = () => {
     setDeleteMode(false)
@@ -131,30 +260,54 @@ export default function BoardPage() {
         </select>
       </form>
 
-      <div className="columns">
-        {board.lists.map((list) => {
-          const listCards = cardsByList.get(list.id) ?? []
-          return (
-            <section key={list.id} className="column" aria-label={list.title}>
-              <h2>
-                {list.title} <span className="count">{listCards.length}</span>
-              </h2>
-              {listCards.map((card) => (
-                <CardItem
-                  key={card.id}
-                  card={card}
-                  labels={labels}
-                  onSaved={() => setReloadKey((k) => k + 1)}
-                  selectable={deleteMode}
-                  selected={selectedIds.has(card.id)}
-                  onToggle={() => toggleSelected(card.id)}
-                />
-              ))}
-              <AddCardForm listId={list.id} labels={labels} onCreated={() => setReloadKey((k) => k + 1)} />
-            </section>
-          )
-        })}
-      </div>
+      {filtering && <p className="hint">検索・絞り込み中は、カードの移動・並べ替えはできません。</p>}
+      {moveError && <p className="message error">{moveError}</p>}
+
+      <DndContext
+        sensors={sensors}
+        collisionDetection={closestCorners}
+        onDragStart={handleDragStart}
+        onDragOver={handleDragOver}
+        onDragEnd={handleDragEnd}
+        onDragCancel={handleDragCancel}
+      >
+        <div className="columns">
+          {board.lists.map((list) => {
+            const listCards = columns[list.id] ?? []
+            return (
+              <CardColumn
+                key={list.id}
+                listId={list.id}
+                title={list.title}
+                cards={listCards}
+                footer={
+                  <AddCardForm listId={list.id} labels={labels} onCreated={() => setReloadKey((k) => k + 1)} />
+                }
+              >
+                {listCards.map((card) => (
+                  <SortableCard
+                    key={card.id}
+                    card={card}
+                    labels={labels}
+                    onSaved={() => setReloadKey((k) => k + 1)}
+                    dragEnabled={dragEnabled}
+                    selectable={deleteMode}
+                    selected={selectedIds.has(card.id)}
+                    onToggle={() => toggleSelected(card.id)}
+                  />
+                ))}
+              </CardColumn>
+            )
+          })}
+        </div>
+        <DragOverlay>
+          {activeCard && (
+            <div className="drag-overlay">
+              <CardItem card={activeCard} labels={labels} onSaved={() => {}} />
+            </div>
+          )}
+        </DragOverlay>
+      </DndContext>
 
       <div className="delete-bar">
         {deleteError && <span className="message error">{deleteError}</span>}
