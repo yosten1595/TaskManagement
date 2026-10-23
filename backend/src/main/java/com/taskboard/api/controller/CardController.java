@@ -2,6 +2,7 @@ package com.taskboard.api.controller;
 
 import com.taskboard.api.dto.CardDto;
 import com.taskboard.api.dto.CreateCardRequest;
+import com.taskboard.api.dto.MoveCardRequest;
 import com.taskboard.api.dto.UpdateCardRequest;
 import com.taskboard.api.entity.Priority;
 import com.taskboard.api.service.CardCommandService;
@@ -58,5 +59,10 @@ public class CardController {
 	@PutMapping("/{id}")
 	public CardDto update(@PathVariable UUID id, @Valid @RequestBody UpdateCardRequest request) {
 		return cardCommandService.update(id, request);
+	}
+
+	@PutMapping("/{id}/move")
+	public CardDto move(@PathVariable UUID id, @Valid @RequestBody MoveCardRequest request) {
+		return cardCommandService.move(id, request);
 	}
 }

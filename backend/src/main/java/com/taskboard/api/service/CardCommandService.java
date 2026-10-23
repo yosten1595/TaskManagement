@@ -2,6 +2,7 @@ package com.taskboard.api.service;
 
 import com.taskboard.api.dto.CardDto;
 import com.taskboard.api.dto.CreateCardRequest;
+import com.taskboard.api.dto.MoveCardRequest;
 import com.taskboard.api.dto.UpdateCardRequest;
 import com.taskboard.api.entity.Card;
 import com.taskboard.api.entity.CardLabel;
@@ -10,6 +11,7 @@ import com.taskboard.api.entity.TaskList;
 import com.taskboard.api.repository.CardRepository;
 import com.taskboard.api.repository.LabelRepository;
 import com.taskboard.api.repository.TaskListRepository;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -64,6 +66,35 @@ public class CardCommandService {
 		return CardDto.from(card);
 	}
 
+	// 移動先リストの指定位置に挿入し、移動元・移動先の position を 0 から連番に振り直す
+	public CardDto move(UUID id, MoveCardRequest request) {
+		Card card = cardRepository.findById(id)
+				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Card not found: " + id));
+		TaskList target = taskListRepository.findById(request.listId())
+				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "List not found: " + request.listId()));
+		UUID sourceId = card.getList().getId();
+
+		List<Card> targetCards = new ArrayList<>(cardRepository.findByListIdOrderByPosition(target.getId()));
+		targetCards.removeIf(c -> c.getId().equals(id));
+		int index = request.position() == null ? targetCards.size() : Math.min(request.position(), targetCards.size());
+		card.setList(target);
+		targetCards.add(index, card);
+		renumber(targetCards);
+
+		if (!sourceId.equals(target.getId())) {
+			List<Card> sourceCards = new ArrayList<>(cardRepository.findByListIdOrderByPosition(sourceId));
+			sourceCards.removeIf(c -> c.getId().equals(id));
+			renumber(sourceCards);
+		}
+		return CardDto.from(card);
+	}
+
+	private void renumber(List<Card> cards) {
+		for (int i = 0; i < cards.size(); i++) {
+			cards.get(i).setPosition(i);
+		}
+	}
+
 	// 削除後は同一リストの position を 0 から連番に詰め直し、末尾追加時の重複を防ぐ
 	public void delete(UUID id) {
 		Card card = cardRepository.findById(id)
@@ -71,10 +102,7 @@ public class CardCommandService {
 		UUID listId = card.getList().getId();
 		cardRepository.delete(card);
 		cardRepository.flush();
-		List<Card> rest = cardRepository.findByListIdOrderByPosition(listId);
-		for (int i = 0; i < rest.size(); i++) {
-			rest.get(i).setPosition(i);
-		}
+		renumber(cardRepository.findByListIdOrderByPosition(listId));
 	}
 
 	// 指定された ID のラベルが 1 件でも存在しなければ 404
