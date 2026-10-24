@@ -37,7 +37,7 @@ class TaskReadApiTests {
 		String id = firstBoardId();
 		mockMvc.perform(get("/api/boards/" + id))
 				.andExpect(status().isOk())
-				.andExpect(jsonPath("$.lists[0].title", is("To Do")))
+				.andExpect(jsonPath("$.lists[0].title", is("未着手")))
 				.andExpect(jsonPath("$.lists[0].cards[0].labels[0].name", is("バックエンド")))
 				.andExpect(jsonPath("$.lists[0].cards[0].checklist", hasSize(3)));
 	}

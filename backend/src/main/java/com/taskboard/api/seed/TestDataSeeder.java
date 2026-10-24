@@ -38,7 +38,7 @@ public class TestDataSeeder implements CommandLineRunner {
 		Board board = new Board();
 		board.setTitle("サンプルプロジェクト");
 
-		TaskList todo = list(board, "To Do", 0);
+		TaskList todo = list(board, "未着手", 0);
 		TaskList doing = list(board, "進行中", 1);
 		TaskList done = list(board, "完了", 2);
 
