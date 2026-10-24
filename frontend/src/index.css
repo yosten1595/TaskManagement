@@ -501,3 +501,80 @@ h1 {
   font: inherit;
   font-size: 12px;
 }
+
+.board-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.board-card .message,
+.board-form .message {
+  margin: 0;
+  font-size: 12px;
+}
+
+.board-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.board-actions button,
+.board-add-open {
+  padding: 6px 12px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--fg);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.board-actions button.primary {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: #fff;
+}
+
+.board-actions button.danger {
+  color: var(--crit);
+}
+
+.board-actions button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.board-add-open {
+  width: 100%;
+  min-height: 74px;
+  border-style: dashed;
+  color: var(--fg-muted);
+}
+
+.board-add-open:hover {
+  background: var(--accent-bg);
+  color: var(--accent);
+}
+
+.board-form {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px;
+  background: var(--surface);
+  border: 1px solid var(--accent);
+  border-radius: 6px;
+}
+
+.board-form input {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--fg);
+  font: inherit;
+}
