@@ -4,6 +4,20 @@ import EditCardForm from './EditCardForm'
 
 const PRIORITY_LABEL: Record<Priority, string> = { HIGH: '高', MID: '中', LOW: '低' }
 
+type DueStatus = 'overdue' | 'soon' | 'ok'
+
+const DUE_STATUS_LABEL: Record<DueStatus, string> = { overdue: '期限切れ', soon: '期限間近', ok: '余裕あり' }
+
+// dueDate は YYYY-MM-DD。ブラウザのローカル日付の 0 時同士で日数差を取る
+function dueStatus(dueDate: string, warnDays: number): DueStatus {
+  const [y, m, d] = dueDate.split('-').map(Number)
+  const today = new Date()
+  const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate())
+  const days = Math.round((new Date(y, m - 1, d).getTime() - todayStart.getTime()) / 86_400_000)
+  if (days < 0) return 'overdue'
+  return days <= warnDays ? 'soon' : 'ok'
+}
+
 interface Props {
   card: Card
   labels: Label[]
@@ -30,6 +44,7 @@ export default function CardItem({
     setEditingState(value)
     onEditingChange?.(value)
   }
+  const due = card.dueDate ? dueStatus(card.dueDate, card.warnDays) : null
   const doneCount = card.checklist.filter((item) => item.done).length
 
   if (editing) {
@@ -81,7 +96,11 @@ export default function CardItem({
             優先度 {PRIORITY_LABEL[card.priority]}
           </span>
         )}
-        {card.dueDate && <span>期限 {card.dueDate}</span>}
+        {card.dueDate && due && (
+          <span className={`due due-${due}`}>
+            期限 {card.dueDate}（{DUE_STATUS_LABEL[due]}）
+          </span>
+        )}
         {card.checklist.length > 0 && (
           <span>
             ✓ {doneCount}/{card.checklist.length}

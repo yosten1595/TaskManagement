@@ -190,6 +190,20 @@ h1 {
   color: var(--ok);
 }
 
+.due-overdue {
+  color: var(--crit);
+  font-weight: 600;
+}
+
+.due-soon {
+  color: var(--warn);
+  font-weight: 600;
+}
+
+.due-ok {
+  color: var(--ok);
+}
+
 .add-card-open {
   width: 100%;
   padding: 8px;
