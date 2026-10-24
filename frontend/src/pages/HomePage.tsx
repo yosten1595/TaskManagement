@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
 import { fetchBoards } from '../api'
+import AddBoardForm from '../components/AddBoardForm'
+import BoardTile from '../components/BoardTile'
 import type { BoardSummary } from '../types'
 
 export default function HomePage() {
@@ -19,19 +20,21 @@ export default function HomePage() {
   return (
     <section>
       <h1>ボード</h1>
-      {boards.length === 0 ? (
-        <p className="message">ボードがありません。</p>
-      ) : (
-        <ul className="board-grid">
-          {boards.map((board) => (
-            <li key={board.id}>
-              <Link to={`/boards/${board.id}`} className="board-tile">
-                {board.title}
-              </Link>
-            </li>
-          ))}
-        </ul>
-      )}
+      {boards.length === 0 && <p className="message">ボードがありません。</p>}
+      <ul className="board-grid">
+        {boards.map((board) => (
+          <li key={board.id}>
+            <BoardTile
+              board={board}
+              onRenamed={(renamed) => setBoards(boards.map((b) => (b.id === renamed.id ? renamed : b)))}
+              onDeleted={(id) => setBoards(boards.filter((b) => b.id !== id))}
+            />
+          </li>
+        ))}
+        <li>
+          <AddBoardForm onCreated={(created) => setBoards([...boards, created])} />
+        </li>
+      </ul>
     </section>
   )
 }

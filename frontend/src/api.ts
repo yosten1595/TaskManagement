@@ -113,3 +113,35 @@ export async function deleteCheckItem(cardId: string, itemId: string): Promise<v
     throw new Error(`${res.status} ${res.statusText}`)
   }
 }
+
+export async function createBoard(title: string): Promise<BoardSummary> {
+  const res = await fetch('/api/boards', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ title }),
+  })
+  if (!res.ok) {
+    throw new Error(`${res.status} ${res.statusText}`)
+  }
+  return res.json() as Promise<BoardSummary>
+}
+
+export async function renameBoard(id: string, title: string): Promise<BoardSummary> {
+  const res = await fetch(`/api/boards/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ title }),
+  })
+  if (!res.ok) {
+    throw new Error(`${res.status} ${res.statusText}`)
+  }
+  return res.json() as Promise<BoardSummary>
+}
+
+// ボードに属するリスト・カードも一緒に削除される
+export async function deleteBoard(id: string): Promise<void> {
+  const res = await fetch(`/api/boards/${id}`, { method: 'DELETE' })
+  if (!res.ok) {
+    throw new Error(`${res.status} ${res.statusText}`)
+  }
+}
