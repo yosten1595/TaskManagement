@@ -516,7 +516,7 @@
 
 <!-- ── Cover ── -->
 <div class="cover">
-  <p class="cover-eyebrow">製品要件定義書 · v1.8</p>
+  <p class="cover-eyebrow">製品要件定義書 · v1.9</p>
   <h1 class="cover-title">TaskBoard<br>タスク管理アプリケーション 要件定義書</h1>
   <p style="color:var(--fg-sub);font-size:15px;max-width:55ch;margin-bottom:20px;line-height:1.7;">
     付箋やメモ帳で管理していたタスクをデジタル化し、期限・優先度・進捗をチーム全員がひと目で把握できる Web アプリケーションの提案資料です。
@@ -811,7 +811,7 @@
       </div>
       <ul style="margin:16px 0 0 20px;color:var(--fg-sub);font-size:14px;line-height:1.9">
         <li>色だけに頼らず、状態を文字でも示す（アクセシビリティ）。</li>
-        <li>期限の状態は、表示のたびに現在の日付と所属リストから算出する。カードを「完了」リストへ移すと「完了」表示になり、To Do・進行中へ戻すと自動で「期限切れ」等の表示に戻る（保存データは変わらない）。</li>
+        <li>期限の状態は、表示のたびに現在の日付と所属リストから算出する。カードを「完了」リストへ移すと「完了」表示になり、未着手・進行中へ戻すと自動で「期限切れ」等の表示に戻る（保存データは変わらない）。</li>
         <li>「完了リスト」は、タイトルが「完了」のリストで判定する。</li>
       </ul>
     </div>
@@ -822,6 +822,16 @@
         <li>カード編集フォームで、項目の追加・チェックの切り替え・削除ができる。</li>
         <li>編集中の変更はフォーム内だけで保持し、<strong>「保存」を押したときだけ</strong>データベースに反映する。「キャンセル」した場合は、チェックした内容も含めてすべて破棄する。</li>
         <li>保存の途中で失敗した場合は、エラーを表示し、データベース上の最新の状態に表示を合わせる。</li>
+      </ul>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title"><span class="subsection-num">UI-3</span> 検索・絞り込み</div>
+      <ul style="margin:0 0 0 20px;color:var(--fg-sub);font-size:14px;line-height:1.9">
+        <li>キーワード（タイトル・説明の部分一致）、優先度、ラベル、期限の条件で絞り込める（機能要件 3.7）。</li>
+        <li><strong>絞り込み表示</strong>とする。条件に合うカードだけを表示し、合わないカードは表示しない（強調表示にはしない）。</li>
+        <li>条件の入力に合わせて自動で更新する。絞り込み中は、カードの移動・並べ替えはできない。</li>
+        <li>実装状況：キーワードと優先度は実装済み。ラベルと期限は未実装。</li>
       </ul>
     </div>
   </section>
@@ -988,13 +998,18 @@
         <span class="rev-ver">v1.8</span>
         <span class="rev-desc">「画面の振る舞い（確定事項）」を追加：期限の表示ルール（完了リストでは「完了」表示、戻すと自動で警告表示に復帰）、チェックリストは「保存」時のみ反映（キャンセルで破棄）。表紙・フッターのバージョン表記を統一。</span>
       </div>
+      <div class="rev-item">
+        <span class="rev-date">2026-10-24</span>
+        <span class="rev-ver">v1.9</span>
+        <span class="rev-desc">検索・絞り込みの振る舞いを追記（条件に合うカードのみ表示する「絞り込み表示」）。完了リストの期限表示を、期限なしのカードも「完了」と表示する仕様に明確化。</span>
+      </div>
     </div>
   </section>
 
 </div>
 
 <footer class="doc-footer">
-  <span>TaskBoard 要件定義書 v1.8</span>
+  <span>TaskBoard 要件定義書 v1.9</span>
   <span>最終更新: 2026-10-24</span>
 </footer>
 
