@@ -47,7 +47,8 @@ export default function CardItem({
     setEditingState(value)
     onEditingChange?.(value)
   }
-  const due: DueStatus | null = !card.dueDate ? null : completed ? 'done' : dueStatus(card.dueDate, card.warnDays)
+  // 完了リストでは期限の有無にかかわらず「完了」、それ以外は期限がある場合のみ状態を表示する
+  const due: DueStatus | null = completed ? 'done' : card.dueDate ? dueStatus(card.dueDate, card.warnDays) : null
   const doneCount = card.checklist.filter((item) => item.done).length
 
   if (editing) {
@@ -99,9 +100,9 @@ export default function CardItem({
             優先度 {PRIORITY_LABEL[card.priority]}
           </span>
         )}
-        {card.dueDate && due && (
+        {due && (
           <span className={`due due-${due}`}>
-            期限 {card.dueDate}（{DUE_STATUS_LABEL[due]}）
+            {card.dueDate ? `期限 ${card.dueDate}（${DUE_STATUS_LABEL[due]}）` : DUE_STATUS_LABEL[due]}
           </span>
         )}
         {card.checklist.length > 0 && (
