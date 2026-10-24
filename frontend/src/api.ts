@@ -21,6 +21,8 @@ export function searchCards({ keyword, priority, listId }: CardSearchParams = {}
   return getJson<Card[]>(`/api/cards${query ? `?${query}` : ''}`)
 }
 
+export const fetchCard = (id: string) => getJson<Card>(`/api/cards/${id}`)
+
 export const fetchLabels = () => getJson<Label[]>('/api/labels')
 
 export async function createCard(listId: string, card: NewCard): Promise<Card> {

@@ -1,51 +1,31 @@
 import { useState } from 'react'
-import { addCheckItem, deleteCheckItem, updateCheckItem } from '../api'
+import { NEW_ITEM_PREFIX } from '../checklistSync'
 import type { CheckItem } from '../types'
 
 interface Props {
-  cardId: string
   items: CheckItem[]
-  // 項目を変更したとき（呼び出し側で閉じた後にボードを再読み込みするため）
-  onChanged: (items: CheckItem[]) => void
+  // 変更はこのフォームの中だけで持ち、API への反映は呼び出し側が「保存」時に行う
+  onChange: (items: CheckItem[]) => void
 }
 
-// カード編集フォームの中に置くため、<form> は使わず Enter キーで追加する。操作は API に即時反映される
-export default function ChecklistEditor({ cardId, items, onChanged }: Props) {
+// カード編集フォームの中に置くため、<form> は使わず Enter キーで追加する
+export default function ChecklistEditor({ items, onChange }: Props) {
   const [text, setText] = useState('')
-  const [busy, setBusy] = useState(false)
-  const [error, setError] = useState<string | null>(null)
 
-  const run = async (action: () => Promise<CheckItem[]>, failure: string) => {
-    if (busy) return
-    setBusy(true)
-    setError(null)
-    try {
-      onChanged(await action())
-    } catch (err) {
-      setError(`${failure}: ${(err as Error).message}`)
-    } finally {
-      setBusy(false)
-    }
-  }
-
-  const add = async () => {
+  const add = () => {
     const trimmed = text.trim()
     if (!trimmed) return
-    await run(async () => {
-      const card = await addCheckItem(cardId, trimmed)
-      setText('')
-      return card.checklist
-    }, '追加できませんでした')
+    onChange([
+      ...items,
+      { id: `${NEW_ITEM_PREFIX}${crypto.randomUUID()}`, text: trimmed, done: false, position: items.length },
+    ])
+    setText('')
   }
 
   const toggle = (item: CheckItem) =>
-    run(async () => (await updateCheckItem(cardId, item.id, item.text, !item.done)).checklist, '更新できませんでした')
+    onChange(items.map((i) => (i.id === item.id ? { ...i, done: !i.done } : i)))
 
-  const remove = (item: CheckItem) =>
-    run(async () => {
-      await deleteCheckItem(cardId, item.id)
-      return items.filter((i) => i.id !== item.id)
-    }, '削除できませんでした')
+  const remove = (item: CheckItem) => onChange(items.filter((i) => i.id !== item.id))
 
   const doneCount = items.filter((i) => i.done).length
 
@@ -59,14 +39,13 @@ export default function ChecklistEditor({ cardId, items, onChanged }: Props) {
           {items.map((item) => (
             <li key={item.id}>
               <label className={item.done ? 'checklist-done' : undefined}>
-                <input type="checkbox" checked={item.done} disabled={busy} onChange={() => toggle(item)} />
+                <input type="checkbox" checked={item.done} onChange={() => toggle(item)} />
                 {item.text}
               </label>
               <button
                 type="button"
                 className="checklist-remove"
                 aria-label={`「${item.text}」を削除`}
-                disabled={busy}
                 onClick={() => remove(item)}
               >
                 ×
@@ -88,11 +67,10 @@ export default function ChecklistEditor({ cardId, items, onChanged }: Props) {
             }
           }}
         />
-        <button type="button" disabled={!text.trim() || busy} onClick={add}>
+        <button type="button" disabled={!text.trim()} onClick={add}>
           追加
         </button>
       </div>
-      {error && <p className="message error">{error}</p>}
     </fieldset>
   )
 }

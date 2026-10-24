@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { updateCard } from '../api'
+import { fetchCard, updateCard } from '../api'
+import { syncChecklist } from '../checklistSync'
 import type { Card, Label, Priority } from '../types'
 import CardFields from './CardFields'
 import ChecklistEditor from './ChecklistEditor'
@@ -17,13 +18,15 @@ export default function EditCardForm({ card, labels, onSaved, onCancel }: Props)
   const [dueDate, setDueDate] = useState(card.dueDate ?? '')
   const [priority, setPriority] = useState<Priority | ''>(card.priority ?? '')
   const [labelIds, setLabelIds] = useState<string[]>(card.labels.map((l) => l.id))
+  // チェックリストは「保存」を押したときだけ API に反映する。savedChecklist は API 上の現在の状態
+  const [savedChecklist, setSavedChecklist] = useState(card.checklist)
   const [checklist, setChecklist] = useState(card.checklist)
-  const [checklistChanged, setChecklistChanged] = useState(false)
+  // 保存の途中で失敗してカードが一部だけ更新された場合、キャンセルでもボードを再読み込みする
+  const [partiallySaved, setPartiallySaved] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  // チェックリストは API に即時反映済みなので、キャンセルでも変更があればボードを再読み込みする
-  const cancel = checklistChanged ? onSaved : onCancel
+  const cancel = partiallySaved ? onSaved : onCancel
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -39,9 +42,25 @@ export default function EditCardForm({ card, labels, onSaved, onCancel }: Props)
         priority: priority || null,
         labelIds,
       })
-      onSaved()
     } catch (err) {
       setError(`保存できませんでした: ${(err as Error).message}`)
+      setSubmitting(false)
+      return
+    }
+    try {
+      await syncChecklist(card.id, savedChecklist, checklist)
+      onSaved()
+    } catch (err) {
+      // 途中まで反映された可能性があるため、API 上の最新の状態に表示を合わせる
+      setPartiallySaved(true)
+      setError(`カードは保存しましたが、チェックリストを保存できませんでした: ${(err as Error).message}`)
+      try {
+        const latest = await fetchCard(card.id)
+        setSavedChecklist(latest.checklist)
+        setChecklist(latest.checklist)
+      } catch {
+        // 最新の取得にも失敗した場合は表示をそのままにする
+      }
       setSubmitting(false)
     }
   }
@@ -73,14 +92,7 @@ export default function EditCardForm({ card, labels, onSaved, onCancel }: Props)
         onPriorityChange={setPriority}
         onLabelIdsChange={setLabelIds}
       />
-      <ChecklistEditor
-        cardId={card.id}
-        items={checklist}
-        onChanged={(items) => {
-          setChecklist(items)
-          setChecklistChanged(true)
-        }}
-      />
+      <ChecklistEditor items={checklist} onChange={setChecklist} />
       {error && <p className="message error">{error}</p>}
       <div className="add-card-actions">
         <button type="submit" disabled={!title.trim() || submitting}>
