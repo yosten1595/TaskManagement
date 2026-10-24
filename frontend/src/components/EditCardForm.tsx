@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { updateCard } from '../api'
 import type { Card, Label, Priority } from '../types'
 import CardFields from './CardFields'
+import ChecklistEditor from './ChecklistEditor'
 
 interface Props {
   card: Card
@@ -16,8 +17,13 @@ export default function EditCardForm({ card, labels, onSaved, onCancel }: Props)
   const [dueDate, setDueDate] = useState(card.dueDate ?? '')
   const [priority, setPriority] = useState<Priority | ''>(card.priority ?? '')
   const [labelIds, setLabelIds] = useState<string[]>(card.labels.map((l) => l.id))
+  const [checklist, setChecklist] = useState(card.checklist)
+  const [checklistChanged, setChecklistChanged] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
+
+  // チェックリストは API に即時反映済みなので、キャンセルでも変更があればボードを再読み込みする
+  const cancel = checklistChanged ? onSaved : onCancel
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -48,7 +54,7 @@ export default function EditCardForm({ card, labels, onSaved, onCancel }: Props)
         placeholder="タイトルを入力"
         value={title}
         onChange={(e) => setTitle(e.target.value)}
-        onKeyDown={(e) => e.key === 'Escape' && onCancel()}
+        onKeyDown={(e) => e.key === 'Escape' && cancel()}
       />
       <textarea
         aria-label="説明"
@@ -56,7 +62,7 @@ export default function EditCardForm({ card, labels, onSaved, onCancel }: Props)
         rows={3}
         value={description}
         onChange={(e) => setDescription(e.target.value)}
-        onKeyDown={(e) => e.key === 'Escape' && onCancel()}
+        onKeyDown={(e) => e.key === 'Escape' && cancel()}
       />
       <CardFields
         labels={labels}
@@ -67,12 +73,20 @@ export default function EditCardForm({ card, labels, onSaved, onCancel }: Props)
         onPriorityChange={setPriority}
         onLabelIdsChange={setLabelIds}
       />
+      <ChecklistEditor
+        cardId={card.id}
+        items={checklist}
+        onChanged={(items) => {
+          setChecklist(items)
+          setChecklistChanged(true)
+        }}
+      />
       {error && <p className="message error">{error}</p>}
       <div className="add-card-actions">
         <button type="submit" disabled={!title.trim() || submitting}>
           保存
         </button>
-        <button type="button" disabled={submitting} onClick={onCancel}>
+        <button type="button" disabled={submitting} onClick={cancel}>
           キャンセル
         </button>
       </div>
