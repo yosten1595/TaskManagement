@@ -13,6 +13,7 @@ interface Props {
   selectable: boolean
   selected: boolean
   onToggle: () => void
+  completed: boolean
 }
 
 // CardItem をドラッグ可能にするラッパー。編集フォームを開いている間はドラッグしない

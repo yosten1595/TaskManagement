@@ -4,12 +4,12 @@ import EditCardForm from './EditCardForm'
 
 const PRIORITY_LABEL: Record<Priority, string> = { HIGH: '高', MID: '中', LOW: '低' }
 
-type DueStatus = 'overdue' | 'soon' | 'ok'
+type DueStatus = 'overdue' | 'soon' | 'ok' | 'done'
 
-const DUE_STATUS_LABEL: Record<DueStatus, string> = { overdue: '期限切れ', soon: '期限間近', ok: '余裕あり' }
+const DUE_STATUS_LABEL: Record<DueStatus, string> = { overdue: '期限切れ', soon: '期限間近', ok: '余裕あり', done: '完了' }
 
 // dueDate は YYYY-MM-DD。ブラウザのローカル日付の 0 時同士で日数差を取る
-function dueStatus(dueDate: string, warnDays: number): DueStatus {
+function dueStatus(dueDate: string, warnDays: number): Exclude<DueStatus, 'done'> {
   const [y, m, d] = dueDate.split('-').map(Number)
   const today = new Date()
   const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate())
@@ -28,6 +28,8 @@ interface Props {
   selectable?: boolean
   selected?: boolean
   onToggle?: () => void
+  // 完了リストのカード。期限の警告表示の代わりに「完了」と表示する
+  completed?: boolean
 }
 
 export default function CardItem({
@@ -38,13 +40,14 @@ export default function CardItem({
   selectable = false,
   selected = false,
   onToggle,
+  completed = false,
 }: Props) {
   const [editing, setEditingState] = useState(false)
   const setEditing = (value: boolean) => {
     setEditingState(value)
     onEditingChange?.(value)
   }
-  const due = card.dueDate ? dueStatus(card.dueDate, card.warnDays) : null
+  const due: DueStatus | null = !card.dueDate ? null : completed ? 'done' : dueStatus(card.dueDate, card.warnDays)
   const doneCount = card.checklist.filter((item) => item.done).length
 
   if (editing) {
