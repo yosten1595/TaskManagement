@@ -8,7 +8,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.jayway.jsonpath.JsonPath;
+import com.taskboard.api.repository.BoardRepository;
 import java.util.List;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -17,7 +20,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 
-// docker-compose の PostgreSQL に接続し、TestDataSeeder が投入したリストを使って移動・並べ替えを検証する
+// docker-compose の PostgreSQL に接続し、専用のボードとリストを作って検証する（開発用データに依存しない）。終了後にボードごと削除する
 @SpringBootTest
 @AutoConfigureMockMvc
 @TestPropertySource(properties = "app.seed.enabled=true")
@@ -25,6 +28,21 @@ class CardMoveApiTests {
 
 	@Autowired
 	MockMvc mockMvc;
+
+	@Autowired
+	BoardRepository boardRepository;
+
+	TestBoardFixture fixture;
+
+	@BeforeEach
+	void createBoard() {
+		fixture = TestBoardFixture.create(boardRepository, "リストA", "リストB");
+	}
+
+	@AfterEach
+	void deleteBoard() {
+		fixture.delete();
+	}
 
 	@Test
 	void reorderWithinList() throws Exception {
@@ -146,10 +164,7 @@ class CardMoveApiTests {
 		}
 	}
 
-	private List<String> listIds() throws Exception {
-		String boards = mockMvc.perform(get("/api/boards")).andReturn().getResponse().getContentAsString();
-		String boardId = JsonPath.read(boards, "$[0].id");
-		String board = mockMvc.perform(get("/api/boards/" + boardId)).andReturn().getResponse().getContentAsString();
-		return JsonPath.read(board, "$.lists[*].id");
+	private List<String> listIds() {
+		return fixture.listIds();
 	}
 }
