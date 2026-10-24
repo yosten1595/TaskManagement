@@ -200,6 +200,10 @@ h1 {
   font-weight: 600;
 }
 
+.due-done {
+  color: var(--fg-muted);
+}
+
 .due-ok {
   color: var(--ok);
 }

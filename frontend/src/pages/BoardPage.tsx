@@ -22,6 +22,9 @@ import type { BoardDetail, Card, CardSortKey, Label, Priority } from '../types'
 
 const SEARCH_DELAY_MS = 300
 
+// このタイトルのリストに置かれたカードは完了扱いにする
+const DONE_LIST_TITLE = '完了'
+
 // リスト ID → そのリストのカード（position 順）
 type Columns = Record<string, Card[]>
 
@@ -311,6 +314,7 @@ export default function BoardPage() {
                     selectable={deleteMode}
                     selected={selectedIds.has(card.id)}
                     onToggle={() => toggleSelected(card.id)}
+                    completed={list.title === DONE_LIST_TITLE}
                   />
                 ))}
               </CardColumn>
@@ -320,7 +324,12 @@ export default function BoardPage() {
         <DragOverlay>
           {activeCard && (
             <div className="drag-overlay">
-              <CardItem card={activeCard} labels={labels} onSaved={() => {}} />
+              <CardItem
+                card={activeCard}
+                labels={labels}
+                onSaved={() => {}}
+                completed={board?.lists.find((l) => l.id === findContainer(columns, activeCard.id))?.title === DONE_LIST_TITLE}
+              />
             </div>
           )}
         </DragOverlay>
