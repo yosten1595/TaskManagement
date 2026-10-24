@@ -1,4 +1,4 @@
-import type { BoardDetail, BoardSummary, Card, CardSearchParams, CardSortKey, CardUpdate, Label, NewCard } from './types'
+import type { BoardDetail, BoardList, BoardSummary, Card, CardSearchParams, CardSortKey, CardUpdate, Label, NewCard } from './types'
 
 async function getJson<T>(url: string): Promise<T> {
   const res = await fetch(url)
@@ -141,6 +141,38 @@ export async function renameBoard(id: string, title: string): Promise<BoardSumma
 // ボードに属するリスト・カードも一緒に削除される
 export async function deleteBoard(id: string): Promise<void> {
   const res = await fetch(`/api/boards/${id}`, { method: 'DELETE' })
+  if (!res.ok) {
+    throw new Error(`${res.status} ${res.statusText}`)
+  }
+}
+
+export async function createList(boardId: string, title: string): Promise<BoardList> {
+  const res = await fetch(`/api/boards/${boardId}/lists`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ title }),
+  })
+  if (!res.ok) {
+    throw new Error(`${res.status} ${res.statusText}`)
+  }
+  return res.json() as Promise<BoardList>
+}
+
+export async function renameList(id: string, title: string): Promise<BoardList> {
+  const res = await fetch(`/api/lists/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ title }),
+  })
+  if (!res.ok) {
+    throw new Error(`${res.status} ${res.statusText}`)
+  }
+  return res.json() as Promise<BoardList>
+}
+
+// リストに属するカード・チェック項目も一緒に削除される
+export async function deleteList(id: string): Promise<void> {
+  const res = await fetch(`/api/lists/${id}`, { method: 'DELETE' })
   if (!res.ok) {
     throw new Error(`${res.status} ${res.statusText}`)
   }

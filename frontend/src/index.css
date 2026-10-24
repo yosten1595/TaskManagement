@@ -578,3 +578,84 @@ h1 {
   color: var(--fg);
   font: inherit;
 }
+
+.column-tools {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.column-tools button {
+  padding: 2px 8px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--surface);
+  color: var(--fg-muted);
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.column-tools button.primary {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: #fff;
+}
+
+.column-tools button.danger {
+  color: var(--crit);
+}
+
+.column-tools button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.column .message {
+  margin: 0 0 8px;
+  font-size: 12px;
+}
+
+.column-rename,
+.list-add-form {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.column-rename input,
+.list-add-form input {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 6px 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--fg);
+  font: inherit;
+}
+
+.list-add-form {
+  flex: 0 0 280px;
+  padding: 12px;
+  background: var(--accent-bg);
+  border-radius: 6px;
+}
+
+.list-add-open {
+  flex: 0 0 200px;
+  padding: 12px;
+  border: 1px dashed var(--border);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--fg-muted);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.list-add-open:hover {
+  background: var(--accent-bg);
+  color: var(--accent);
+}

@@ -13,12 +13,13 @@ import {
 import { arrayMove, sortableKeyboardCoordinates } from '@dnd-kit/sortable'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { deleteCard, fetchBoard, fetchLabels, moveCard, searchCards, sortList } from '../api'
+import { deleteCard, deleteList, fetchBoard, fetchLabels, moveCard, renameList, searchCards, sortList } from '../api'
 import AddCardForm from '../components/AddCardForm'
+import AddListForm from '../components/AddListForm'
 import CardColumn from '../components/CardColumn'
 import CardItem from '../components/CardItem'
 import SortableCard from '../components/SortableCard'
-import type { BoardDetail, Card, CardSortKey, Label, Priority } from '../types'
+import type { BoardDetail, BoardList, Card, CardSortKey, Label, Priority } from '../types'
 
 const SEARCH_DELAY_MS = 300
 
@@ -190,6 +191,29 @@ export default function BoardPage() {
   }
 
   // 並べ替えはサーバー側で position に保存される。終わったら全カードを取り直して表示を合わせる
+  // 完了リストの判定はタイトルで行うため、「完了」の名前を変えるときは確認する。取りやめたら false
+  const handleRenameList = async (list: BoardList, title: string): Promise<boolean> => {
+    if (
+      list.title === DONE_LIST_TITLE &&
+      !window.confirm(
+        `「${DONE_LIST_TITLE}」リストの名前を変えると、このリストのカードの期限表示が「${DONE_LIST_TITLE}」にならなくなります。変更しますか？`,
+      )
+    ) {
+      return false
+    }
+    const renamed = await renameList(list.id, title)
+    setBoard((b) => b && { ...b, lists: b.lists.map((l) => (l.id === renamed.id ? { ...l, title: renamed.title } : l)) })
+    return true
+  }
+
+  const handleDeleteList = async (list: BoardList, cardCount: number) => {
+    const detail = cardCount > 0 ? `リスト内の ${cardCount} 件のカードも削除されます。` : 'カードはありません。'
+    if (!window.confirm(`リスト「${list.title}」を削除しますか？ ${detail}`)) return
+    await deleteList(list.id)
+    setBoard((b) => b && { ...b, lists: b.lists.filter((l) => l.id !== list.id) })
+    setReloadKey((k) => k + 1)
+  }
+
   const handleSort = async (listId: string, by: CardSortKey) => {
     setMoveError(null)
     try {
@@ -300,6 +324,9 @@ export default function BoardPage() {
                 cards={listCards}
                 onSort={(by) => handleSort(list.id, by)}
                 sortDisabled={filtering}
+                onRename={(title) => handleRenameList(list, title)}
+                onDelete={() => handleDeleteList(list, listCards.length)}
+                deleteDisabled={filtering}
                 footer={
                   <AddCardForm listId={list.id} labels={labels} onCreated={() => setReloadKey((k) => k + 1)} />
                 }
@@ -320,6 +347,10 @@ export default function BoardPage() {
               </CardColumn>
             )
           })}
+          <AddListForm
+            boardId={board.id}
+            onCreated={(list) => setBoard((b) => b && { ...b, lists: [...b.lists, list] })}
+          />
         </div>
         <DragOverlay>
           {activeCard && (
