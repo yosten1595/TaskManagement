@@ -793,3 +793,16 @@ h1 {
     padding: 14px;
   }
 }
+
+/* タッチ操作で、カードの長押しが文字選択やメニューにならないようにする */
+.card {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.card input,
+.card textarea {
+  -webkit-user-select: text;
+  user-select: text;
+}
