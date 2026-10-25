@@ -12,7 +12,7 @@ import {
   type DragStartEvent,
 } from '@dnd-kit/core'
 import { arrayMove, sortableKeyboardCoordinates } from '@dnd-kit/sortable'
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { deleteCard, fetchBoard, fetchLabels, moveCard, searchCards, sortList } from '../api'
 import AddCardForm from '../components/AddCardForm'
@@ -50,6 +50,8 @@ export default function BoardPage() {
   const [error, setError] = useState<string | null>(null)
   // カード作成後に検索をやり直すためのカウンタ
   const [reloadKey, setReloadKey] = useState(0)
+  // 毎回新しい関数にならないようにする（カードの部品を描き直さないため）
+  const reload = useCallback(() => setReloadKey((k) => k + 1), [])
   // 削除モード: カードを選択してまとめて削除する
   const [deleteMode, setDeleteMode] = useState(false)
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
@@ -227,13 +229,14 @@ export default function BoardPage() {
     setDeleteError(null)
   }
 
-  const toggleSelected = (id: string) =>
+  const toggleSelected = useCallback((id: string) => {
     setSelectedIds((prev) => {
       const next = new Set(prev)
       if (next.has(id)) next.delete(id)
       else next.add(id)
       return next
     })
+  }, [])
 
   // 同一リストの position の詰め直しが競合しないよう、1 件ずつ順に削除する
   const deleteSelected = async () => {
@@ -329,7 +332,7 @@ export default function BoardPage() {
                 onSort={(by) => handleSort(list.id, by)}
                 sortDisabled={filtering}
                 footer={
-                  <AddCardForm listId={list.id} labels={labels} onCreated={() => setReloadKey((k) => k + 1)} />
+                  <AddCardForm listId={list.id} labels={labels} onCreated={reload} />
                 }
               >
                 {listCards.map((card) => (
@@ -337,11 +340,11 @@ export default function BoardPage() {
                     key={card.id}
                     card={card}
                     labels={labels}
-                    onSaved={() => setReloadKey((k) => k + 1)}
+                    onSaved={reload}
                     dragEnabled={dragEnabled}
                     selectable={deleteMode}
                     selected={selectedIds.has(card.id)}
-                    onToggle={() => toggleSelected(card.id)}
+                    onToggle={toggleSelected}
                     completed={list.title === DONE_LIST_TITLE}
                   />
                 ))}
