@@ -54,7 +54,13 @@ export default function CardItem({
               tabIndex: 0,
               'aria-label': `「${card.title}」を編集`,
               onClick: () => setEditing(true),
-              onKeyDown: (e: React.KeyboardEvent) => e.key === 'Enter' && setEditing(true),
+              onKeyDown: (e: React.KeyboardEvent) => {
+              if (e.key !== 'Enter') return
+              // 既定の動作を止める。止めないと、同じ Enter が、モーダルで新しくフォーカスされた入力欄の
+              // フォームを送信し、開いた直後に保存されて閉じてしまう
+              e.preventDefault()
+              setEditing(true)
+            },
             })}
       >
         {selectable && (
