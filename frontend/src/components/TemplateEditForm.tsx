@@ -56,7 +56,6 @@ export default function TemplateEditForm({ template, labels, onSaved, onCancel }
         placeholder="タイトルを入力"
         value={title}
         onChange={(e) => setTitle(e.target.value)}
-        onKeyDown={(e) => e.key === 'Escape' && onCancel()}
       />
       <textarea
         aria-label="説明"
@@ -64,7 +63,6 @@ export default function TemplateEditForm({ template, labels, onSaved, onCancel }
         rows={3}
         value={description}
         onChange={(e) => setDescription(e.target.value)}
-        onKeyDown={(e) => e.key === 'Escape' && onCancel()}
       />
       <CardFields
         labels={labels}

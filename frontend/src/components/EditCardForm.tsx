@@ -101,7 +101,6 @@ export default function EditCardForm({ card, labels, onSaved, onCancel }: Props)
         placeholder="タイトルを入力"
         value={title}
         onChange={(e) => setTitle(e.target.value)}
-        onKeyDown={(e) => e.key === 'Escape' && cancel()}
       />
       <textarea
         aria-label="説明"
@@ -109,7 +108,6 @@ export default function EditCardForm({ card, labels, onSaved, onCancel }: Props)
         rows={3}
         value={description}
         onChange={(e) => setDescription(e.target.value)}
-        onKeyDown={(e) => e.key === 'Escape' && cancel()}
       />
       <CardFields
         labels={labels}

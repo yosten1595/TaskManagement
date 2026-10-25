@@ -1,7 +1,7 @@
 import { useState } from 'react'
-import { createPortal } from 'react-dom'
 import { deleteTemplate, fetchTemplates } from '../api'
 import type { Label, Template } from '../types'
+import Modal from './Modal'
 import TemplateEditForm from './TemplateEditForm'
 
 interface Props {
@@ -58,9 +58,8 @@ export default function TemplateManager({ labels }: Props) {
   )
   if (!open) return button
 
-  const modal = createPortal(
-    <div className="modal-backdrop">
-      <div className="modal" role="dialog" aria-modal="true" aria-label="テンプレート管理">
+  const modal = (
+    <Modal label="テンプレート管理" onClose={editing ? () => setEditing(null) : close}>
         {editing ? (
           <TemplateEditForm
             template={editing}
@@ -100,9 +99,7 @@ export default function TemplateManager({ labels }: Props) {
             {error && <p className="message error">{error}</p>}
           </>
         )}
-      </div>
-    </div>,
-    document.body,
+    </Modal>
   )
 
   return (

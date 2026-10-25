@@ -1,9 +1,9 @@
 import { useState } from 'react'
-import { createPortal } from 'react-dom'
 import type { Card, Label, Priority } from '../types'
 import { dueStatus, type DueStatus } from '../dueStatus'
 import { labelTextColor } from '../labelColor'
 import EditCardForm from './EditCardForm'
+import Modal from './Modal'
 import ProgressBar from './ProgressBar'
 
 const PRIORITY_LABEL: Record<Priority, string> = { HIGH: '高', MID: '中', LOW: '低' }
@@ -92,22 +92,25 @@ export default function CardItem({
         </div>
         <ProgressBar done={doneCount} total={card.checklist.length} />
       </article>
-      {editing &&
-      createPortal(
-        <div className="modal-backdrop">
-          <div className="modal" role="dialog" aria-modal="true" aria-label={`「${card.title}」の詳細`}>
-            <EditCardForm
-              card={card}
-              labels={labels}
-              onSaved={() => {
-                setEditing(false)
-                onSaved()
-              }}
-              onCancel={() => setEditing(false)}
-            />
-          </div>
-        </div>,
-        document.body,
+      {editing && (
+        <Modal
+          label={`「${card.title}」の詳細`}
+          onClose={() => {
+            // 保存の途中で失敗していた場合に備えて、閉じたら最新の状態を読み込み直す
+            setEditing(false)
+            onSaved()
+          }}
+        >
+          <EditCardForm
+            card={card}
+            labels={labels}
+            onSaved={() => {
+              setEditing(false)
+              onSaved()
+            }}
+            onCancel={() => setEditing(false)}
+          />
+        </Modal>
       )}
     </>
   )
