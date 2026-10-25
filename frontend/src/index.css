@@ -112,8 +112,16 @@ h1 {
   font: inherit;
 }
 
-.search input {
+.search input[type='search'] {
   flex: 1 1 220px;
+}
+
+.search-due {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--fg-muted);
+  font-size: 13px;
 }
 
 .columns {
@@ -572,84 +580,6 @@ h1 {
   box-sizing: border-box;
   width: 100%;
   padding: 8px 12px;
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  background: var(--surface);
-  color: var(--fg);
-  font: inherit;
-}
-
-.label-manager-open,
-.label-manager button {
-  padding: 4px 10px;
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  background: var(--surface);
-  color: var(--fg);
-  font: inherit;
-  font-size: 13px;
-  cursor: pointer;
-}
-
-.label-manager button.primary {
-  border-color: var(--accent);
-  background: var(--accent);
-  color: #fff;
-}
-
-.label-manager button.danger {
-  color: var(--crit);
-}
-
-.label-manager button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.label-manager {
-  margin: 8px 0;
-  padding: 12px;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 6px;
-}
-
-.label-manager-head {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 8px;
-}
-
-.label-manager-list {
-  list-style: none;
-  margin: 0 0 8px;
-  padding: 0;
-}
-
-.label-manager-list li {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 4px 0;
-}
-
-.label-manager-list .label {
-  margin-right: auto;
-  padding: 2px 8px;
-}
-
-.label-manager-form {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px;
-}
-
-.label-manager-form input:not([type='color']) {
-  flex: 1;
-  min-width: 140px;
-  padding: 6px 10px;
   border: 1px solid var(--border);
   border-radius: 6px;
   background: var(--surface);

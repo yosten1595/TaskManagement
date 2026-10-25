@@ -17,9 +17,7 @@ import { deleteCard, fetchBoard, fetchLabels, moveCard, searchCards, sortList } 
 import AddCardForm from '../components/AddCardForm'
 import CardColumn from '../components/CardColumn'
 import CardItem from '../components/CardItem'
-import LabelManager from '../components/LabelManager'
 import SortableCard from '../components/SortableCard'
-import { matchesDueFilter, type DueFilter } from '../dueStatus'
 import type { BoardDetail, Card, CardSortKey, Label, Priority } from '../types'
 
 const SEARCH_DELAY_MS = 300
@@ -43,7 +41,8 @@ export default function BoardPage() {
   const [keyword, setKeyword] = useState('')
   const [priority, setPriority] = useState<Priority | ''>('')
   const [labelId, setLabelId] = useState('')
-  const [dueFilter, setDueFilter] = useState<DueFilter>('')
+  // 期限で絞り込む日付（YYYY-MM-DD）。空なら絞り込まない
+  const [dueDate, setDueDate] = useState('')
   const [error, setError] = useState<string | null>(null)
   // カード作成後に検索をやり直すためのカウンタ
   const [reloadKey, setReloadKey] = useState(0)
@@ -87,17 +86,16 @@ export default function BoardPage() {
   // 検索 API はボードを指定できないため、このボードのリストに属するカードだけを振り分ける
   const cardsByList = useMemo(() => {
     const map = new Map<string, Card[]>()
-    const doneListIds = new Set(board?.lists.filter((l) => l.title === DONE_LIST_TITLE).map((l) => l.id))
     for (const card of cards) {
-      if (!matchesDueFilter(dueFilter, card, doneListIds.has(card.listId))) continue
+      if (dueDate && card.dueDate !== dueDate) continue
       map.set(card.listId, [...(map.get(card.listId) ?? []), card])
     }
     return map
-  }, [cards, board, dueFilter])
+  }, [cards, dueDate])
 
   // ドラッグ＆ドロップ: ドラッグ中だけ列ごとのカード並びを一時的に持つ。
   // 絞り込み中は一部のカードしか表示されず、挿入位置が実際の position とずれるので無効にする
-  const filtering = keyword.trim() !== '' || priority !== '' || labelId !== '' || dueFilter !== ''
+  const filtering = keyword.trim() !== '' || priority !== '' || labelId !== '' || dueDate !== ''
   const dragEnabled = !deleteMode && !filtering
   const baseColumns = useMemo(() => {
     const record: Columns = {}
@@ -290,24 +288,12 @@ export default function BoardPage() {
             </option>
           ))}
         </select>
-        <select aria-label="期限" value={dueFilter} onChange={(e) => setDueFilter(e.target.value as DueFilter)}>
-          <option value="">期限: すべて</option>
-          <option value="overdue">期限切れ</option>
-          <option value="soon">期限間近</option>
-          <option value="ok">余裕あり</option>
-          <option value="none">期限なし</option>
-        </select>
+        <label className="search-due">
+          期限
+          <input type="date" aria-label="期限" value={dueDate} onChange={(e) => setDueDate(e.target.value)} />
+        </label>
       </form>
 
-      <LabelManager
-        labels={labels}
-        onChanged={(next) => {
-          setLabels(next)
-          // 絞り込み中のラベルが削除された場合は条件を外す
-          setLabelId((id) => (next.some((l) => l.id === id) ? id : ''))
-          setReloadKey((k) => k + 1)
-        }}
-      />
 
       {filtering && <p className="hint">検索・絞り込み中は、カードの移動・並べ替えはできません。</p>}
       {moveError && <p className="message error">{moveError}</p>}

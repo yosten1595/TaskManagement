@@ -9,17 +9,3 @@ export function dueStatus(dueDate: string, warnDays: number): Exclude<DueStatus,
   if (days < 0) return 'overdue'
   return days <= warnDays ? 'soon' : 'ok'
 }
-
-// 期限での絞り込み。'none' は期限なし。完了リストのカードは「完了」と表示されるので、期限の条件には合わない
-export type DueFilter = '' | 'overdue' | 'soon' | 'ok' | 'none'
-
-export function matchesDueFilter(
-  filter: DueFilter,
-  card: { dueDate: string | null; warnDays: number },
-  completed: boolean,
-): boolean {
-  if (filter === '') return true
-  if (completed) return false
-  if (filter === 'none') return card.dueDate === null
-  return card.dueDate !== null && dueStatus(card.dueDate, card.warnDays) === filter
-}
