@@ -129,6 +129,47 @@ class CardCreateApiTests {
 				.andExpect(status().isNotFound());
 	}
 
+	// 削除したカードを元に戻す（Undo）ための、説明・チェックリスト・挿入位置の指定
+	@Test
+	void createCardRestoresDescriptionChecklistAndPosition() throws Exception {
+		String listId = firstListId();
+		for (String title : new String[] {"A", "B", "C"}) {
+			mockMvc.perform(post("/api/cards").contentType(MediaType.APPLICATION_JSON)
+					.content("{\"listId\":\"" + listId + "\",\"title\":\"" + title + "\"}"))
+					.andExpect(status().isCreated());
+		}
+
+		mockMvc.perform(post("/api/cards").contentType(MediaType.APPLICATION_JSON)
+				.content("{\"listId\":\"" + listId + "\",\"title\":\"戻したカード\",\"description\":\"説明\","
+						+ "\"checklist\":[{\"text\":\"一\",\"done\":true},{\"text\":\"二\",\"done\":false}],\"position\":1}"))
+				.andExpect(status().isCreated())
+				.andExpect(jsonPath("$.position", is(1)))
+				.andExpect(jsonPath("$.description", is("説明")))
+				.andExpect(jsonPath("$.checklist[*].text", org.hamcrest.Matchers.contains("一", "二")))
+				.andExpect(jsonPath("$.checklist[*].done", org.hamcrest.Matchers.contains(true, false)));
+
+		// 挿入位置より後ろのカードは 1 つずつずれて、position が 0 から連番になる
+		mockMvc.perform(get("/api/cards").param("listId", listId))
+				.andExpect(jsonPath("$[*].title", org.hamcrest.Matchers.contains("A", "戻したカード", "B", "C")))
+				.andExpect(jsonPath("$[*].position", org.hamcrest.Matchers.contains(0, 1, 2, 3)));
+
+		// 範囲外の位置は末尾になる
+		mockMvc.perform(post("/api/cards").contentType(MediaType.APPLICATION_JSON)
+				.content("{\"listId\":\"" + listId + "\",\"title\":\"末尾\",\"position\":99}"))
+				.andExpect(status().isCreated())
+				.andExpect(jsonPath("$.position", is(4)));
+	}
+
+	@Test
+	void invalidRestoreFieldsReturn400() throws Exception {
+		String head = "{\"listId\":\"" + firstListId() + "\",\"title\":\"x\",";
+		mockMvc.perform(post("/api/cards").contentType(MediaType.APPLICATION_JSON).content(head + "\"position\":-1}"))
+				.andExpect(status().isBadRequest());
+		mockMvc.perform(post("/api/cards").contentType(MediaType.APPLICATION_JSON)
+				.content(head + "\"checklist\":[{\"text\":\"  \",\"done\":false}]}"))
+				.andExpect(status().isBadRequest());
+	}
+
 	private String firstListId() {
 		return fixture.firstListId();
 	}

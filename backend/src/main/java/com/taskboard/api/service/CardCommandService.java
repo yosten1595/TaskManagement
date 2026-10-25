@@ -6,6 +6,7 @@ import com.taskboard.api.dto.MoveCardRequest;
 import com.taskboard.api.dto.UpdateCardRequest;
 import com.taskboard.api.entity.Card;
 import com.taskboard.api.entity.CardLabel;
+import com.taskboard.api.entity.CheckItem;
 import com.taskboard.api.entity.Label;
 import com.taskboard.api.entity.TaskList;
 import com.taskboard.api.repository.CardRepository;
@@ -34,7 +35,7 @@ public class CardCommandService {
 	private final TaskListRepository taskListRepository;
 	private final LabelRepository labelRepository;
 
-	// 作成したカードは同一リストの末尾に置く
+	// 作成したカードは、position を指定しなければ同一リストの末尾に置く。指定したときは、その位置に挿入して、後ろのカードを 1 つずつずらす
 	public CardDto create(CreateCardRequest request) {
 		TaskList list = taskListRepository.findById(request.listId())
 				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "List not found: " + request.listId()));
@@ -46,8 +47,25 @@ public class CardCommandService {
 		if (request.warnDays() != null) {
 			card.setWarnDays(request.warnDays());
 		}
-		card.setPosition(cardRepository.countByListId(list.getId()));
+		card.setDescription(request.description() == null || request.description().isBlank() ? null : request.description());
+		int count = cardRepository.countByListId(list.getId());
+		int position = request.position() == null ? count : Math.min(request.position(), count);
+		if (position < count) {
+			cardRepository.findByListIdOrderByPosition(list.getId()).stream()
+					.filter(other -> other.getPosition() >= position)
+					.forEach(other -> other.setPosition(other.getPosition() + 1));
+		}
+		card.setPosition(position);
 		attachLabels(card, request.labelIds());
+		List<CreateCardRequest.CheckItem> items = request.checklist() == null ? List.of() : request.checklist();
+		for (int i = 0; i < items.size(); i++) {
+			CheckItem item = new CheckItem();
+			item.setCard(card);
+			item.setText(items.get(i).text().strip());
+			item.setDone(items.get(i).done());
+			item.setPosition(i);
+			card.getChecklist().add(item);
+		}
 		return CardDto.from(cardRepository.save(card));
 	}
 

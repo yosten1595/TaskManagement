@@ -85,6 +85,10 @@ export interface NewCard {
   priority?: Priority
   labelIds?: string[]
   warnDays?: number
+  // 削除したカードを元に戻すときに使う。position はリスト内の挿入位置（省略すると末尾）
+  description?: string | null
+  checklist?: { text: string; done: boolean }[]
+  position?: number
 }
 
 // カード編集時の入力（全項目を置き換える）。null は未設定に戻す

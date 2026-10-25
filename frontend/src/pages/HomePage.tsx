@@ -35,6 +35,7 @@ export default function HomePage() {
               board={board}
               onRenamed={(renamed) => setBoards(boards.map((b) => (b.id === renamed.id ? renamed : b)))}
               onDeleted={(id) => setBoards(boards.filter((b) => b.id !== id))}
+              onRestored={load}
             />
           </li>
         ))}
