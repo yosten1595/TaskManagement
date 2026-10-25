@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { createPortal } from 'react-dom'
 import { createCard, createTemplate } from '../api'
 import type { Label, Priority } from '../types'
 import { parseWarnDays } from '../dueStatus'
@@ -84,55 +85,68 @@ export default function AddCardForm({ listId, labels, onCreated }: Props) {
     }
   }
 
-  if (!open) {
-    return (
-      <button type="button" className="add-card-open" onClick={() => setOpen(true)}>
-        ＋ カードを追加
-      </button>
-    )
-  }
+  const openButton = (
+    <button type="button" className="add-card-open" onClick={() => setOpen(true)}>
+      ＋ カードを追加
+    </button>
+  )
+
+  if (!open) return openButton
+
+  // 編集と同じく、画面に重ねたモーダルで入力する
+  const modal = createPortal(
+    <div className="modal-backdrop">
+      <div className="modal" role="dialog" aria-modal="true" aria-label="カードを追加">
+        <form className="add-card" onSubmit={submit}>
+          <TemplatePicker
+            listId={listId}
+            onCreated={() => {
+              close()
+              onCreated()
+            }}
+          />
+          <input
+            autoFocus
+            aria-label="カードのタイトル"
+            placeholder="タイトルを入力"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            onKeyDown={(e) => e.key === 'Escape' && close()}
+          />
+          <CardFields
+            labels={labels}
+            dueDate={dueDate}
+            priority={priority}
+            labelIds={labelIds}
+            warnDays={warnDays}
+            onDueDateChange={setDueDate}
+            onPriorityChange={setPriority}
+            onLabelIdsChange={setLabelIds}
+            onWarnDaysChange={setWarnDays}
+          />
+          {error && <p className="message error">{error}</p>}
+          {templateMessage && <p className="message">{templateMessage}</p>}
+          <div className="add-card-actions">
+            <button type="submit" disabled={!title.trim() || submitting}>
+              追加
+            </button>
+            <button type="button" onClick={close}>
+              キャンセル
+            </button>
+            <button type="button" disabled={!title.trim() || submitting} onClick={saveAsTemplate}>
+              テンプレートとして保存
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>,
+    document.body,
+  )
 
   return (
-    <form className="add-card" onSubmit={submit}>
-      <TemplatePicker
-        listId={listId}
-        onCreated={() => {
-          close()
-          onCreated()
-        }}
-      />
-      <input
-        autoFocus
-        aria-label="カードのタイトル"
-        placeholder="タイトルを入力"
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
-        onKeyDown={(e) => e.key === 'Escape' && close()}
-      />
-      <CardFields
-        labels={labels}
-        dueDate={dueDate}
-        priority={priority}
-        labelIds={labelIds}
-        warnDays={warnDays}
-        onDueDateChange={setDueDate}
-        onPriorityChange={setPriority}
-        onLabelIdsChange={setLabelIds}
-        onWarnDaysChange={setWarnDays}
-      />
-      {error && <p className="message error">{error}</p>}
-      {templateMessage && <p className="message">{templateMessage}</p>}
-      <div className="add-card-actions">
-        <button type="submit" disabled={!title.trim() || submitting}>
-          追加
-        </button>
-        <button type="button" onClick={close}>
-          キャンセル
-        </button>
-        <button type="button" disabled={!title.trim() || submitting} onClick={saveAsTemplate}>
-          テンプレートとして保存
-        </button>
-      </div>
-    </form>
+    <>
+      {openButton}
+      {modal}
+    </>
   )
 }
