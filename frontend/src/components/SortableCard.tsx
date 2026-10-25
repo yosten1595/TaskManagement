@@ -12,7 +12,7 @@ interface Props {
   dragEnabled: boolean
   selectable: boolean
   selected: boolean
-  onToggle: () => void
+  onToggle: (id: string) => void
   completed: boolean
 }
 

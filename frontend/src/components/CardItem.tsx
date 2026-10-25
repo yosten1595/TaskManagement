@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { memo, useState } from 'react'
 import type { Card, Label, Priority } from '../types'
 import { dueStatus, type DueStatus } from '../dueStatus'
 import { labelTextColor } from '../labelColor'
@@ -19,12 +19,12 @@ interface Props {
   // 削除モード中のみ、選択用のチェックボックスを表示する
   selectable?: boolean
   selected?: boolean
-  onToggle?: () => void
+  onToggle?: (id: string) => void
   // 完了リストのカード。期限の警告表示の代わりに「完了」と表示する
   completed?: boolean
 }
 
-export default function CardItem({
+function CardItem({
   card,
   labels,
   onSaved,
@@ -65,7 +65,7 @@ export default function CardItem({
       >
         {selectable && (
           <label className="card-select">
-            <input type="checkbox" checked={selected} onChange={onToggle} />
+            <input type="checkbox" checked={selected} onChange={() => onToggle?.(card.id)} />
             選択
           </label>
         )}
@@ -121,3 +121,6 @@ export default function CardItem({
     </>
   )
 }
+
+// 内容が変わったときだけ描き直す。ドラッグ中は他のカードを描き直さないようにするため（カードが多いと重くなる）
+export default memo(CardItem)
