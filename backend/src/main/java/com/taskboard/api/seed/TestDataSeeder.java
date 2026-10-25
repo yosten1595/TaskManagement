@@ -31,9 +31,9 @@ public class TestDataSeeder implements CommandLineRunner {
 		if (boardRepository.count() > 0) {
 			return;
 		}
-		Label backend = labelRepository.save(label("バックエンド", "#2563eb"));
-		Label frontend = labelRepository.save(label("フロントエンド", "#16a34a"));
-		Label bug = labelRepository.save(label("バグ", "#dc2626"));
+		Label backend = labelRepository.save(label("バックエンド", "#4a6a8a"));
+		Label frontend = labelRepository.save(label("フロントエンド", "#5b7b48"));
+		Label bug = labelRepository.save(label("バグ", "#a63a2b"));
 
 		Board board = new Board();
 		board.setTitle("サンプルプロジェクト");

@@ -1,40 +1,46 @@
 :root {
-  --bg: #f7f8fa;
-  --surface: #ffffff;
-  --border: #dde2eb;
-  --fg: #1c2133;
-  --fg-muted: #5b6381;
-  --accent: #2c5af5;
-  --accent-bg: #eef2fe;
-  --on-accent: #ffffff;
-  --on-crit: #ffffff;
-  --crit: #b91c1c;
-  --warn: #a15c00;
-  --ok: #0e7c4a;
-  --yellow: #ca8a04;
-  --yellow-bg: #fde68a;
-  --yellow-fg: #422006;
+  /* カフェ風の配色。ライトは生成りの紙とエスプレッソ、アクセントはキャラメル */
+  --bg: #f6efe4;
+  --surface: #fffaf2;
+  --border: #e2d4c0;
+  --fg: #3b2a20;
+  --fg-muted: #6e5a4b;
+  --accent: #9a5b2e;
+  --accent-bg: #efe0cb;
+  --on-accent: #fffaf2;
+  --on-crit: #fffaf2;
+  --crit: #a63a2b;
+  --warn: #8a5a00;
+  --ok: #4a6b3a;
+  --yellow: #c9962b;
+  --yellow-bg: #f6dc9b;
+  --yellow-fg: #4a3000;
+  --shadow: 0 1px 2px rgba(59, 42, 32, 0.08), 0 4px 14px rgba(59, 42, 32, 0.07);
+  --radius: 10px;
   color-scheme: light dark;
   font-family: 'Noto Sans JP', 'Hiragino Sans', 'Yu Gothic', system-ui, sans-serif;
+  --font-serif: 'Noto Serif JP', 'Yu Mincho', 'Hiragino Mincho ProN', serif;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #111420;
-    --surface: #191d2e;
-    --border: #262d42;
-    --fg: #e4e8f5;
-    --fg-muted: #9099bb;
-    --accent: #7d9bff;
-    --accent-bg: #1a2248;
-    --on-accent: #0b1020;
-    --on-crit: #1c0505;
-    --crit: #f87171;
-    --warn: #fbbf24;
-    --ok: #34d399;
-    --yellow: #facc15;
-    --yellow-bg: #4d3b05;
-    --yellow-fg: #fef08a;
+    /* 夜のカフェ。深いコーヒー色の背景に、キャラメルのアクセント */
+    --bg: #1f1611;
+    --surface: #2b1f18;
+    --border: #46342a;
+    --fg: #f1e4d3;
+    --fg-muted: #c2ad98;
+    --accent: #e0a470;
+    --accent-bg: #3a2a20;
+    --on-accent: #2b1a0e;
+    --on-crit: #2b0d08;
+    --crit: #f08a76;
+    --warn: #e6b84a;
+    --ok: #a8c98f;
+    --yellow: #e0b24a;
+    --yellow-bg: #5a4412;
+    --yellow-fg: #fbe9b5;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.35), 0 4px 14px rgba(0, 0, 0, 0.3);
   }
 }
 
@@ -815,4 +821,73 @@ h1 {
 ::placeholder {
   color: var(--fg-muted);
   opacity: 1;
+}
+
+/* ── カフェ風の仕上げ：書体・角の丸み・やわらかい影 ── */
+h1,
+.column h2,
+.app-header a,
+.modal strong,
+.template-manager-head strong {
+  font-family: var(--font-serif);
+  letter-spacing: 0.02em;
+}
+
+h1 {
+  font-weight: 700;
+}
+
+.app-header {
+  background: var(--surface);
+  box-shadow: 0 1px 0 var(--border), 0 4px 12px rgba(59, 42, 32, 0.05);
+}
+
+.app-header a {
+  font-size: 18px;
+  color: var(--accent);
+}
+
+.board-tile,
+.card,
+.template-picker select,
+.board-form,
+.modal {
+  border-radius: var(--radius);
+}
+
+.board-tile,
+.card {
+  box-shadow: var(--shadow);
+}
+
+.column {
+  border-radius: 14px;
+}
+
+.board-tile {
+  transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
+}
+
+.board-tile:hover {
+  transform: translateY(-2px);
+}
+
+.modal {
+  border: 1px solid var(--border);
+}
+
+.modal-backdrop {
+  background: rgba(59, 42, 32, 0.5);
+}
+
+button,
+select,
+input,
+textarea {
+  border-radius: 8px;
+}
+
+.label {
+  border-radius: 999px;
+  padding: 1px 10px;
 }
