@@ -77,7 +77,15 @@ export default function BoardTile({ board, onRenamed, onDeleted }: Props) {
   return (
     <div className="board-card">
       <Link to={`/boards/${board.id}`} className="board-tile">
-        {board.title}
+        <span className="board-tile-title">{board.title}</span>
+        <span className="board-tile-count">{board.cardCount} タスク</span>
+        <span className="board-badges">
+          {board.overdueCount > 0 && <span className="badge badge-overdue">期限切れ {board.overdueCount}件</span>}
+          {board.soonCount > 0 && <span className="badge badge-soon">期限間近 {board.soonCount}件</span>}
+          {board.overdueCount === 0 && board.soonCount === 0 && board.cardCount > 0 && (
+            <span className="badge badge-ok">すべて順調</span>
+          )}
+        </span>
       </Link>
       <div className="board-actions">
         <button type="button" disabled={busy} onClick={startRename}>

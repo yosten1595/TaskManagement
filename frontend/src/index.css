@@ -714,3 +714,44 @@ h1 {
 .template-manager-open:disabled {
   opacity: 0.75;
 }
+
+.board-tile {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.board-tile-count {
+  color: var(--fg-muted);
+  font-size: 12px;
+  font-weight: 400;
+}
+
+.board-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  min-height: 20px;
+}
+
+.badge {
+  padding: 1px 8px;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.badge-overdue {
+  background: color-mix(in srgb, var(--crit) 14%, transparent);
+  color: var(--crit);
+}
+
+.badge-soon {
+  background: color-mix(in srgb, var(--warn) 16%, transparent);
+  color: var(--warn);
+}
+
+.badge-ok {
+  background: color-mix(in srgb, var(--ok) 14%, transparent);
+  color: var(--ok);
+}

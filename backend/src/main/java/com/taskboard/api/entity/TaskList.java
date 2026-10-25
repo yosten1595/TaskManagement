@@ -18,6 +18,9 @@ import org.hibernate.annotations.OnDeleteAction;
 @NoArgsConstructor
 public class TaskList {
 
+	// 完了リストはタイトル「完了」で判定する（リストは固定で名前を変えない）
+	public static final String DONE_TITLE = "完了";
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.UUID)
 	private UUID id;

@@ -5,6 +5,7 @@ import com.taskboard.api.dto.BoardSummaryDto;
 import com.taskboard.api.entity.Board;
 import com.taskboard.api.entity.TaskList;
 import com.taskboard.api.repository.BoardRepository;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -33,13 +34,13 @@ public class BoardCommandService {
 			list.setPosition(i);
 			board.getLists().add(list);
 		}
-		return BoardSummaryDto.from(boardRepository.save(board));
+		return BoardSummaryDto.from(boardRepository.save(board), LocalDate.now());
 	}
 
 	public BoardSummaryDto rename(UUID id, BoardRequest request) {
 		Board board = find(id);
 		board.setTitle(request.title().strip());
-		return BoardSummaryDto.from(board);
+		return BoardSummaryDto.from(board, LocalDate.now());
 	}
 
 	// リスト・カード・チェック項目・ラベルの紐付けは、カスケードで一緒に削除される

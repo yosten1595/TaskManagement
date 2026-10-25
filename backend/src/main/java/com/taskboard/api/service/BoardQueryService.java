@@ -3,6 +3,7 @@ package com.taskboard.api.service;
 import com.taskboard.api.dto.BoardDetailDto;
 import com.taskboard.api.dto.BoardSummaryDto;
 import com.taskboard.api.repository.BoardRepository;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +20,7 @@ public class BoardQueryService {
 	private final BoardRepository boardRepository;
 
 	public List<BoardSummaryDto> findAll() {
-		return boardRepository.findAllByOrderByCreatedAtAsc().stream().map(BoardSummaryDto::from).toList();
+		return boardRepository.findAllByOrderByCreatedAtAsc().stream().map(board -> BoardSummaryDto.from(board, LocalDate.now())).toList();
 	}
 
 	public BoardDetailDto findById(UUID id) {

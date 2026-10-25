@@ -40,9 +40,13 @@ export interface BoardSummary {
   id: string
   title: string
   createdAt: string
+  // ホーム画面のタイル用。期限切れ・期限間近は完了リストのカードを数えない
+  cardCount: number
+  overdueCount: number
+  soonCount: number
 }
 
-export interface BoardDetail extends BoardSummary {
+export interface BoardDetail extends Pick<BoardSummary, 'id' | 'title' | 'createdAt'> {
   lists: BoardList[]
 }
 
