@@ -35,8 +35,9 @@ public class CardController {
 	public List<CardDto> search(
 			@RequestParam(required = false) String keyword,
 			@RequestParam(required = false) Priority priority,
-			@RequestParam(required = false) UUID listId) {
-		return cardQueryService.search(keyword, priority, listId);
+			@RequestParam(required = false) UUID listId,
+			@RequestParam(required = false) UUID labelId) {
+		return cardQueryService.search(keyword, priority, listId, labelId);
 	}
 
 	@GetMapping("/{id}")

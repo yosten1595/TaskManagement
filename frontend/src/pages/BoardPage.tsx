@@ -19,6 +19,7 @@ import CardColumn from '../components/CardColumn'
 import CardItem from '../components/CardItem'
 import LabelManager from '../components/LabelManager'
 import SortableCard from '../components/SortableCard'
+import { matchesDueFilter, type DueFilter } from '../dueStatus'
 import type { BoardDetail, Card, CardSortKey, Label, Priority } from '../types'
 
 const SEARCH_DELAY_MS = 300
@@ -41,6 +42,8 @@ export default function BoardPage() {
   const [labels, setLabels] = useState<Label[]>([])
   const [keyword, setKeyword] = useState('')
   const [priority, setPriority] = useState<Priority | ''>('')
+  const [labelId, setLabelId] = useState('')
+  const [dueFilter, setDueFilter] = useState<DueFilter>('')
   const [error, setError] = useState<string | null>(null)
   // カード作成後に検索をやり直すためのカウンタ
   const [reloadKey, setReloadKey] = useState(0)
@@ -67,7 +70,7 @@ export default function BoardPage() {
   useEffect(() => {
     let cancelled = false
     const timer = setTimeout(() => {
-      searchCards({ keyword: keyword.trim(), priority: priority || undefined })
+      searchCards({ keyword: keyword.trim(), priority: priority || undefined, labelId: labelId || undefined })
         .then((result) => {
           if (!cancelled) setCards(result)
         })
@@ -79,20 +82,22 @@ export default function BoardPage() {
       cancelled = true
       clearTimeout(timer)
     }
-  }, [keyword, priority, reloadKey])
+  }, [keyword, priority, labelId, reloadKey])
 
   // 検索 API はボードを指定できないため、このボードのリストに属するカードだけを振り分ける
   const cardsByList = useMemo(() => {
     const map = new Map<string, Card[]>()
+    const doneListIds = new Set(board?.lists.filter((l) => l.title === DONE_LIST_TITLE).map((l) => l.id))
     for (const card of cards) {
+      if (!matchesDueFilter(dueFilter, card, doneListIds.has(card.listId))) continue
       map.set(card.listId, [...(map.get(card.listId) ?? []), card])
     }
     return map
-  }, [cards])
+  }, [cards, board, dueFilter])
 
   // ドラッグ＆ドロップ: ドラッグ中だけ列ごとのカード並びを一時的に持つ。
   // 絞り込み中は一部のカードしか表示されず、挿入位置が実際の position とずれるので無効にする
-  const filtering = keyword.trim() !== '' || priority !== ''
+  const filtering = keyword.trim() !== '' || priority !== '' || labelId !== '' || dueFilter !== ''
   const dragEnabled = !deleteMode && !filtering
   const baseColumns = useMemo(() => {
     const record: Columns = {}
@@ -277,12 +282,29 @@ export default function BoardPage() {
           <option value="MID">中</option>
           <option value="LOW">低</option>
         </select>
+        <select aria-label="ラベル" value={labelId} onChange={(e) => setLabelId(e.target.value)}>
+          <option value="">ラベル: すべて</option>
+          {labels.map((label) => (
+            <option key={label.id} value={label.id}>
+              {label.name}
+            </option>
+          ))}
+        </select>
+        <select aria-label="期限" value={dueFilter} onChange={(e) => setDueFilter(e.target.value as DueFilter)}>
+          <option value="">期限: すべて</option>
+          <option value="overdue">期限切れ</option>
+          <option value="soon">期限間近</option>
+          <option value="ok">余裕あり</option>
+          <option value="none">期限なし</option>
+        </select>
       </form>
 
       <LabelManager
         labels={labels}
         onChanged={(next) => {
           setLabels(next)
+          // 絞り込み中のラベルが削除された場合は条件を外す
+          setLabelId((id) => (next.some((l) => l.id === id) ? id : ''))
           setReloadKey((k) => k + 1)
         }}
       />

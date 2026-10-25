@@ -12,11 +12,12 @@ export const fetchBoards = () => getJson<BoardSummary[]>('/api/boards')
 
 export const fetchBoard = (id: string) => getJson<BoardDetail>(`/api/boards/${id}`)
 
-export function searchCards({ keyword, priority, listId }: CardSearchParams = {}) {
+export function searchCards({ keyword, priority, listId, labelId }: CardSearchParams = {}) {
   const params = new URLSearchParams()
   if (keyword) params.set('keyword', keyword)
   if (priority) params.set('priority', priority)
   if (listId) params.set('listId', listId)
+  if (labelId) params.set('labelId', labelId)
   const query = params.toString()
   return getJson<Card[]>(`/api/cards${query ? `?${query}` : ''}`)
 }

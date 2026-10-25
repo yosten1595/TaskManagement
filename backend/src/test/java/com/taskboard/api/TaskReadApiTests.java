@@ -124,6 +124,17 @@ class TaskReadApiTests {
 	}
 
 	@Test
+	void searchCardsByLabel() throws Exception {
+		mockMvc.perform(get("/api/cards").param("labelId", labelId.toString()))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$[*].id", contains(cardId)));
+		mockMvc.perform(get("/api/cards").param("labelId", labelId.toString()).param("priority", "LOW"))
+				.andExpect(jsonPath("$", hasSize(0)));
+		mockMvc.perform(get("/api/cards").param("labelId", "00000000-0000-0000-0000-000000000000"))
+				.andExpect(jsonPath("$", hasSize(0)));
+	}
+
+	@Test
 	void unknownIdsReturn404() throws Exception {
 		String unknown = "00000000-0000-0000-0000-000000000000";
 		mockMvc.perform(get("/api/boards/" + unknown)).andExpect(status().isNotFound());
