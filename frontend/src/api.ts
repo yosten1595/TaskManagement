@@ -145,3 +145,35 @@ export async function deleteBoard(id: string): Promise<void> {
     throw new Error(`${res.status} ${res.statusText}`)
   }
 }
+
+export async function createLabel(name: string, color: string): Promise<Label> {
+  const res = await fetch('/api/labels', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name, color }),
+  })
+  if (!res.ok) {
+    throw new Error(`${res.status} ${res.statusText}`)
+  }
+  return res.json() as Promise<Label>
+}
+
+export async function updateLabel(id: string, name: string, color: string): Promise<Label> {
+  const res = await fetch(`/api/labels/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name, color }),
+  })
+  if (!res.ok) {
+    throw new Error(`${res.status} ${res.statusText}`)
+  }
+  return res.json() as Promise<Label>
+}
+
+// カードとの紐付けだけが外れ、カード自体は残る
+export async function deleteLabel(id: string): Promise<void> {
+  const res = await fetch(`/api/labels/${id}`, { method: 'DELETE' })
+  if (!res.ok) {
+    throw new Error(`${res.status} ${res.statusText}`)
+  }
+}
