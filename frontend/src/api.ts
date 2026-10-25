@@ -193,3 +193,34 @@ export async function deleteTemplate(id: string): Promise<void> {
     throw new Error(`${res.status} ${res.statusText}`)
   }
 }
+
+// バックアップ用。中身はサーバーが決める形式なので、画面では解釈せず、そのまま保存・送信する
+export async function exportBackup(): Promise<string> {
+  const res = await fetch('/api/export')
+  if (!res.ok) {
+    throw new Error(`${res.status} ${res.statusText}`)
+  }
+  return res.text()
+}
+
+export interface ImportResult {
+  boards: number
+  cards: number
+  templates: number
+}
+
+// 既存のデータは消さず、ファイルの内容を新しいボード・テンプレートとして追加する。不正なファイルは 400 で、何も追加されない
+export async function importBackup(json: string): Promise<ImportResult> {
+  const res = await fetch('/api/import', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: json,
+  })
+  if (res.status === 400) {
+    throw new Error('ファイルの形式が正しくありません')
+  }
+  if (!res.ok) {
+    throw new Error(`${res.status} ${res.statusText}`)
+  }
+  return res.json() as Promise<ImportResult>
+}

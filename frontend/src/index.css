@@ -938,3 +938,44 @@ textarea {
 .theme-toggle:hover {
   border-color: var(--accent);
 }
+
+.home-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px 16px;
+  margin-bottom: 16px;
+}
+
+.home-head h1 {
+  margin: 0;
+}
+
+.backup {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.backup button {
+  padding: 6px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--fg);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.backup button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.backup .message {
+  margin: 0;
+  font-size: 12px;
+}
