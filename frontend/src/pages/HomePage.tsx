@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { fetchBoards } from '../api'
 import AddBoardForm from '../components/AddBoardForm'
+import BackupControls from '../components/BackupControls'
 import BoardTile from '../components/BoardTile'
 import type { BoardSummary } from '../types'
 
@@ -8,10 +9,13 @@ export default function HomePage() {
   const [boards, setBoards] = useState<BoardSummary[] | null>(null)
   const [error, setError] = useState<string | null>(null)
 
-  useEffect(() => {
+  const load = () =>
     fetchBoards()
       .then(setBoards)
       .catch((e: Error) => setError(e.message))
+
+  useEffect(() => {
+    load()
   }, [])
 
   if (error) return <p className="message error">ボードを取得できませんでした: {error}</p>
@@ -19,7 +23,10 @@ export default function HomePage() {
 
   return (
     <section>
-      <h1>ボード</h1>
+      <div className="home-head">
+        <h1>ボード</h1>
+        <BackupControls onImported={load} />
+      </div>
       {boards.length === 0 && <p className="message">ボードがありません。</p>}
       <ul className="board-grid">
         {boards.map((board) => (
