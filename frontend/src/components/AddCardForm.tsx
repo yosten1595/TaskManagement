@@ -1,8 +1,9 @@
 import { useState } from 'react'
-import { createCard } from '../api'
+import { createCard, createTemplate } from '../api'
 import type { Label, Priority } from '../types'
 import { parseWarnDays } from '../dueStatus'
 import CardFields from './CardFields'
+import TemplatePicker from './TemplatePicker'
 
 interface Props {
   listId: string
@@ -19,6 +20,7 @@ export default function AddCardForm({ listId, labels, onCreated }: Props) {
   const [warnDays, setWarnDays] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [templateMessage, setTemplateMessage] = useState<string | null>(null)
 
   const reset = () => {
     setTitle('')
@@ -27,11 +29,36 @@ export default function AddCardForm({ listId, labels, onCreated }: Props) {
     setLabelIds([])
     setWarnDays('')
     setError(null)
+    setTemplateMessage(null)
   }
 
   const close = () => {
     setOpen(false)
     reset()
+  }
+
+  // カードは作らず、入力中の内容（タイトル・優先度・警告日数・ラベル）だけをテンプレートとして保存する
+  const saveAsTemplate = async () => {
+    const trimmed = title.trim()
+    if (!trimmed || submitting) return
+    setSubmitting(true)
+    setError(null)
+    setTemplateMessage(null)
+    try {
+      await createTemplate({
+        title: trimmed,
+        description: null,
+        priority: priority || null,
+        warnDays: parseWarnDays(warnDays),
+        labelIds,
+        checklist: [],
+      })
+      setTemplateMessage('テンプレートとして保存しました')
+    } catch (err) {
+      setError(`テンプレートを保存できませんでした: ${(err as Error).message}`)
+    } finally {
+      setSubmitting(false)
+    }
   }
 
   const submit = async (e: React.FormEvent) => {
@@ -67,6 +94,13 @@ export default function AddCardForm({ listId, labels, onCreated }: Props) {
 
   return (
     <form className="add-card" onSubmit={submit}>
+      <TemplatePicker
+        listId={listId}
+        onCreated={() => {
+          close()
+          onCreated()
+        }}
+      />
       <input
         autoFocus
         aria-label="カードのタイトル"
@@ -87,12 +121,16 @@ export default function AddCardForm({ listId, labels, onCreated }: Props) {
         onWarnDaysChange={setWarnDays}
       />
       {error && <p className="message error">{error}</p>}
+      {templateMessage && <p className="message">{templateMessage}</p>}
       <div className="add-card-actions">
         <button type="submit" disabled={!title.trim() || submitting}>
           追加
         </button>
         <button type="button" onClick={close}>
           キャンセル
+        </button>
+        <button type="button" disabled={!title.trim() || submitting} onClick={saveAsTemplate}>
+          テンプレートとして保存
         </button>
       </div>
     </form>

@@ -634,42 +634,13 @@ h1 {
   background: var(--ok);
 }
 
-.template-picker {
-  padding: 8px;
+.template-picker select {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 8px 12px;
   border: 1px solid var(--border);
   border-radius: 6px;
   background: var(--surface);
-}
-
-.template-picker ul {
-  margin: 0 0 6px;
-  padding: 0;
-  list-style: none;
-}
-
-.template-picker li button,
-.template-picker-close {
-  width: 100%;
-  padding: 6px 8px;
-  border: 0;
-  border-radius: 4px;
-  background: transparent;
   color: var(--fg);
   font: inherit;
-  text-align: left;
-  cursor: pointer;
-}
-
-.template-picker li button:hover:not(:disabled) {
-  background: var(--accent-bg);
-  color: var(--accent);
-}
-
-.template-picker-close {
-  color: var(--fg-muted);
-}
-
-.template-picker button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
 }
