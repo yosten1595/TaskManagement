@@ -53,6 +53,27 @@ export interface CardSearchParams {
   labelId?: string
 }
 
+// テンプレート。チェック項目は未完了でコピーするため done を持たない
+export interface Template {
+  id: string
+  title: string
+  description: string | null
+  priority: Priority | null
+  warnDays: number
+  labels: Label[]
+  checklist: { id: string; text: string; position: number }[]
+}
+
+// テンプレート作成時の入力。checklist は項目のテキストを表示順に並べる
+export interface NewTemplate {
+  title: string
+  description: string | null
+  priority: Priority | null
+  warnDays: number
+  labelIds: string[]
+  checklist: string[]
+}
+
 // カード作成時の入力。title 以外は任意
 export interface NewCard {
   title: string
