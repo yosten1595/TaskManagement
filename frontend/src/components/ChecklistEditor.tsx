@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { NEW_ITEM_PREFIX } from '../checklistSync'
+import { newItemId } from '../checklistSync'
 import type { CheckItem } from '../types'
 import ProgressBar from './ProgressBar'
 
@@ -18,7 +18,7 @@ export default function ChecklistEditor({ items, onChange }: Props) {
     if (!trimmed) return
     onChange([
       ...items,
-      { id: `${NEW_ITEM_PREFIX}${crypto.randomUUID()}`, text: trimmed, done: false, position: items.length },
+      { id: newItemId(), text: trimmed, done: false, position: items.length },
     ])
     setText('')
   }
