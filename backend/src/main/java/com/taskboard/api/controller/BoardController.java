@@ -3,11 +3,8 @@ package com.taskboard.api.controller;
 import com.taskboard.api.dto.BoardDetailDto;
 import com.taskboard.api.dto.BoardRequest;
 import com.taskboard.api.dto.BoardSummaryDto;
-import com.taskboard.api.dto.ListDto;
-import com.taskboard.api.dto.ListRequest;
 import com.taskboard.api.service.BoardCommandService;
 import com.taskboard.api.service.BoardQueryService;
-import com.taskboard.api.service.ListCommandService;
 import jakarta.validation.Valid;
 import java.util.List;
 import java.util.UUID;
@@ -30,7 +27,6 @@ public class BoardController {
 
 	private final BoardQueryService boardQueryService;
 	private final BoardCommandService boardCommandService;
-	private final ListCommandService listCommandService;
 
 	@GetMapping
 	public List<BoardSummaryDto> list() {
@@ -51,12 +47,6 @@ public class BoardController {
 	@PutMapping("/{id}")
 	public BoardSummaryDto rename(@PathVariable UUID id, @Valid @RequestBody BoardRequest request) {
 		return boardCommandService.rename(id, request);
-	}
-
-	@PostMapping("/{boardId}/lists")
-	@ResponseStatus(HttpStatus.CREATED)
-	public ListDto addList(@PathVariable UUID boardId, @Valid @RequestBody ListRequest request) {
-		return listCommandService.create(boardId, request);
 	}
 
 	@DeleteMapping("/{id}")

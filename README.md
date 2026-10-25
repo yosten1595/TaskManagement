@@ -173,9 +173,6 @@ npm run build
 | POST | `/api/boards` | ボード作成（`title` 必須）。初期リスト「未着手 / 進行中 / 完了」も作る |
 | PUT | `/api/boards/{id}` | ボード名の変更 |
 | DELETE | `/api/boards/{id}` | ボード削除（リスト・カード・チェック項目も削除） |
-| POST | `/api/boards/{boardId}/lists` | リスト追加（`title` 必須。ボードの末尾に追加。画面からは使わない） |
-| PUT | `/api/lists/{id}` | リスト名の変更 |
-| DELETE | `/api/lists/{id}` | リスト削除（カード・チェック項目も削除。並び順を詰める） |
 | GET | `/api/labels` | ラベル一覧 |
 | GET | `/api/cards` | カード検索。クエリ: `keyword`、`priority`、`listId`（すべて任意） |
 | GET | `/api/cards/{id}` | カード詳細 |
