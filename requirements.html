@@ -780,7 +780,7 @@
     </div>
     <ul style="margin:20px 0 0 20px;color:var(--fg-sub);font-size:14px;line-height:1.9">
       <li><strong>並び順</strong>：配列（<code>listIds</code> / <code>cardIds</code>）ではなく、<code>lists.position</code>・<code>cards.position</code> 列で持つ。</li>
-      <li><strong>カスケード削除</strong>：ボード削除でリスト・カードも削除（DF-04）。リスト単体の削除は行わない（UI-4）。ラベル削除時は <code>card_labels</code> / <code>template_labels</code> の紐付けも削除（DF-19）。</li>
+      <li><strong>カスケード削除</strong>：ボード削除でリスト・カードも削除（DF-04）。リスト単体の削除は行わない（UI-4）。ラベルの作成・編集・削除は行わない（DF-17〜19 は対象外）。</li>
       <li><strong>ラベル・チェックリスト</strong>：カードとラベルは多対多（<code>card_labels</code>）。チェックリストは <code>check_items</code> に分離。テンプレートも同様で、テンプレート側の項目は未完了でコピーするため <code>done</code> を持たない。</li>
       <li><strong>値の制約</strong>：<code>priority</code> は high / mid / low / NULL、<code>due_date</code> は NULL 可、<code>warn_days</code> の既定値は 3。</li>
       <li>ユーザー・認証に関するテーブルは現時点の要件に含まれないため設けない（単一ユーザー前提）。</li>
