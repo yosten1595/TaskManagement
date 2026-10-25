@@ -22,9 +22,10 @@
   --font-serif: 'Noto Serif JP', 'Yu Mincho', 'Hiragino Mincho ProN', serif;
 }
 
+/* 夜のカフェ。深いコーヒー色の背景に、キャラメルのアクセント。
+   OS の設定に従う（自動）。ヘッダーの切り替えで data-theme が付いたときは、そちらを優先する */
 @media (prefers-color-scheme: dark) {
-  :root {
-    /* 夜のカフェ。深いコーヒー色の背景に、キャラメルのアクセント */
+  :root:not([data-theme='light']) {
     --bg: #1f1611;
     --surface: #2b1f18;
     --border: #46342a;
@@ -42,6 +43,30 @@
     --yellow-fg: #fbe9b5;
     --shadow: 0 1px 2px rgba(0, 0, 0, 0.35), 0 4px 14px rgba(0, 0, 0, 0.3);
   }
+}
+
+:root[data-theme='dark'] {
+  --bg: #1f1611;
+  --surface: #2b1f18;
+  --border: #46342a;
+  --fg: #f1e4d3;
+  --fg-muted: #c2ad98;
+  --accent: #e0a470;
+  --accent-bg: #3a2a20;
+  --on-accent: #2b1a0e;
+  --on-crit: #2b0d08;
+  --crit: #f08a76;
+  --warn: #e6b84a;
+  --ok: #a8c98f;
+  --yellow: #e0b24a;
+  --yellow-bg: #5a4412;
+  --yellow-fg: #fbe9b5;
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.35), 0 4px 14px rgba(0, 0, 0, 0.3);
+  color-scheme: dark;
+}
+
+:root[data-theme='light'] {
+  color-scheme: light;
 }
 
 * {
@@ -890,4 +915,26 @@ textarea {
 .label {
   border-radius: 999px;
   padding: 1px 10px;
+}
+
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.theme-toggle {
+  padding: 4px 12px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--fg);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.theme-toggle:hover {
+  border-color: var(--accent);
 }

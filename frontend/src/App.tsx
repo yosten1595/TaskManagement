@@ -1,4 +1,5 @@
 import { Link, Route, Routes } from 'react-router-dom'
+import ThemeToggle from './components/ThemeToggle'
 import BoardPage from './pages/BoardPage'
 import HomePage from './pages/HomePage'
 
@@ -7,6 +8,7 @@ export default function App() {
     <>
       <header className="app-header">
         <Link to="/">TaskBoard</Link>
+        <ThemeToggle />
       </header>
       <main>
         <Routes>
