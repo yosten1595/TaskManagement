@@ -1021,3 +1021,87 @@ textarea {
   opacity: 0.5;
   cursor: not-allowed;
 }
+
+/* ── アニメーション ──
+   動きは小さく短くする。OS の「動きを減らす」設定のときは、最後のブロックで全部止める */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes pop-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.98);
+  }
+}
+
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 16px);
+  }
+}
+
+@keyframes card-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+
+.modal-backdrop {
+  animation: fade-in 0.15s ease-out;
+}
+
+.modal {
+  animation: pop-in 0.2s ease-out;
+}
+
+.undo-bar {
+  animation: slide-up 0.25s ease-out;
+}
+
+/* 新しく表示されたカードだけが現れる（カードは ID で区別しているので、再読み込みでは動かない） */
+article.card {
+  animation: card-in 0.2s ease-out;
+  transition: border-color 0.15s, box-shadow 0.15s, transform 0.15s;
+}
+
+article.card-editable:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(59, 42, 32, 0.1), 0 8px 18px rgba(59, 42, 32, 0.1);
+}
+
+/* 色の変化（ボタンの上にカーソルを置く、テーマを切り替える）をなめらかにする */
+body,
+.app-header,
+.column,
+.board-tile,
+.modal,
+button,
+input,
+select,
+textarea {
+  transition: background-color 0.2s, border-color 0.15s, color 0.2s, box-shadow 0.15s, opacity 0.15s;
+}
+
+.board-tile {
+  transition: background-color 0.2s, border-color 0.15s, color 0.2s, box-shadow 0.15s, transform 0.15s;
+}
+
+.progress-fill {
+  transition: width 0.3s ease-out, background-color 0.2s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
