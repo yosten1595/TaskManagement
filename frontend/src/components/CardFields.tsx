@@ -1,4 +1,5 @@
 import { DEFAULT_WARN_DAYS, MAX_WARN_DAYS } from '../dueStatus'
+import { labelTextColor } from '../labelColor'
 import type { Label, Priority } from '../types'
 
 interface Props {
@@ -77,7 +78,7 @@ export default function CardFields({
                 checked={labelIds.includes(label.id)}
                 onChange={() => toggleLabel(label.id)}
               />
-              <span className="label" style={{ background: label.color }}>
+              <span className="label" style={{ background: label.color, color: labelTextColor(label.color) }}>
                 {label.name}
               </span>
             </label>

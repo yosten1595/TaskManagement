@@ -3,9 +3,11 @@
   --surface: #ffffff;
   --border: #dde2eb;
   --fg: #1c2133;
-  --fg-muted: #6b7390;
+  --fg-muted: #5b6381;
   --accent: #2c5af5;
   --accent-bg: #eef2fe;
+  --on-accent: #ffffff;
+  --on-crit: #ffffff;
   --crit: #b91c1c;
   --warn: #a15c00;
   --ok: #0e7c4a;
@@ -25,6 +27,8 @@
     --fg-muted: #9099bb;
     --accent: #7d9bff;
     --accent-bg: #1a2248;
+    --on-accent: #0b1020;
+    --on-crit: #1c0505;
     --crit: #f87171;
     --warn: #fbbf24;
     --ok: #34d399;
@@ -279,7 +283,7 @@ h1 {
 .add-card-actions button[type='submit'] {
   border-color: var(--accent);
   background: var(--accent);
-  color: #fff;
+  color: var(--on-accent);
 }
 
 .add-card-actions button:disabled {
@@ -447,7 +451,7 @@ h1 {
 .delete-bar .delete-run {
   border-color: var(--crit);
   background: var(--crit);
-  color: #fff;
+  color: var(--on-crit);
 }
 
 .delete-bar button:disabled {
@@ -551,7 +555,7 @@ h1 {
 .board-actions button.primary {
   border-color: var(--accent);
   background: var(--accent);
-  color: #fff;
+  color: var(--on-accent);
 }
 
 .board-actions button.danger {
@@ -805,4 +809,10 @@ h1 {
 .card textarea {
   -webkit-user-select: text;
   user-select: text;
+}
+
+/* 入力欄の薄い案内文字も、ライト・ダークの両方で基準以上のコントラストにする */
+::placeholder {
+  color: var(--fg-muted);
+  opacity: 1;
 }

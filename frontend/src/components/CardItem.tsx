@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { createPortal } from 'react-dom'
 import type { Card, Label, Priority } from '../types'
 import { dueStatus, type DueStatus } from '../dueStatus'
+import { labelTextColor } from '../labelColor'
 import EditCardForm from './EditCardForm'
 import ProgressBar from './ProgressBar'
 
@@ -65,7 +66,7 @@ export default function CardItem({
         {card.labels.length > 0 && (
           <div className="card-labels">
             {card.labels.map((label) => (
-              <span key={label.id} className="label" style={{ background: label.color }}>
+              <span key={label.id} className="label" style={{ background: label.color, color: labelTextColor(label.color) }}>
                 {label.name}
               </span>
             ))}
