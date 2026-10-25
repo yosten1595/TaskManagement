@@ -17,13 +17,13 @@ import { deleteCard, fetchBoard, fetchLabels, moveCard, searchCards, sortList } 
 import AddCardForm from '../components/AddCardForm'
 import CardColumn from '../components/CardColumn'
 import CardItem from '../components/CardItem'
-import LabelManager from '../components/LabelManager'
 import SortableCard from '../components/SortableCard'
 import type { BoardDetail, Card, CardSortKey, Label, Priority } from '../types'
 
 const SEARCH_DELAY_MS = 300
 
 // このタイトルのリストに置かれたカードは完了扱いにする
+const NO_LABEL = 'none'
 const DONE_LIST_TITLE = '完了'
 
 // リスト ID → そのリストのカード（position 順）
@@ -41,6 +41,10 @@ export default function BoardPage() {
   const [labels, setLabels] = useState<Label[]>([])
   const [keyword, setKeyword] = useState('')
   const [priority, setPriority] = useState<Priority | ''>('')
+  // ラベルでの絞り込み。空はすべて、NO_LABEL はラベルが付いていないカード
+  const [labelId, setLabelId] = useState('')
+  // 期限で絞り込む日付（YYYY-MM-DD）。空なら絞り込まない
+  const [dueDate, setDueDate] = useState('')
   const [error, setError] = useState<string | null>(null)
   // カード作成後に検索をやり直すためのカウンタ
   const [reloadKey, setReloadKey] = useState(0)
@@ -67,7 +71,7 @@ export default function BoardPage() {
   useEffect(() => {
     let cancelled = false
     const timer = setTimeout(() => {
-      searchCards({ keyword: keyword.trim(), priority: priority || undefined })
+      searchCards({ keyword: keyword.trim(), priority: priority || undefined, labelId: labelId && labelId !== NO_LABEL ? labelId : undefined })
         .then((result) => {
           if (!cancelled) setCards(result)
         })
@@ -79,20 +83,22 @@ export default function BoardPage() {
       cancelled = true
       clearTimeout(timer)
     }
-  }, [keyword, priority, reloadKey])
+  }, [keyword, priority, labelId, reloadKey])
 
   // 検索 API はボードを指定できないため、このボードのリストに属するカードだけを振り分ける
   const cardsByList = useMemo(() => {
     const map = new Map<string, Card[]>()
     for (const card of cards) {
+      if (labelId === NO_LABEL && card.labels.length > 0) continue
+      if (dueDate && card.dueDate !== dueDate) continue
       map.set(card.listId, [...(map.get(card.listId) ?? []), card])
     }
     return map
-  }, [cards])
+  }, [cards, labelId, dueDate])
 
   // ドラッグ＆ドロップ: ドラッグ中だけ列ごとのカード並びを一時的に持つ。
   // 絞り込み中は一部のカードしか表示されず、挿入位置が実際の position とずれるので無効にする
-  const filtering = keyword.trim() !== '' || priority !== ''
+  const filtering = keyword.trim() !== '' || priority !== '' || labelId !== '' || dueDate !== ''
   const dragEnabled = !deleteMode && !filtering
   const baseColumns = useMemo(() => {
     const record: Columns = {}
@@ -277,15 +283,21 @@ export default function BoardPage() {
           <option value="MID">中</option>
           <option value="LOW">低</option>
         </select>
+        <select aria-label="ラベル" value={labelId} onChange={(e) => setLabelId(e.target.value)}>
+          <option value="">ラベル: すべて</option>
+          <option value={NO_LABEL}>ラベルなし</option>
+          {labels.map((label) => (
+            <option key={label.id} value={label.id}>
+              {label.name}
+            </option>
+          ))}
+        </select>
+        <label className="search-due">
+          期限
+          <input type="date" aria-label="期限" value={dueDate} onChange={(e) => setDueDate(e.target.value)} />
+        </label>
       </form>
 
-      <LabelManager
-        labels={labels}
-        onChanged={(next) => {
-          setLabels(next)
-          setReloadKey((k) => k + 1)
-        }}
-      />
 
       {filtering && <p className="hint">検索・絞り込み中は、カードの移動・並べ替えはできません。</p>}
       {moveError && <p className="message error">{moveError}</p>}

@@ -50,6 +50,7 @@ export interface CardSearchParams {
   keyword?: string
   priority?: Priority
   listId?: string
+  labelId?: string
 }
 
 // カード作成時の入力。title 以外は任意
