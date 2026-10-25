@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { NEW_ITEM_PREFIX } from '../checklistSync'
 import type { CheckItem } from '../types'
+import ProgressBar from './ProgressBar'
 
 interface Props {
   items: CheckItem[]
@@ -34,6 +35,7 @@ export default function ChecklistEditor({ items, onChange }: Props) {
       <legend>
         チェックリスト{items.length > 0 && `（${doneCount}/${items.length} 完了）`}
       </legend>
+      <ProgressBar done={doneCount} total={items.length} />
       {items.length > 0 && (
         <ul>
           {items.map((item) => (

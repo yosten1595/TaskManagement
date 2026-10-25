@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { createPortal } from 'react-dom'
 import type { Card, Label, Priority } from '../types'
 import EditCardForm from './EditCardForm'
+import ProgressBar from './ProgressBar'
 
 const PRIORITY_LABEL: Record<Priority, string> = { HIGH: '高', MID: '中', LOW: '低' }
 
@@ -99,6 +100,7 @@ export default function CardItem({
             </span>
           )}
         </div>
+        <ProgressBar done={doneCount} total={card.checklist.length} />
       </article>
       {editing &&
       createPortal(
