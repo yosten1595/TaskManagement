@@ -23,6 +23,7 @@ import type { BoardDetail, Card, CardSortKey, Label, Priority } from '../types'
 const SEARCH_DELAY_MS = 300
 
 // このタイトルのリストに置かれたカードは完了扱いにする
+const NO_LABEL = 'none'
 const DONE_LIST_TITLE = '完了'
 
 // リスト ID → そのリストのカード（position 順）
@@ -40,6 +41,7 @@ export default function BoardPage() {
   const [labels, setLabels] = useState<Label[]>([])
   const [keyword, setKeyword] = useState('')
   const [priority, setPriority] = useState<Priority | ''>('')
+  // ラベルでの絞り込み。空はすべて、NO_LABEL はラベルが付いていないカード
   const [labelId, setLabelId] = useState('')
   // 期限で絞り込む日付（YYYY-MM-DD）。空なら絞り込まない
   const [dueDate, setDueDate] = useState('')
@@ -69,7 +71,7 @@ export default function BoardPage() {
   useEffect(() => {
     let cancelled = false
     const timer = setTimeout(() => {
-      searchCards({ keyword: keyword.trim(), priority: priority || undefined, labelId: labelId || undefined })
+      searchCards({ keyword: keyword.trim(), priority: priority || undefined, labelId: labelId && labelId !== NO_LABEL ? labelId : undefined })
         .then((result) => {
           if (!cancelled) setCards(result)
         })
@@ -87,11 +89,12 @@ export default function BoardPage() {
   const cardsByList = useMemo(() => {
     const map = new Map<string, Card[]>()
     for (const card of cards) {
+      if (labelId === NO_LABEL && card.labels.length > 0) continue
       if (dueDate && card.dueDate !== dueDate) continue
       map.set(card.listId, [...(map.get(card.listId) ?? []), card])
     }
     return map
-  }, [cards, dueDate])
+  }, [cards, labelId, dueDate])
 
   // ドラッグ＆ドロップ: ドラッグ中だけ列ごとのカード並びを一時的に持つ。
   // 絞り込み中は一部のカードしか表示されず、挿入位置が実際の position とずれるので無効にする
@@ -282,6 +285,7 @@ export default function BoardPage() {
         </select>
         <select aria-label="ラベル" value={labelId} onChange={(e) => setLabelId(e.target.value)}>
           <option value="">ラベル: すべて</option>
+          <option value={NO_LABEL}>ラベルなし</option>
           {labels.map((label) => (
             <option key={label.id} value={label.id}>
               {label.name}
