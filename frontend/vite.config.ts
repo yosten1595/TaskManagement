@@ -1,6 +1,11 @@
 import react from '@vitejs/plugin-react'
 import { defineConfig } from 'vite'
 
+// 開発中は /api をバックエンドへ転送する（CORS 設定を不要にする）
+const proxy = {
+  '/api': 'http://localhost:8080',
+}
+
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
@@ -8,9 +13,12 @@ export default defineConfig({
     // ポートは固定。使用中でも別ポートへ逃げず、起動に失敗させる
     port: 5173,
     strictPort: true,
-    // 開発中は /api をバックエンドへ転送する（CORS 設定を不要にする）
-    proxy: {
-      '/api': 'http://localhost:8080',
-    },
+    proxy,
+  },
+  // 本番ビルドの確認（npm run build のあとに npm run preview）も、開発サーバーと同じポートで動かす
+  preview: {
+    port: 5173,
+    strictPort: true,
+    proxy,
   },
 })
