@@ -656,3 +656,32 @@ h1 {
   color: var(--fg);
   font: inherit;
 }
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  padding: 40px 16px;
+  overflow-y: auto;
+  background: rgba(0, 0, 0, 0.45);
+}
+
+.modal {
+  /* flex 内の auto マージンで上下左右の中央に置く。背が高い場合は上端が切れずスクロールできる */
+  margin: auto;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 560px;
+  padding: 20px;
+  background: var(--surface);
+  border-radius: 8px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.modal .add-card {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  box-shadow: none;
+}

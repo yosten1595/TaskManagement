@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { createPortal } from 'react-dom'
 import type { Card, Label, Priority } from '../types'
 import EditCardForm from './EditCardForm'
 
@@ -51,66 +52,71 @@ export default function CardItem({
   const due: DueStatus | null = completed ? 'done' : card.dueDate ? dueStatus(card.dueDate, card.warnDays) : null
   const doneCount = card.checklist.filter((item) => item.done).length
 
-  if (editing) {
-    return (
-      <EditCardForm
-        card={card}
-        labels={labels}
-        onSaved={() => {
-          setEditing(false)
-          onSaved()
-        }}
-        onCancel={() => setEditing(false)}
-      />
-    )
-  }
-
   return (
-    <article
-      className={`card${selected ? ' card-selected' : ''}${selectable ? '' : ' card-editable'}`}
-      {...(selectable
-        ? {}
-        : {
-            role: 'button',
-            tabIndex: 0,
-            'aria-label': `「${card.title}」を編集`,
-            onClick: () => setEditing(true),
-            onKeyDown: (e: React.KeyboardEvent) => e.key === 'Enter' && setEditing(true),
-          })}
-    >
-      {selectable && (
-        <label className="card-select">
-          <input type="checkbox" checked={selected} onChange={onToggle} />
-          選択
-        </label>
-      )}
-      {card.labels.length > 0 && (
-        <div className="card-labels">
-          {card.labels.map((label) => (
-            <span key={label.id} className="label" style={{ background: label.color }}>
-              {label.name}
+    <>
+      <article
+        className={`card${selected ? ' card-selected' : ''}${selectable ? '' : ' card-editable'}`}
+        {...(selectable
+          ? {}
+          : {
+              role: 'button',
+              tabIndex: 0,
+              'aria-label': `「${card.title}」を編集`,
+              onClick: () => setEditing(true),
+              onKeyDown: (e: React.KeyboardEvent) => e.key === 'Enter' && setEditing(true),
+            })}
+      >
+        {selectable && (
+          <label className="card-select">
+            <input type="checkbox" checked={selected} onChange={onToggle} />
+            選択
+          </label>
+        )}
+        {card.labels.length > 0 && (
+          <div className="card-labels">
+            {card.labels.map((label) => (
+              <span key={label.id} className="label" style={{ background: label.color }}>
+                {label.name}
+              </span>
+            ))}
+          </div>
+        )}
+        <h3>{card.title}</h3>
+        <div className="card-meta">
+          {card.priority && (
+            <span className={`priority priority-${card.priority.toLowerCase()}`}>
+              優先度 {PRIORITY_LABEL[card.priority]}
             </span>
-          ))}
+          )}
+          {due && (
+            <span className={`due due-${due}`}>
+              {card.dueDate ? `期限 ${card.dueDate}（${DUE_STATUS_LABEL[due]}）` : DUE_STATUS_LABEL[due]}
+            </span>
+          )}
+          {card.checklist.length > 0 && (
+            <span>
+              ✓ {doneCount}/{card.checklist.length}
+            </span>
+          )}
         </div>
+      </article>
+      {editing &&
+      createPortal(
+        <div className="modal-backdrop">
+          <div className="modal" role="dialog" aria-modal="true" aria-label={`「${card.title}」の詳細`}>
+            <EditCardForm
+              card={card}
+              labels={labels}
+              onSaved={() => {
+                setEditing(false)
+                onSaved()
+              }}
+              onCancel={() => setEditing(false)}
+            />
+          </div>
+        </div>,
+        document.body,
       )}
-      <h3>{card.title}</h3>
-      <div className="card-meta">
-        {card.priority && (
-          <span className={`priority priority-${card.priority.toLowerCase()}`}>
-            優先度 {PRIORITY_LABEL[card.priority]}
-          </span>
-        )}
-        {due && (
-          <span className={`due due-${due}`}>
-            {card.dueDate ? `期限 ${card.dueDate}（${DUE_STATUS_LABEL[due]}）` : DUE_STATUS_LABEL[due]}
-          </span>
-        )}
-        {card.checklist.length > 0 && (
-          <span>
-            ✓ {doneCount}/{card.checklist.length}
-          </span>
-        )}
-      </div>
-    </article>
+    </>
   )
 }
