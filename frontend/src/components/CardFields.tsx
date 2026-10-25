@@ -1,3 +1,4 @@
+import { DEFAULT_WARN_DAYS, MAX_WARN_DAYS } from '../dueStatus'
 import type { Label, Priority } from '../types'
 
 interface Props {
@@ -5,9 +6,12 @@ interface Props {
   dueDate: string
   priority: Priority | ''
   labelIds: string[]
+  // 空文字は未入力（保存時に既定の日数になる）
+  warnDays: string
   onDueDateChange: (value: string) => void
   onPriorityChange: (value: Priority | '') => void
   onLabelIdsChange: (value: string[]) => void
+  onWarnDaysChange: (value: string) => void
 }
 
 // カードの作成・編集フォームで共通の、期限・優先度・ラベルの入力欄
@@ -16,9 +20,11 @@ export default function CardFields({
   dueDate,
   priority,
   labelIds,
+  warnDays,
   onDueDateChange,
   onPriorityChange,
   onLabelIdsChange,
+  onWarnDaysChange,
 }: Props) {
   const toggleLabel = (id: string) =>
     onLabelIdsChange(labelIds.includes(id) ? labelIds.filter((x) => x !== id) : [...labelIds, id])
@@ -38,6 +44,24 @@ export default function CardFields({
             <option value="MID">中</option>
             <option value="LOW">低</option>
           </select>
+        </label>
+        <label>
+          警告日数
+          <input
+            type="number"
+            min={0}
+            max={MAX_WARN_DAYS}
+            list="warn-days-options"
+            placeholder={`${DEFAULT_WARN_DAYS}`}
+            title="期限の何日前から「期限間近」と表示するか"
+            value={warnDays}
+            onChange={(e) => onWarnDaysChange(e.target.value)}
+          />
+          <datalist id="warn-days-options">
+            {[1, 3, 5, 7, 14].map((d) => (
+              <option key={d} value={d} />
+            ))}
+          </datalist>
         </label>
       </div>
       {labels.length > 0 && (

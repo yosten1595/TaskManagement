@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { fetchCard, updateCard } from '../api'
 import { syncChecklist } from '../checklistSync'
 import type { Card, Label, Priority } from '../types'
+import { parseWarnDays } from '../dueStatus'
 import CardFields from './CardFields'
 import ChecklistEditor from './ChecklistEditor'
 
@@ -18,6 +19,7 @@ export default function EditCardForm({ card, labels, onSaved, onCancel }: Props)
   const [dueDate, setDueDate] = useState(card.dueDate ?? '')
   const [priority, setPriority] = useState<Priority | ''>(card.priority ?? '')
   const [labelIds, setLabelIds] = useState<string[]>(card.labels.map((l) => l.id))
+  const [warnDays, setWarnDays] = useState(String(card.warnDays))
   // チェックリストは「保存」を押したときだけ API に反映する。savedChecklist は API 上の現在の状態
   const [savedChecklist, setSavedChecklist] = useState(card.checklist)
   const [checklist, setChecklist] = useState(card.checklist)
@@ -41,6 +43,7 @@ export default function EditCardForm({ card, labels, onSaved, onCancel }: Props)
         dueDate: dueDate || null,
         priority: priority || null,
         labelIds,
+        warnDays: parseWarnDays(warnDays),
       })
     } catch (err) {
       setError(`保存できませんでした: ${(err as Error).message}`)
@@ -88,9 +91,11 @@ export default function EditCardForm({ card, labels, onSaved, onCancel }: Props)
         dueDate={dueDate}
         priority={priority}
         labelIds={labelIds}
+        warnDays={warnDays}
         onDueDateChange={setDueDate}
         onPriorityChange={setPriority}
         onLabelIdsChange={setLabelIds}
+        onWarnDaysChange={setWarnDays}
       />
       <ChecklistEditor items={checklist} onChange={setChecklist} />
       {error && <p className="message error">{error}</p>}

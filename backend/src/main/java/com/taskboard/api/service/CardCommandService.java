@@ -27,6 +27,9 @@ import org.springframework.web.server.ResponseStatusException;
 @Transactional
 public class CardCommandService {
 
+	// 要件定義書 3.4: 警告日数の既定値
+	private static final int DEFAULT_WARN_DAYS = 3;
+
 	private final CardRepository cardRepository;
 	private final TaskListRepository taskListRepository;
 	private final LabelRepository labelRepository;
@@ -40,6 +43,9 @@ public class CardCommandService {
 		card.setTitle(request.title().strip());
 		card.setDueDate(request.dueDate());
 		card.setPriority(request.priority());
+		if (request.warnDays() != null) {
+			card.setWarnDays(request.warnDays());
+		}
 		card.setPosition(cardRepository.countByListId(list.getId()));
 		attachLabels(card, request.labelIds());
 		return CardDto.from(cardRepository.save(card));
@@ -58,6 +64,7 @@ public class CardCommandService {
 		card.setDescription(request.description() == null || request.description().isBlank() ? null : request.description());
 		card.setDueDate(request.dueDate());
 		card.setPriority(request.priority());
+		card.setWarnDays(request.warnDays() == null ? DEFAULT_WARN_DAYS : request.warnDays());
 		card.getLabels().removeIf(cl -> !labelIds.contains(cl.getLabel().getId()));
 		Set<UUID> attached = card.getLabels().stream().map(cl -> cl.getLabel().getId()).collect(Collectors.toSet());
 		labels.stream()
