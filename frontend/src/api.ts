@@ -1,4 +1,4 @@
-import type { BoardDetail, BoardSummary, Card, CardSearchParams, CardSortKey, CardUpdate, Label, NewCard } from './types'
+import type { BoardDetail, BoardSummary, Card, CardSearchParams, CardSortKey, CardUpdate, Label, NewCard, NewTemplate, Template } from './types'
 
 async function getJson<T>(url: string): Promise<T> {
   const res = await fetch(url)
@@ -145,4 +145,31 @@ export async function deleteBoard(id: string): Promise<void> {
   if (!res.ok) {
     throw new Error(`${res.status} ${res.statusText}`)
   }
+}
+
+export const fetchTemplates = () => getJson<Template[]>('/api/templates')
+
+export async function createTemplate(template: NewTemplate): Promise<Template> {
+  const res = await fetch('/api/templates', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(template),
+  })
+  if (!res.ok) {
+    throw new Error(`${res.status} ${res.statusText}`)
+  }
+  return res.json() as Promise<Template>
+}
+
+// テンプレートの内容をコピーして、指定リストの末尾にカードを作る
+export async function createCardFromTemplate(templateId: string, listId: string): Promise<Card> {
+  const res = await fetch(`/api/templates/${templateId}/cards`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ listId }),
+  })
+  if (!res.ok) {
+    throw new Error(`${res.status} ${res.statusText}`)
+  }
+  return res.json() as Promise<Card>
 }

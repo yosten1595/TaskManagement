@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { fetchCard, updateCard } from '../api'
+import { createTemplate, fetchCard, updateCard } from '../api'
 import { syncChecklist } from '../checklistSync'
 import type { Card, Label, Priority } from '../types'
 import { parseWarnDays } from '../dueStatus'
@@ -27,8 +27,33 @@ export default function EditCardForm({ card, labels, onSaved, onCancel }: Props)
   const [partiallySaved, setPartiallySaved] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [templateMessage, setTemplateMessage] = useState<string | null>(null)
 
   const cancel = partiallySaved ? onSaved : onCancel
+
+  // フォームに入力中の内容（未保存の編集を含む）をテンプレートとして保存する。期限は含めない
+  const saveAsTemplate = async () => {
+    const trimmed = title.trim()
+    if (!trimmed || submitting) return
+    setSubmitting(true)
+    setError(null)
+    setTemplateMessage(null)
+    try {
+      await createTemplate({
+        title: trimmed,
+        description: description.trim() || null,
+        priority: priority || null,
+        warnDays: parseWarnDays(warnDays),
+        labelIds,
+        checklist: checklist.map((item) => item.text),
+      })
+      setTemplateMessage('テンプレートとして保存しました')
+    } catch (err) {
+      setError(`テンプレートを保存できませんでした: ${(err as Error).message}`)
+    } finally {
+      setSubmitting(false)
+    }
+  }
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -99,12 +124,16 @@ export default function EditCardForm({ card, labels, onSaved, onCancel }: Props)
       />
       <ChecklistEditor items={checklist} onChange={setChecklist} />
       {error && <p className="message error">{error}</p>}
+      {templateMessage && <p className="message">{templateMessage}</p>}
       <div className="add-card-actions">
         <button type="submit" disabled={!title.trim() || submitting}>
           保存
         </button>
         <button type="button" disabled={submitting} onClick={cancel}>
           キャンセル
+        </button>
+        <button type="button" disabled={!title.trim() || submitting} onClick={saveAsTemplate}>
+          テンプレートとして保存
         </button>
       </div>
     </form>

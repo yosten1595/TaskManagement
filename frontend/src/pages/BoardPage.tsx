@@ -17,6 +17,7 @@ import { deleteCard, fetchBoard, fetchLabels, moveCard, searchCards, sortList } 
 import AddCardForm from '../components/AddCardForm'
 import CardColumn from '../components/CardColumn'
 import CardItem from '../components/CardItem'
+import TemplatePicker from '../components/TemplatePicker'
 import SortableCard from '../components/SortableCard'
 import type { BoardDetail, Card, CardSortKey, Label, Priority } from '../types'
 
@@ -322,7 +323,10 @@ export default function BoardPage() {
                 onSort={(by) => handleSort(list.id, by)}
                 sortDisabled={filtering}
                 footer={
-                  <AddCardForm listId={list.id} labels={labels} onCreated={() => setReloadKey((k) => k + 1)} />
+                  <>
+                    <AddCardForm listId={list.id} labels={labels} onCreated={() => setReloadKey((k) => k + 1)} />
+                    <TemplatePicker listId={list.id} onCreated={() => setReloadKey((k) => k + 1)} />
+                  </>
                 }
               >
                 {listCards.map((card) => (
