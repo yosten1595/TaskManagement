@@ -260,11 +260,13 @@ h1 {
 
 .add-card-actions {
   display: flex;
+  flex-wrap: wrap;
   gap: 8px;
   margin-top: 8px;
 }
 
 .add-card-actions button {
+  white-space: nowrap;
   padding: 6px 12px;
   border: 1px solid var(--border);
   border-radius: 6px;
@@ -754,4 +756,53 @@ h1 {
 .badge-ok {
   background: color-mix(in srgb, var(--ok) 14%, transparent);
   color: var(--ok);
+}
+
+/* スマートフォン（幅 375px〜）向け。ページ全体が横にはみ出さないようにする */
+.board-grid {
+  grid-template-columns: repeat(auto-fill, minmax(min(220px, 100%), 1fr));
+}
+
+@media (max-width: 600px) {
+  .search input[type='search'] {
+    flex: 1 1 100%;
+    max-width: none;
+  }
+
+  .search-field {
+    flex: 1 1 calc(50% - 8px);
+    min-width: 0;
+  }
+
+  .search-field select,
+  .search-field input {
+    flex: 1;
+    min-width: 0;
+  }
+
+  /* 列は横にスワイプして切り替える。1列がほぼ画面幅になるようにする */
+  .column {
+    flex-basis: min(280px, 85vw);
+  }
+
+  .modal-backdrop {
+    padding: 16px 8px;
+  }
+
+  .modal {
+    padding: 14px;
+  }
+}
+
+/* タッチ操作で、カードの長押しが文字選択やメニューにならないようにする */
+.card {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.card input,
+.card textarea {
+  -webkit-user-select: text;
+  user-select: text;
 }

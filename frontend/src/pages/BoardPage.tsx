@@ -3,7 +3,8 @@ import {
   DndContext,
   DragOverlay,
   KeyboardSensor,
-  PointerSensor,
+  MouseSensor,
+  TouchSensor,
   useSensor,
   useSensors,
   type DragEndEvent,
@@ -113,8 +114,10 @@ export default function BoardPage() {
   const columns = dragColumns ?? baseColumns
 
   const sensors = useSensors(
-    // 少し動かしてからドラッグ扱いにして、単なるクリック（編集）と区別する
-    useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
+    // マウスは少し動かしてからドラッグ扱いにして、単なるクリック（編集）と区別する
+    useSensor(MouseSensor, { activationConstraint: { distance: 5 } }),
+    // タッチは少し長押ししてからドラッグ扱いにする。すぐ動かした場合は、画面のスクロールになる
+    useSensor(TouchSensor, { activationConstraint: { delay: 250, tolerance: 8 } }),
     // Enter はクリックと同じく編集に使うので、キーボードのドラッグは Space で開始・確定する
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
