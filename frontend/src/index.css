@@ -700,8 +700,9 @@ h1 {
   overflow-wrap: anywhere;
 }
 
-/* 「テンプレートとして保存」は色分けのため黄色の枠にする */
-.add-card-actions button.template-save {
+/* テンプレート関連（「テンプレートとして保存」「テンプレート管理」）は色分けのため黄色の枠にする */
+.add-card-actions button.template-save,
+.template-manager-open {
   border: 2px solid var(--yellow);
   background: var(--yellow-bg);
   color: var(--yellow-fg);
@@ -709,6 +710,7 @@ h1 {
 }
 
 /* 入力前（無効）でも黄色が分かるよう、薄くなりすぎないようにする */
-.add-card-actions button.template-save:disabled {
+.add-card-actions button.template-save:disabled,
+.template-manager-open:disabled {
   opacity: 0.75;
 }
