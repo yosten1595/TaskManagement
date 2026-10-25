@@ -51,7 +51,8 @@ Phase 1（基盤構築）〜Phase 2（コア機能）の途中です。カード
 | リスト（未着手 / 進行中 / 完了の3列に固定） | ボード作成時に自動で作成。追加・名前変更・削除・並び替えは行わない |
 | ラベルの作成／編集／削除 | 行わない（画面・API ともになし）。ラベルは一覧取得、カードへの付与、絞り込みのみ |
 | カード詳細モーダル（カードをクリックして編集） | 実装済み |
-| テンプレート、ダークモード、エクスポート、Undo | 未実装 |
+| テンプレート | API は実装済み。画面は未実装 |
+| ダークモード、エクスポート、Undo | 未実装 |
 
 ## 技術スタック
 
@@ -176,6 +177,11 @@ npm run build
 | PUT | `/api/boards/{id}` | ボード名の変更 |
 | DELETE | `/api/boards/{id}` | ボード削除（リスト・カード・チェック項目も削除） |
 | GET | `/api/labels` | ラベル一覧 |
+| GET | `/api/templates` | テンプレート一覧（新しい順） |
+| POST | `/api/templates` | テンプレート作成（`title` 必須。`description`、`priority`、`warnDays`（既定 3）、`labelIds`、`checklist`（項目テキストの配列）は任意） |
+| PUT | `/api/templates/{id}` | テンプレート更新（全項目を置き換え） |
+| DELETE | `/api/templates/{id}` | テンプレート削除（作成済みのカードは残る） |
+| POST | `/api/templates/{id}/cards` | テンプレートからカード作成（`listId` 必須。リスト末尾に追加。期限なし、チェック項目は未完了） |
 | GET | `/api/cards` | カード検索。クエリ: `keyword`、`priority`、`listId`、`labelId`（すべて任意） |
 | GET | `/api/cards/{id}` | カード詳細 |
 | POST | `/api/cards` | カード作成（`listId`、`title` 必須。`warnDays` は任意で 0〜365、省略時は 3。末尾に追加） |
