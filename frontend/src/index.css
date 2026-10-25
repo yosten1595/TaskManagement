@@ -9,6 +9,8 @@
   --crit: #b91c1c;
   --warn: #a15c00;
   --ok: #0e7c4a;
+  --yellow: #eab308;
+  --yellow-bg: #fef9c3;
   color-scheme: light dark;
   font-family: 'Noto Sans JP', 'Hiragino Sans', 'Yu Gothic', system-ui, sans-serif;
 }
@@ -25,6 +27,8 @@
     --crit: #f87171;
     --warn: #fbbf24;
     --ok: #34d399;
+    --yellow: #facc15;
+    --yellow-bg: #3a3205;
   }
 }
 
@@ -113,10 +117,11 @@ h1 {
 }
 
 .search input[type='search'] {
-  flex: 1 1 220px;
+  flex: 1 1 140px;
+  max-width: 240px;
 }
 
-.search-due {
+.search-field {
   display: flex;
   align-items: center;
   gap: 6px;
@@ -691,4 +696,10 @@ h1 {
 .template-manager-title {
   flex: 1;
   overflow-wrap: anywhere;
+}
+
+/* 「テンプレートとして保存」は色分けのため黄色の枠にする */
+.add-card-actions button.template-save {
+  border: 2px solid var(--yellow);
+  background: var(--yellow-bg);
 }

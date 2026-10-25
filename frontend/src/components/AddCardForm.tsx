@@ -133,7 +133,7 @@ export default function AddCardForm({ listId, labels, onCreated }: Props) {
             <button type="button" onClick={close}>
               キャンセル
             </button>
-            <button type="button" disabled={!title.trim() || submitting} onClick={saveAsTemplate}>
+            <button type="button" className="template-save" disabled={!title.trim() || submitting} onClick={saveAsTemplate}>
               テンプレートとして保存
             </button>
           </div>
