@@ -9,8 +9,9 @@
   --crit: #b91c1c;
   --warn: #a15c00;
   --ok: #0e7c4a;
-  --yellow: #eab308;
-  --yellow-bg: #fef9c3;
+  --yellow: #ca8a04;
+  --yellow-bg: #fde68a;
+  --yellow-fg: #422006;
   color-scheme: light dark;
   font-family: 'Noto Sans JP', 'Hiragino Sans', 'Yu Gothic', system-ui, sans-serif;
 }
@@ -28,7 +29,8 @@
     --warn: #fbbf24;
     --ok: #34d399;
     --yellow: #facc15;
-    --yellow-bg: #3a3205;
+    --yellow-bg: #4d3b05;
+    --yellow-fg: #fef08a;
   }
 }
 
@@ -702,4 +704,11 @@ h1 {
 .add-card-actions button.template-save {
   border: 2px solid var(--yellow);
   background: var(--yellow-bg);
+  color: var(--yellow-fg);
+  font-weight: 600;
+}
+
+/* 入力前（無効）でも黄色が分かるよう、薄くなりすぎないようにする */
+.add-card-actions button.template-save:disabled {
+  opacity: 0.75;
 }
