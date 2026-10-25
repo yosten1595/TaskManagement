@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { createCard } from '../api'
 import type { Label, Priority } from '../types'
+import { parseWarnDays } from '../dueStatus'
 import CardFields from './CardFields'
 
 interface Props {
@@ -15,6 +16,7 @@ export default function AddCardForm({ listId, labels, onCreated }: Props) {
   const [dueDate, setDueDate] = useState('')
   const [priority, setPriority] = useState<Priority | ''>('')
   const [labelIds, setLabelIds] = useState<string[]>([])
+  const [warnDays, setWarnDays] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -23,6 +25,7 @@ export default function AddCardForm({ listId, labels, onCreated }: Props) {
     setDueDate('')
     setPriority('')
     setLabelIds([])
+    setWarnDays('')
     setError(null)
   }
 
@@ -43,6 +46,7 @@ export default function AddCardForm({ listId, labels, onCreated }: Props) {
         dueDate: dueDate || undefined,
         priority: priority || undefined,
         labelIds: labelIds.length > 0 ? labelIds : undefined,
+        warnDays: parseWarnDays(warnDays),
       })
       reset()
       onCreated()
@@ -76,9 +80,11 @@ export default function AddCardForm({ listId, labels, onCreated }: Props) {
         dueDate={dueDate}
         priority={priority}
         labelIds={labelIds}
+        warnDays={warnDays}
         onDueDateChange={setDueDate}
         onPriorityChange={setPriority}
         onLabelIdsChange={setLabelIds}
+        onWarnDaysChange={setWarnDays}
       />
       {error && <p className="message error">{error}</p>}
       <div className="add-card-actions">

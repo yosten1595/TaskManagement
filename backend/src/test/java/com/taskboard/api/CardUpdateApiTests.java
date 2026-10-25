@@ -97,6 +97,33 @@ class CardUpdateApiTests {
 	}
 
 	@Test
+	void warnDaysDefaultsToThreeAndCanBeChanged() throws Exception {
+		String listId = firstListId();
+		String created = mockMvc.perform(post("/api/cards").contentType(MediaType.APPLICATION_JSON)
+				.content("{\"listId\":\"" + listId + "\",\"title\":\"警告日数\"}"))
+				.andExpect(jsonPath("$.warnDays", is(3)))
+				.andReturn().getResponse().getContentAsString();
+		String id = JsonPath.read(created, "$.id");
+
+		mockMvc.perform(put("/api/cards/" + id).contentType(MediaType.APPLICATION_JSON)
+				.content("{\"title\":\"警告日数\",\"warnDays\":7}"))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.warnDays", is(7)));
+		mockMvc.perform(put("/api/cards/" + id).contentType(MediaType.APPLICATION_JSON)
+				.content("{\"title\":\"警告日数\",\"warnDays\":0}"))
+				.andExpect(jsonPath("$.warnDays", is(0)));
+		// 省略すると既定値に戻る
+		mockMvc.perform(put("/api/cards/" + id).contentType(MediaType.APPLICATION_JSON)
+				.content("{\"title\":\"警告日数\"}"))
+				.andExpect(jsonPath("$.warnDays", is(3)));
+
+		mockMvc.perform(post("/api/cards").contentType(MediaType.APPLICATION_JSON)
+				.content("{\"listId\":\"" + listId + "\",\"title\":\"作成時指定\",\"warnDays\":14}"))
+				.andExpect(status().isCreated())
+				.andExpect(jsonPath("$.warnDays", is(14)));
+	}
+
+	@Test
 	void invalidRequests() throws Exception {
 		String listId = firstListId();
 		String created = mockMvc.perform(post("/api/cards").contentType(MediaType.APPLICATION_JSON)
@@ -111,6 +138,12 @@ class CardUpdateApiTests {
 				.content("{\"title\":\"x\",\"priority\":\"URGENT\"}")).andExpect(status().isBadRequest());
 		mockMvc.perform(put("/api/cards/" + id).contentType(MediaType.APPLICATION_JSON)
 				.content("{\"title\":\"x\",\"dueDate\":\"2027/01/01\"}")).andExpect(status().isBadRequest());
+		mockMvc.perform(put("/api/cards/" + id).contentType(MediaType.APPLICATION_JSON)
+				.content("{\"title\":\"x\",\"warnDays\":-1}")).andExpect(status().isBadRequest());
+		mockMvc.perform(put("/api/cards/" + id).contentType(MediaType.APPLICATION_JSON)
+				.content("{\"title\":\"x\",\"warnDays\":366}")).andExpect(status().isBadRequest());
+		mockMvc.perform(post("/api/cards").contentType(MediaType.APPLICATION_JSON)
+				.content("{\"listId\":\"" + listId + "\",\"title\":\"x\",\"warnDays\":-1}")).andExpect(status().isBadRequest());
 		mockMvc.perform(put("/api/cards/" + id).contentType(MediaType.APPLICATION_JSON)
 				.content("{\"title\":\"x\",\"labelIds\":[\"" + unknown + "\"]}")).andExpect(status().isNotFound());
 		mockMvc.perform(put("/api/cards/" + unknown).contentType(MediaType.APPLICATION_JSON)

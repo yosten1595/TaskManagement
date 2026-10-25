@@ -59,6 +59,7 @@ export interface NewCard {
   dueDate?: string
   priority?: Priority
   labelIds?: string[]
+  warnDays?: number
 }
 
 // カード編集時の入力（全項目を置き換える）。null は未設定に戻す
@@ -68,6 +69,7 @@ export interface CardUpdate {
   dueDate: string | null
   priority: Priority | null
   labelIds: string[]
+  warnDays: number
 }
 
 // リスト内のカードを並べ替える基準（バックエンドの CardSortKey に対応）
