@@ -18,6 +18,7 @@ import AddCardForm from '../components/AddCardForm'
 import CardColumn from '../components/CardColumn'
 import CardItem from '../components/CardItem'
 import SortableCard from '../components/SortableCard'
+import TemplateManager from '../components/TemplateManager'
 import type { BoardDetail, Card, CardSortKey, Label, Priority } from '../types'
 
 const SEARCH_DELAY_MS = 300
@@ -273,29 +274,32 @@ export default function BoardPage() {
           value={keyword}
           onChange={(e) => setKeyword(e.target.value)}
         />
-        <select
-          aria-label="優先度"
-          value={priority}
-          onChange={(e) => setPriority(e.target.value as Priority | '')}
-        >
-          <option value="">優先度: すべて</option>
-          <option value="HIGH">高</option>
-          <option value="MID">中</option>
-          <option value="LOW">低</option>
-        </select>
-        <select aria-label="ラベル" value={labelId} onChange={(e) => setLabelId(e.target.value)}>
-          <option value="">ラベル: すべて</option>
-          <option value={NO_LABEL}>ラベルなし</option>
-          {labels.map((label) => (
-            <option key={label.id} value={label.id}>
-              {label.name}
-            </option>
-          ))}
-        </select>
-        <label className="search-due">
+        <label className="search-field">
+          優先度
+          <select aria-label="優先度" value={priority} onChange={(e) => setPriority(e.target.value as Priority | '')}>
+            <option value="">すべて</option>
+            <option value="HIGH">高</option>
+            <option value="MID">中</option>
+            <option value="LOW">低</option>
+          </select>
+        </label>
+        <label className="search-field">
+          ラベル
+          <select aria-label="ラベル" value={labelId} onChange={(e) => setLabelId(e.target.value)}>
+            <option value="">すべて</option>
+            <option value={NO_LABEL}>ラベルなし</option>
+            {labels.map((label) => (
+              <option key={label.id} value={label.id}>
+                {label.name}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label className="search-field">
           期限
           <input type="date" aria-label="期限" value={dueDate} onChange={(e) => setDueDate(e.target.value)} />
         </label>
+        <TemplateManager labels={labels} />
       </form>
 
 

@@ -3,12 +3,13 @@ import type { Label, Priority } from '../types'
 
 interface Props {
   labels: Label[]
-  dueDate: string
+  // 期限は任意。onDueDateChange を渡さない場合（テンプレートの編集）は入力欄を出さない
+  dueDate?: string
   priority: Priority | ''
   labelIds: string[]
   // 空文字は未入力（保存時に既定の日数になる）
   warnDays: string
-  onDueDateChange: (value: string) => void
+  onDueDateChange?: (value: string) => void
   onPriorityChange: (value: Priority | '') => void
   onLabelIdsChange: (value: string[]) => void
   onWarnDaysChange: (value: string) => void
@@ -32,10 +33,12 @@ export default function CardFields({
   return (
     <>
       <div className="add-card-fields">
-        <label>
-          期限
-          <input type="date" value={dueDate} onChange={(e) => onDueDateChange(e.target.value)} />
-        </label>
+        {onDueDateChange && (
+          <label>
+            期限
+            <input type="date" value={dueDate ?? ''} onChange={(e) => onDueDateChange(e.target.value)} />
+          </label>
+        )}
         <label>
           優先度
           <select value={priority} onChange={(e) => onPriorityChange(e.target.value as Priority | '')}>

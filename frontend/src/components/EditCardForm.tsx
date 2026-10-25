@@ -132,7 +132,7 @@ export default function EditCardForm({ card, labels, onSaved, onCancel }: Props)
         <button type="button" disabled={submitting} onClick={cancel}>
           キャンセル
         </button>
-        <button type="button" disabled={!title.trim() || submitting} onClick={saveAsTemplate}>
+        <button type="button" className="template-save" disabled={!title.trim() || submitting} onClick={saveAsTemplate}>
           テンプレートとして保存
         </button>
       </div>

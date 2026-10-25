@@ -9,6 +9,9 @@
   --crit: #b91c1c;
   --warn: #a15c00;
   --ok: #0e7c4a;
+  --yellow: #ca8a04;
+  --yellow-bg: #fde68a;
+  --yellow-fg: #422006;
   color-scheme: light dark;
   font-family: 'Noto Sans JP', 'Hiragino Sans', 'Yu Gothic', system-ui, sans-serif;
 }
@@ -25,6 +28,9 @@
     --crit: #f87171;
     --warn: #fbbf24;
     --ok: #34d399;
+    --yellow: #facc15;
+    --yellow-bg: #4d3b05;
+    --yellow-fg: #fef08a;
   }
 }
 
@@ -113,10 +119,11 @@ h1 {
 }
 
 .search input[type='search'] {
-  flex: 1 1 220px;
+  flex: 1 1 140px;
+  max-width: 240px;
 }
 
-.search-due {
+.search-field {
   display: flex;
   align-items: center;
   gap: 6px;
@@ -643,4 +650,67 @@ h1 {
   background: var(--surface);
   color: var(--fg);
   font: inherit;
+}
+
+.template-manager-open,
+.template-manager-head button,
+.template-manager-list button {
+  padding: 6px 12px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--fg);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.template-manager-list button.danger {
+  color: var(--crit);
+}
+
+.template-manager-list button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.template-manager-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.template-manager-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.template-manager-list li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.template-manager-title {
+  flex: 1;
+  overflow-wrap: anywhere;
+}
+
+/* テンプレート関連（「テンプレートとして保存」「テンプレート管理」）は色分けのため黄色の枠にする */
+.add-card-actions button.template-save,
+.template-manager-open {
+  border: 2px solid var(--yellow);
+  background: var(--yellow-bg);
+  color: var(--yellow-fg);
+  font-weight: 600;
+}
+
+/* 入力前（無効）でも黄色が分かるよう、薄くなりすぎないようにする */
+.add-card-actions button.template-save:disabled,
+.template-manager-open:disabled {
+  opacity: 0.75;
 }
