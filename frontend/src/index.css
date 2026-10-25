@@ -644,3 +644,51 @@ h1 {
   color: var(--fg);
   font: inherit;
 }
+
+.template-manager-open,
+.template-manager-head button,
+.template-manager-list button {
+  padding: 6px 12px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--fg);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.template-manager-list button.danger {
+  color: var(--crit);
+}
+
+.template-manager-list button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.template-manager-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.template-manager-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.template-manager-list li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.template-manager-title {
+  flex: 1;
+  overflow-wrap: anywhere;
+}

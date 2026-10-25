@@ -173,3 +173,23 @@ export async function createCardFromTemplate(templateId: string, listId: string)
   }
   return res.json() as Promise<Card>
 }
+
+export async function updateTemplate(id: string, template: NewTemplate): Promise<Template> {
+  const res = await fetch(`/api/templates/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(template),
+  })
+  if (!res.ok) {
+    throw new Error(`${res.status} ${res.statusText}`)
+  }
+  return res.json() as Promise<Template>
+}
+
+// テンプレートから作成済みのカードは残る
+export async function deleteTemplate(id: string): Promise<void> {
+  const res = await fetch(`/api/templates/${id}`, { method: 'DELETE' })
+  if (!res.ok) {
+    throw new Error(`${res.status} ${res.statusText}`)
+  }
+}

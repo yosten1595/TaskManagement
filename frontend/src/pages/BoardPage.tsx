@@ -18,6 +18,7 @@ import AddCardForm from '../components/AddCardForm'
 import CardColumn from '../components/CardColumn'
 import CardItem from '../components/CardItem'
 import SortableCard from '../components/SortableCard'
+import TemplateManager from '../components/TemplateManager'
 import type { BoardDetail, Card, CardSortKey, Label, Priority } from '../types'
 
 const SEARCH_DELAY_MS = 300
@@ -296,6 +297,7 @@ export default function BoardPage() {
           期限
           <input type="date" aria-label="期限" value={dueDate} onChange={(e) => setDueDate(e.target.value)} />
         </label>
+        <TemplateManager labels={labels} />
       </form>
 
 
