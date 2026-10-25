@@ -14,13 +14,14 @@ import {
 import { arrayMove, sortableKeyboardCoordinates } from '@dnd-kit/sortable'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { deleteCard, fetchBoard, fetchLabels, moveCard, searchCards, sortList } from '../api'
+import { createCard, deleteCard, fetchBoard, fetchLabels, moveCard, searchCards, sortList } from '../api'
 import AddCardForm from '../components/AddCardForm'
 import CardColumn from '../components/CardColumn'
 import CardItem from '../components/CardItem'
 import SortableCard from '../components/SortableCard'
 import TemplateManager from '../components/TemplateManager'
 import type { BoardDetail, Card, CardSortKey, Label, Priority } from '../types'
+import { useUndo } from '../undo'
 
 const SEARCH_DELAY_MS = 300
 
@@ -38,6 +39,7 @@ function findContainer(columns: Columns, id: string): string | null {
 
 export default function BoardPage() {
   const { boardId } = useParams<{ boardId: string }>()
+  const undo = useUndo()
   const [board, setBoard] = useState<BoardDetail | null>(null)
   const [cards, setCards] = useState<Card[]>([])
   const [labels, setLabels] = useState<Label[]>([])
@@ -187,10 +189,18 @@ export default function BoardPage() {
       return
     }
     setDragColumns(next)
+    let moved = false
     try {
       await moveCard(activeId, listId, index)
+      moved = true
     } catch (e) {
       setMoveError(`移動できませんでした: ${(e as Error).message}`)
+    }
+    if (moved) {
+      undo.push('カードを移動しました', async () => {
+        await moveCard(activeId, origin.listId, origin.index)
+        reload()
+      })
     }
     // 成功・失敗どちらでも、サーバー上の並びを取り直して表示を合わせる
     try {
@@ -245,14 +255,35 @@ export default function BoardPage() {
     setDeleting(true)
     setDeleteError(null)
     const failed = new Set<string>()
+    const deleted: Card[] = []
     for (const id of selectedIds) {
       try {
         await deleteCard(id)
+        const card = cards.find((c) => c.id === id)
+        if (card) deleted.push(card)
       } catch {
         failed.add(id)
       }
     }
     setReloadKey((k) => k + 1)
+    if (deleted.length > 0) {
+      undo.push(`${deleted.length} 件のカードを削除しました`, async () => {
+        // 元の並び順（position）の小さい順に、元の位置へ挿入し直すと、削除前と同じ並びになる
+        for (const card of [...deleted].sort((a, b) => a.position - b.position)) {
+          await createCard(card.listId, {
+            title: card.title,
+            description: card.description,
+            dueDate: card.dueDate ?? undefined,
+            priority: card.priority ?? undefined,
+            warnDays: card.warnDays,
+            labelIds: card.labels.map((l) => l.id),
+            checklist: card.checklist.map((item) => ({ text: item.text, done: item.done })),
+            position: card.position,
+          })
+        }
+        reload()
+      })
+    }
     setDeleting(false)
     if (failed.size === 0) {
       exitDeleteMode()

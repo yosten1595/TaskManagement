@@ -1,15 +1,20 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { deleteBoard, renameBoard } from '../api'
+import { deleteBoard, fetchBoard, importBackup, renameBoard } from '../api'
+import { boardToBackupJson } from '../backup'
 import type { BoardSummary } from '../types'
+import { useUndo } from '../undo'
 
 interface Props {
   board: BoardSummary
   onRenamed: (board: BoardSummary) => void
   onDeleted: (id: string) => void
+  // 削除を元に戻したあとに、一覧を読み込み直す
+  onRestored: () => void
 }
 
-export default function BoardTile({ board, onRenamed, onDeleted }: Props) {
+export default function BoardTile({ board, onRenamed, onDeleted, onRestored }: Props) {
+  const undo = useUndo()
   const [renaming, setRenaming] = useState(false)
   const [title, setTitle] = useState(board.title)
   const [busy, setBusy] = useState(false)
@@ -43,8 +48,16 @@ export default function BoardTile({ board, onRenamed, onDeleted }: Props) {
     setBusy(true)
     setError(null)
     try {
+      // 元に戻せるように、削除する前に中身を控える（取得できなくても、削除自体は続ける）
+      const snapshot = await fetchBoard(board.id).catch(() => null)
       await deleteBoard(board.id)
       onDeleted(board.id)
+      if (snapshot) {
+        undo.push(`ボード「${board.title}」を削除しました`, async () => {
+          await importBackup(boardToBackupJson(snapshot))
+          onRestored()
+        })
+      }
     } catch (err) {
       setError(`削除できませんでした: ${(err as Error).message}`)
       setBusy(false)
