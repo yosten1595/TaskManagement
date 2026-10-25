@@ -10,6 +10,13 @@
       href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Noto+Serif+JP:wght@600;700&display=swap"
       rel="stylesheet"
     />
+    <script>
+      // 描画前に、保存済みのテーマを反映する（読み込み時のちらつき防止）
+      try {
+        var t = localStorage.getItem('taskboard-theme')
+        if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t)
+      } catch (e) {}
+    </script>
     <title>TaskBoard</title>
   </head>
   <body>
