@@ -17,6 +17,7 @@ import { deleteCard, fetchBoard, fetchLabels, moveCard, searchCards, sortList } 
 import AddCardForm from '../components/AddCardForm'
 import CardColumn from '../components/CardColumn'
 import CardItem from '../components/CardItem'
+import LabelManager from '../components/LabelManager'
 import SortableCard from '../components/SortableCard'
 import type { BoardDetail, Card, CardSortKey, Label, Priority } from '../types'
 
@@ -277,6 +278,14 @@ export default function BoardPage() {
           <option value="LOW">低</option>
         </select>
       </form>
+
+      <LabelManager
+        labels={labels}
+        onChanged={(next) => {
+          setLabels(next)
+          setReloadKey((k) => k + 1)
+        }}
+      />
 
       {filtering && <p className="hint">検索・絞り込み中は、カードの移動・並べ替えはできません。</p>}
       {moveError && <p className="message error">{moveError}</p>}
