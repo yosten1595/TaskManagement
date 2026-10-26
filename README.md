@@ -96,7 +96,7 @@
 │       ├── repository/   Spring Data JPA リポジトリ
 │       ├── entity/       JPA エンティティ
 │       ├── dto/          API のリクエスト・レスポンス用 DTO
-│       └── seed/         動作確認用テストデータの投入
+│       └── seed/         動作確認用テストデータと、固定ラベルの登録
 ├── frontend/             React + TypeScript + Vite の SPA
 │   └── src/              pages / components / api.ts / types.ts / undo.tsx など
 ├── docker-compose.yml    開発用 PostgreSQL
@@ -165,7 +165,7 @@ powershell -NoProfile -File scripts/free-port.ps1 -Port 8080,5173
 | `DB_URL` | `jdbc:postgresql://localhost:5433/taskboard` | 接続先 DB |
 | `DB_USERNAME` | `taskboard` | DB ユーザー |
 | `DB_PASSWORD` | `taskboard` | DB パスワード |
-| `SEED_ENABLED` | `true` | テストデータの自動投入（本番では `false`） |
+| `SEED_ENABLED` | `true` | テストデータ（サンプルのボード・カード）の自動投入（本番では `false`）。固定の3ラベルは、この設定に関係なく起動時に必ず登録される |
 
 ### ビルド・テスト・Lint
 

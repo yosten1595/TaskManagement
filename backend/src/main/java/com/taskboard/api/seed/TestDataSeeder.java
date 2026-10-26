@@ -13,12 +13,14 @@ import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 // 動作確認用のテストデータ。boards が空のときだけ投入する。app.seed.enabled=false で無効化
 @Component
 @ConditionalOnProperty(name = "app.seed.enabled", havingValue = "true")
+@Order(2)
 @RequiredArgsConstructor
 public class TestDataSeeder implements CommandLineRunner {
 
@@ -31,9 +33,10 @@ public class TestDataSeeder implements CommandLineRunner {
 		if (boardRepository.count() > 0) {
 			return;
 		}
-		Label backend = labelRepository.save(label("バックエンド", "#4a6a8a"));
-		Label frontend = labelRepository.save(label("フロントエンド", "#5b7b48"));
-		Label bug = labelRepository.save(label("バグ", "#a63a2b"));
+		// ラベルは DefaultLabelInitializer が先に登録している
+		Label backend = find(DefaultLabelInitializer.BACKEND);
+		Label frontend = find(DefaultLabelInitializer.FRONTEND);
+		Label bug = find(DefaultLabelInitializer.BUG);
 
 		Board board = new Board();
 		board.setTitle("サンプルプロジェクト");
@@ -65,11 +68,8 @@ public class TestDataSeeder implements CommandLineRunner {
 		boardRepository.save(board);
 	}
 
-	private Label label(String name, String color) {
-		Label l = new Label();
-		l.setName(name);
-		l.setColor(color);
-		return l;
+	private Label find(String name) {
+		return labelRepository.findByName(name).orElseThrow();
 	}
 
 	private TaskList list(Board board, String title, int position) {
