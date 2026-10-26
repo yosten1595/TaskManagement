@@ -1,9 +1,10 @@
 import type { BoardDetail, BoardSummary, Card, CardSearchParams, CardSortKey, CardUpdate, Label, NewCard, NewTemplate, Template } from './types'
 
 // fetch を呼ぶのはここだけ。body は JSON にして送る（文字列はそのまま送る）
-function send(url: string, method: string = 'GET', body?: unknown): Promise<Response> {
+function send(url: string, method: string = 'GET', body?: unknown, signal?: AbortSignal): Promise<Response> {
   return fetch(url, {
     method,
+    signal,
     ...(body === undefined
       ? {}
       : { headers: { 'Content-Type': 'application/json' }, body: typeof body === 'string' ? body : JSON.stringify(body) }),
@@ -11,23 +12,26 @@ function send(url: string, method: string = 'GET', body?: unknown): Promise<Resp
 }
 
 // 失敗（2xx 以外）は `状態コード 状態テキスト` のメッセージの Error にする
-async function request(url: string, method?: string, body?: unknown): Promise<Response> {
-  const res = await send(url, method, body)
+async function request(url: string, method?: string, body?: unknown, signal?: AbortSignal): Promise<Response> {
+  const res = await send(url, method, body, signal)
   if (!res.ok) {
     throw new Error(`${res.status} ${res.statusText}`)
   }
   return res
 }
 
-async function requestJson<T>(url: string, method?: string, body?: unknown): Promise<T> {
-  return (await request(url, method, body)).json() as Promise<T>
+async function requestJson<T>(url: string, method?: string, body?: unknown, signal?: AbortSignal): Promise<T> {
+  return (await request(url, method, body, signal)).json() as Promise<T>
 }
 
-export const fetchBoards = () => requestJson<BoardSummary[]>('/api/boards')
+// 取得（GET）。画面を離れるときに signal で中断できる
+const getJson = <T>(url: string, signal?: AbortSignal) => requestJson<T>(url, 'GET', undefined, signal)
 
-export const fetchBoard = (id: string) => requestJson<BoardDetail>(`/api/boards/${id}`)
+export const fetchBoards = (signal?: AbortSignal) => getJson<BoardSummary[]>('/api/boards', signal)
 
-export function searchCards({ keyword, priority, listId, labelId, boardId }: CardSearchParams = {}) {
+export const fetchBoard = (id: string, signal?: AbortSignal) => getJson<BoardDetail>(`/api/boards/${id}`, signal)
+
+export function searchCards({ keyword, priority, listId, labelId, boardId }: CardSearchParams = {}, signal?: AbortSignal) {
   const params = new URLSearchParams()
   if (keyword) params.set('keyword', keyword)
   if (priority) params.set('priority', priority)
@@ -35,12 +39,12 @@ export function searchCards({ keyword, priority, listId, labelId, boardId }: Car
   if (labelId) params.set('labelId', labelId)
   if (boardId) params.set('boardId', boardId)
   const query = params.toString()
-  return requestJson<Card[]>(`/api/cards${query ? `?${query}` : ''}`)
+  return getJson<Card[]>(`/api/cards${query ? `?${query}` : ''}`, signal)
 }
 
 export const fetchCard = (id: string) => requestJson<Card>(`/api/cards/${id}`)
 
-export const fetchLabels = () => requestJson<Label[]>('/api/labels')
+export const fetchLabels = (signal?: AbortSignal) => getJson<Label[]>('/api/labels', signal)
 
 export const createCard = (listId: string, card: NewCard) => requestJson<Card>('/api/cards', 'POST', { listId, ...card })
 
@@ -72,7 +76,7 @@ export const renameBoard = (id: string, title: string) => requestJson<BoardSumma
 // ボードに属するリスト・カードも一緒に削除される
 export const deleteBoard = async (id: string): Promise<void> => void (await request(`/api/boards/${id}`, 'DELETE'))
 
-export const fetchTemplates = () => requestJson<Template[]>('/api/templates')
+export const fetchTemplates = (signal?: AbortSignal) => getJson<Template[]>('/api/templates', signal)
 
 export const createTemplate = (template: NewTemplate) => requestJson<Template>('/api/templates', 'POST', template)
 

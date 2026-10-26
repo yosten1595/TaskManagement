@@ -10,15 +10,20 @@ export default function HomePage() {
   const [error, setError] = useState<string | null>(null)
 
   const load = useCallback(
-    () =>
-      fetchBoards()
+    (signal?: AbortSignal) =>
+      fetchBoards(signal)
         .then(setBoards)
-        .catch((e: Error) => setError(e.message)),
+        .catch((e: Error) => {
+          if (!signal?.aborted) setError(e.message)
+        }),
     [],
   )
 
+  // 取得中に画面を離れたら中断し、結果は反映しない
   useEffect(() => {
-    load()
+    const controller = new AbortController()
+    load(controller.signal)
+    return () => controller.abort()
   }, [load])
 
   if (error) return <p className="message error">ボードを取得できませんでした: {error}</p>

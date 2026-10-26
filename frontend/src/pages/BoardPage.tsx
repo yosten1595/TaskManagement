@@ -60,36 +60,46 @@ export default function BoardPage() {
   const [deleting, setDeleting] = useState(false)
   const [deleteError, setDeleteError] = useState<string | null>(null)
 
+  // 取得中に画面を離れたり boardId が変わったら中断し、古い結果は反映しない
   useEffect(() => {
     if (!boardId) return
-    fetchBoard(boardId)
+    const controller = new AbortController()
+    fetchBoard(boardId, controller.signal)
       .then(setBoard)
-      .catch((e: Error) => setError(e.message))
+      .catch((e: Error) => {
+        if (!controller.signal.aborted) setError(e.message)
+      })
+    return () => controller.abort()
   }, [boardId])
 
   useEffect(() => {
-    fetchLabels()
+    const controller = new AbortController()
+    fetchLabels(controller.signal)
       .then(setLabels)
-      .catch((e: Error) => setError(e.message))
+      .catch((e: Error) => {
+        if (!controller.signal.aborted) setError(e.message)
+      })
+    return () => controller.abort()
   }, [])
 
   // 検索条件が変わるたびにカードを検索する。キーワード入力は少し待ってから送る。
   // reloadKey は effect の中では使わず、保存・削除のあとに検索をやり直すための合図として依存に含める
   // oxlint-disable-next-line react/exhaustive-deps
   useEffect(() => {
-    let cancelled = false
+    const controller = new AbortController()
     const timer = setTimeout(() => {
-      searchCards({ boardId, keyword: keyword.trim(), priority: priority || undefined, labelId: labelId && labelId !== NO_LABEL ? labelId : undefined })
-        .then((result) => {
-          if (!cancelled) setCards(result)
-        })
+      searchCards(
+        { boardId, keyword: keyword.trim(), priority: priority || undefined, labelId: labelId && labelId !== NO_LABEL ? labelId : undefined },
+        controller.signal,
+      )
+        .then(setCards)
         .catch((e: Error) => {
-          if (!cancelled) setError(e.message)
+          if (!controller.signal.aborted) setError(e.message)
         })
     }, SEARCH_DELAY_MS)
     return () => {
-      cancelled = true
       clearTimeout(timer)
+      controller.abort()
     }
   }, [boardId, keyword, priority, labelId, reloadKey])
 
