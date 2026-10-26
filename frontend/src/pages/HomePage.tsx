@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { fetchBoards } from '../api'
 import AddBoardForm from '../components/AddBoardForm'
 import BackupControls from '../components/BackupControls'
@@ -9,14 +9,17 @@ export default function HomePage() {
   const [boards, setBoards] = useState<BoardSummary[] | null>(null)
   const [error, setError] = useState<string | null>(null)
 
-  const load = () =>
-    fetchBoards()
-      .then(setBoards)
-      .catch((e: Error) => setError(e.message))
+  const load = useCallback(
+    () =>
+      fetchBoards()
+        .then(setBoards)
+        .catch((e: Error) => setError(e.message)),
+    [],
+  )
 
   useEffect(() => {
     load()
-  }, [])
+  }, [load])
 
   if (error) return <p className="message error">ボードを取得できませんでした: {error}</p>
   if (!boards) return <p className="message">読み込み中…</p>

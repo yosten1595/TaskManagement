@@ -63,6 +63,8 @@ export default function CardFields({
           />
           <datalist id="warn-days-options">
             {[1, 3, 5, 7, 14].map((d) => (
+              // datalist の候補は value だけで足りる（表示用の文字は不要）
+              // oxlint-disable-next-line jsx-a11y/control-has-associated-label
               <option key={d} value={d} />
             ))}
           </datalist>

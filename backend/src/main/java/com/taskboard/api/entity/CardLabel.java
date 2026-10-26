@@ -45,6 +45,8 @@ public class CardLabel {
 	@EqualsAndHashCode
 	public static class Id implements Serializable {
 
+		private static final long serialVersionUID = 1L;
+
 		@Column(name = "card_id")
 		private UUID cardId;
 

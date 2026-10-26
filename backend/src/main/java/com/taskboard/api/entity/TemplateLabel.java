@@ -45,6 +45,8 @@ public class TemplateLabel {
 	@EqualsAndHashCode
 	public static class Id implements Serializable {
 
+		private static final long serialVersionUID = 1L;
+
 		@Column(name = "template_id")
 		private UUID templateId;
 

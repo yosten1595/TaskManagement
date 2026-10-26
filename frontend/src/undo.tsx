@@ -1,5 +1,6 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { useLocation } from 'react-router-dom'
+import { UndoContext } from './undoContext'
 
 // 直前の操作 1 件だけを取り消せる。通知は一定時間で消える
 const VISIBLE_MS = 10_000
@@ -8,15 +9,6 @@ interface UndoAction {
   message: string
   undo: () => Promise<void>
 }
-
-interface UndoApi {
-  // 取り消せる操作を登録する。undo は、操作を元に戻す処理（失敗したら例外を投げる）
-  push: (message: string, undo: () => Promise<void>) => void
-}
-
-const UndoContext = createContext<UndoApi>({ push: () => {} })
-
-export const useUndo = () => useContext(UndoContext)
 
 // 入力欄にいるときの Ctrl+Z は、入力欄自身の元に戻すを優先する
 function isEditing(target: EventTarget | null): boolean {
@@ -59,8 +51,15 @@ export function UndoProvider({ children }: { children: ReactNode }) {
     }
   }, [action, busy])
 
-  // 別のページへ移ったら、前のページの操作は取り消せなくする
-  useEffect(() => clear(), [location.pathname, clear])
+  // 別のページへ移ったら、前のページの操作は取り消せなくする。
+  // 表示中に値の変化を検知して state を直すのは React の推奨する書き方（effect を使うと余計な再描画が 1 回増える）。
+  // タイマーは止めない（残っていても、あとで通知を消すだけで害はなく、次の push で止まる）
+  const [shownPath, setShownPath] = useState(location.pathname)
+  if (shownPath !== location.pathname) {
+    setShownPath(location.pathname)
+    setAction(null)
+    setError(null)
+  }
 
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {

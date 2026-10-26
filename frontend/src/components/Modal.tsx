@@ -55,6 +55,7 @@ export default function Modal({ label, onClose, children }: Props) {
 
   return createPortal(
     <div className="modal-backdrop">
+      {/* oxlint-disable-next-line jsx-a11y/no-noninteractive-element-interactions -- Tab の循環と Esc での閉じる処理のため、ダイアログ自身でキー入力を受ける */}
       <div
         ref={dialogRef}
         className="modal"

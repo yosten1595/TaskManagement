@@ -3,7 +3,6 @@ package com.taskboard.api.service;
 import com.taskboard.api.dto.CardDto;
 import com.taskboard.api.entity.Card;
 import com.taskboard.api.entity.CardSortKey;
-import com.taskboard.api.entity.TaskList;
 import com.taskboard.api.repository.CardRepository;
 import com.taskboard.api.repository.TaskListRepository;
 import java.time.LocalDate;
