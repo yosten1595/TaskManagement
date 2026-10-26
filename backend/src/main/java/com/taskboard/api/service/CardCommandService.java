@@ -9,6 +9,7 @@ import com.taskboard.api.entity.CardLabel;
 import com.taskboard.api.entity.CheckItem;
 import com.taskboard.api.entity.Label;
 import com.taskboard.api.entity.TaskList;
+import com.taskboard.api.exception.ResourceNotFoundException;
 import com.taskboard.api.repository.CardRepository;
 import com.taskboard.api.repository.LabelRepository;
 import com.taskboard.api.repository.TaskListRepository;
@@ -18,10 +19,8 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
 
 @Service
 @RequiredArgsConstructor
@@ -38,7 +37,7 @@ public class CardCommandService {
 	// 作成したカードは、position を指定しなければ同一リストの末尾に置く。指定したときは、その位置に挿入して、後ろのカードを 1 つずつずらす
 	public CardDto create(CreateCardRequest request) {
 		TaskList list = taskListRepository.findById(request.listId())
-				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "List not found: " + request.listId()));
+				.orElseThrow(() -> new ResourceNotFoundException("List not found: " + request.listId()));
 		Card card = new Card();
 		card.setList(list);
 		card.setTitle(request.title().strip());
@@ -72,11 +71,11 @@ public class CardCommandService {
 	// 所属リストと position は変えない（移動は別機能）。ラベルは指定した集合に置き換える
 	public CardDto update(UUID id, UpdateCardRequest request) {
 		Card card = cardRepository.findById(id)
-				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Card not found: " + id));
+				.orElseThrow(() -> new ResourceNotFoundException("Card not found: " + id));
 		Set<UUID> labelIds = request.labelIds() == null ? Set.of() : request.labelIds();
 		List<Label> labels = labelRepository.findAllById(labelIds);
 		if (labels.size() != labelIds.size()) {
-			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Label not found in: " + labelIds);
+			throw new ResourceNotFoundException("Label not found in: " + labelIds);
 		}
 		card.setTitle(request.title().strip());
 		card.setDescription(request.description() == null || request.description().isBlank() ? null : request.description());
@@ -94,9 +93,9 @@ public class CardCommandService {
 	// 移動先リストの指定位置に挿入し、移動元・移動先の position を 0 から連番に振り直す
 	public CardDto move(UUID id, MoveCardRequest request) {
 		Card card = cardRepository.findById(id)
-				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Card not found: " + id));
+				.orElseThrow(() -> new ResourceNotFoundException("Card not found: " + id));
 		TaskList target = taskListRepository.findById(request.listId())
-				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "List not found: " + request.listId()));
+				.orElseThrow(() -> new ResourceNotFoundException("List not found: " + request.listId()));
 		UUID sourceId = card.getList().getId();
 
 		List<Card> targetCards = new ArrayList<>(cardRepository.findByListIdOrderByPosition(target.getId()));
@@ -123,7 +122,7 @@ public class CardCommandService {
 	// 削除後は同一リストの position を 0 から連番に詰め直し、末尾追加時の重複を防ぐ
 	public void delete(UUID id) {
 		Card card = cardRepository.findById(id)
-				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Card not found: " + id));
+				.orElseThrow(() -> new ResourceNotFoundException("Card not found: " + id));
 		UUID listId = card.getList().getId();
 		cardRepository.delete(card);
 		cardRepository.flush();
@@ -137,7 +136,7 @@ public class CardCommandService {
 		}
 		List<Label> labels = labelRepository.findAllById(labelIds);
 		if (labels.size() != labelIds.size()) {
-			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Label not found in: " + labelIds);
+			throw new ResourceNotFoundException("Label not found in: " + labelIds);
 		}
 		labels.forEach(label -> card.getLabels().add(new CardLabel(card, label)));
 	}

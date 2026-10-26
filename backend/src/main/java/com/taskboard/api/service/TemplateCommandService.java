@@ -11,6 +11,7 @@ import com.taskboard.api.entity.TaskList;
 import com.taskboard.api.entity.Template;
 import com.taskboard.api.entity.TemplateCheckItem;
 import com.taskboard.api.entity.TemplateLabel;
+import com.taskboard.api.exception.ResourceNotFoundException;
 import com.taskboard.api.repository.CardRepository;
 import com.taskboard.api.repository.LabelRepository;
 import com.taskboard.api.repository.TaskListRepository;
@@ -19,10 +20,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
 
 @Service
 @RequiredArgsConstructor
@@ -63,7 +62,7 @@ public class TemplateCommandService {
 	public CardDto createCard(UUID id, UUID listId) {
 		Template template = find(id);
 		TaskList list = taskListRepository.findById(listId)
-				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "List not found: " + listId));
+				.orElseThrow(() -> new ResourceNotFoundException("List not found: " + listId));
 		Card card = new Card();
 		card.setList(list);
 		card.setTitle(template.getTitle());
@@ -94,7 +93,7 @@ public class TemplateCommandService {
 		Set<UUID> labelIds = request.labelIds() == null ? Set.of() : request.labelIds();
 		List<Label> labels = labelRepository.findAllById(labelIds);
 		if (labels.size() != labelIds.size()) {
-			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Label not found in: " + labelIds);
+			throw new ResourceNotFoundException("Label not found in: " + labelIds);
 		}
 		labels.forEach(label -> template.getLabels().add(new TemplateLabel(template, label)));
 		List<String> texts = request.checklist() == null ? List.of() : request.checklist();
@@ -109,6 +108,6 @@ public class TemplateCommandService {
 
 	private Template find(UUID id) {
 		return templateRepository.findById(id)
-				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Template not found: " + id));
+				.orElseThrow(() -> new ResourceNotFoundException("Template not found: " + id));
 	}
 }
