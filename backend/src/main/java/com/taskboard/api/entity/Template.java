@@ -32,7 +32,7 @@ public class Template {
 	private Priority priority;
 
 	@Column(name = "warn_days", nullable = false)
-	private int warnDays = 3;
+	private int warnDays = Card.DEFAULT_WARN_DAYS;
 
 	@Column(name = "created_at", nullable = false, updatable = false)
 	private Instant createdAt = Instant.now();

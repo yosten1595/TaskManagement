@@ -123,6 +123,17 @@ class TaskReadApiTests {
 				.andExpect(jsonPath("$", hasSize(0)));
 	}
 
+	// % と _ はワイルドカードではなく、ただの文字として検索する
+	@Test
+	void keywordWildcardsAreLiteral() throws Exception {
+		mockMvc.perform(get("/api/cards").param("keyword", "%"))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$[*].id", org.hamcrest.Matchers.not(hasItem(cardId))));
+		mockMvc.perform(get("/api/cards").param("keyword", "_"))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$[*].id", org.hamcrest.Matchers.not(hasItem(cardId))));
+	}
+
 	@Test
 	void searchCardsByBoard() throws Exception {
 		mockMvc.perform(get("/api/cards").param("boardId", boardId.toString()))

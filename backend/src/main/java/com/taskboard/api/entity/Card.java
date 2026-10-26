@@ -21,6 +21,9 @@ import org.hibernate.annotations.OnDeleteAction;
 @NoArgsConstructor
 public class Card {
 
+	// 要件定義書 3.4: 警告日数の既定値
+	public static final int DEFAULT_WARN_DAYS = 3;
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.UUID)
 	private UUID id;
@@ -43,7 +46,7 @@ public class Card {
 	private Priority priority;
 
 	@Column(name = "warn_days", nullable = false)
-	private int warnDays = 3;
+	private int warnDays = DEFAULT_WARN_DAYS;
 
 	@Column(nullable = false)
 	private int position;

@@ -6,6 +6,7 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.List;
@@ -15,37 +16,46 @@ import java.util.List;
 public record BackupDto(
 		@NotNull Integer version,
 		Instant exportedAt,
-		@Valid List<@Valid @NotNull Board> boards,
-		@Valid List<@Valid @NotNull Template> templates) {
+		@Valid @Size(max = MAX_BOARDS) List<@Valid @NotNull Board> boards,
+		@Valid @Size(max = MAX_TEMPLATES) List<@Valid @NotNull Template> templates) {
 
 	// 形式を変えたときに上げる。インポートでは、この値と一致しないファイルを受け付けない
 	public static final int CURRENT_VERSION = 1;
 
-	public record Board(@NotBlank String title, @Valid List<@Valid @NotNull ListItem> lists) {
+	// 極端に大きなファイルでサーバーが重くならないための上限
+	public static final int MAX_BOARDS = 100;
+	public static final int MAX_LISTS = 10;
+	public static final int MAX_CARDS = 1000;
+	public static final int MAX_CHECK_ITEMS = 200;
+	public static final int MAX_TEMPLATES = 500;
+
+	public record Board(@NotBlank @Size(max = 255) String title,
+			@Valid @Size(max = MAX_LISTS) List<@Valid @NotNull ListItem> lists) {
 	}
 
-	public record ListItem(@NotBlank String title, @Valid List<@Valid @NotNull Card> cards) {
+	public record ListItem(@NotBlank @Size(max = 255) String title,
+			@Valid @Size(max = MAX_CARDS) List<@Valid @NotNull Card> cards) {
 	}
 
 	public record Card(
-			@NotBlank String title,
+			@NotBlank @Size(max = 255) String title,
 			String description,
 			LocalDate dueDate,
 			Priority priority,
 			@Min(0) @Max(365) Integer warnDays,
 			List<String> labels,
-			@Valid List<@Valid @NotNull CheckItem> checklist) {
+			@Valid @Size(max = MAX_CHECK_ITEMS) List<@Valid @NotNull CheckItem> checklist) {
 	}
 
-	public record CheckItem(@NotBlank String text, boolean done) {
+	public record CheckItem(@NotBlank @Size(max = 255) String text, boolean done) {
 	}
 
 	public record Template(
-			@NotBlank String title,
+			@NotBlank @Size(max = 255) String title,
 			String description,
 			Priority priority,
 			@Min(0) @Max(365) Integer warnDays,
 			List<String> labels,
-			List<@NotBlank String> checklist) {
+			@Size(max = MAX_CHECK_ITEMS) List<@NotBlank @Size(max = 255) String> checklist) {
 	}
 }
