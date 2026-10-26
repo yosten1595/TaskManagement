@@ -9,6 +9,7 @@ React 19 + TypeScript + Vite のシングルページアプリです。全体の
 | `npm run dev` | 開発サーバー（http://localhost:5173 。`/api` は `localhost:8080` のバックエンドへ転送） |
 | `npm run lint` | Oxlint。警告もエラー扱い |
 | `npm run typecheck` | `tsc -b`（型チェック） |
+| `npm test` | Vitest（`src/*.test.ts`） |
 | `npm run build` | 型チェック + 本番ビルド |
 | `npm run preview` | 本番ビルドの確認（5173 で起動。先に開発サーバーを止める） |
 
