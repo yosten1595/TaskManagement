@@ -5,14 +5,13 @@ import com.taskboard.api.dto.CreateCheckItemRequest;
 import com.taskboard.api.dto.UpdateCheckItemRequest;
 import com.taskboard.api.entity.Card;
 import com.taskboard.api.entity.CheckItem;
+import com.taskboard.api.exception.ResourceNotFoundException;
 import com.taskboard.api.repository.CardRepository;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
 
 @Service
 @RequiredArgsConstructor
@@ -54,7 +53,7 @@ public class ChecklistCommandService {
 
 	private Card findCard(UUID cardId) {
 		return cardRepository.findById(cardId)
-				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Card not found: " + cardId));
+				.orElseThrow(() -> new ResourceNotFoundException("Card not found: " + cardId));
 	}
 
 	// 別カードの項目 ID を指定した場合も 404
@@ -62,6 +61,6 @@ public class ChecklistCommandService {
 		return card.getChecklist().stream()
 				.filter(item -> item.getId().equals(itemId))
 				.findFirst()
-				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Check item not found: " + itemId));
+				.orElseThrow(() -> new ResourceNotFoundException("Check item not found: " + itemId));
 	}
 }

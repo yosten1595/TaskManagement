@@ -2,15 +2,14 @@ package com.taskboard.api.service;
 
 import com.taskboard.api.dto.BoardDetailDto;
 import com.taskboard.api.dto.BoardSummaryDto;
+import com.taskboard.api.exception.ResourceNotFoundException;
 import com.taskboard.api.repository.BoardRepository;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
 
 @Service
 @RequiredArgsConstructor
@@ -26,6 +25,6 @@ public class BoardQueryService {
 	public BoardDetailDto findById(UUID id) {
 		return boardRepository.findById(id)
 				.map(BoardDetailDto::from)
-				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Board not found: " + id));
+				.orElseThrow(() -> new ResourceNotFoundException("Board not found: " + id));
 	}
 }

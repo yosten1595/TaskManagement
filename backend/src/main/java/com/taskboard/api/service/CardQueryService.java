@@ -3,6 +3,7 @@ package com.taskboard.api.service;
 import com.taskboard.api.dto.CardDto;
 import com.taskboard.api.entity.Card;
 import com.taskboard.api.entity.Priority;
+import com.taskboard.api.exception.ResourceNotFoundException;
 import com.taskboard.api.repository.CardRepository;
 import jakarta.persistence.criteria.Predicate;
 import java.util.ArrayList;
@@ -11,10 +12,8 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
 
 @Service
 @RequiredArgsConstructor
@@ -54,6 +53,6 @@ public class CardQueryService {
 	public CardDto findById(UUID id) {
 		return cardRepository.findById(id)
 				.map(CardDto::from)
-				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Card not found: " + id));
+				.orElseThrow(() -> new ResourceNotFoundException("Card not found: " + id));
 	}
 }

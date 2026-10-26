@@ -96,6 +96,7 @@
 │       ├── service/      取得・作成・更新・削除などのロジック
 │       ├── repository/   Spring Data JPA リポジトリ
 │       ├── entity/       JPA エンティティ
+│       ├── exception/    共通の例外（存在しない ID は ResourceNotFoundException → 404）
 │       ├── dto/          API のリクエスト・レスポンス用 DTO
 │       └── seed/         動作確認用テストデータと、固定ラベルの登録
 ├── frontend/             React + TypeScript + Vite の SPA
