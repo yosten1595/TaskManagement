@@ -124,6 +124,15 @@ class TaskReadApiTests {
 	}
 
 	@Test
+	void searchCardsByBoard() throws Exception {
+		mockMvc.perform(get("/api/cards").param("boardId", boardId.toString()))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$[*].id", contains(cardId)));
+		mockMvc.perform(get("/api/cards").param("boardId", "00000000-0000-0000-0000-000000000000"))
+				.andExpect(jsonPath("$", hasSize(0)));
+	}
+
+	@Test
 	void searchCardsByLabel() throws Exception {
 		mockMvc.perform(get("/api/cards").param("labelId", labelId.toString()))
 				.andExpect(status().isOk())

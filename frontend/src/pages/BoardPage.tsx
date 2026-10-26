@@ -79,7 +79,7 @@ export default function BoardPage() {
   useEffect(() => {
     let cancelled = false
     const timer = setTimeout(() => {
-      searchCards({ keyword: keyword.trim(), priority: priority || undefined, labelId: labelId && labelId !== NO_LABEL ? labelId : undefined })
+      searchCards({ boardId, keyword: keyword.trim(), priority: priority || undefined, labelId: labelId && labelId !== NO_LABEL ? labelId : undefined })
         .then((result) => {
           if (!cancelled) setCards(result)
         })
@@ -91,9 +91,9 @@ export default function BoardPage() {
       cancelled = true
       clearTimeout(timer)
     }
-  }, [keyword, priority, labelId, reloadKey])
+  }, [boardId, keyword, priority, labelId, reloadKey])
 
-  // 検索 API はボードを指定できないため、このボードのリストに属するカードだけを振り分ける
+  // 検索はこのボードのカードだけを取得する。リストごとに振り分ける
   const cardsByList = useMemo(() => {
     const map = new Map<string, Card[]>()
     for (const card of cards) {
@@ -206,7 +206,7 @@ export default function BoardPage() {
     }
     // 成功・失敗どちらでも、サーバー上の並びを取り直して表示を合わせる
     try {
-      setCards(await searchCards())
+      setCards(await searchCards({ boardId }))
     } catch (e) {
       setError((e as Error).message)
     } finally {
@@ -223,7 +223,7 @@ export default function BoardPage() {
       setMoveError(`並べ替えできませんでした: ${(e as Error).message}`)
     }
     try {
-      setCards(await searchCards())
+      setCards(await searchCards({ boardId }))
     } catch (e) {
       setError((e as Error).message)
     }

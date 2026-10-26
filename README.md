@@ -203,7 +203,7 @@ npm run preview
 | POST | `/api/templates/{id}/cards` | テンプレートからカード作成（`listId` 必須。リスト末尾に追加。期限なし、チェック項目は未完了） |
 | GET | `/api/export` | 全ボード・リスト・カード・チェック項目・テンプレートを JSON で返す（`version`、`exportedAt`、`boards`、`templates`。ID は含まず、並び順は配列の順。ラベルは名前） |
 | POST | `/api/import` | エクスポートした JSON から、新しいボード・テンプレートを追加（`201`。件数を返す）。既存のデータは消さず、同名のラベルがあれば付ける。`version` の不一致や入力の誤りは `400` で、何も追加しない |
-| GET | `/api/cards` | カード検索。クエリ: `keyword`、`priority`、`listId`、`labelId`（すべて任意） |
+| GET | `/api/cards` | カード検索。クエリ: `keyword`、`priority`、`listId`、`labelId`、`boardId`（すべて任意。`boardId` はそのボードのカードだけに絞る。ボード画面は必ず指定する） |
 | GET | `/api/cards/{id}` | カード詳細 |
 | POST | `/api/cards` | カード作成（`listId`、`title` 必須。`warnDays` は任意で 0〜365、省略時は 3。`description`、`checklist`（`text`・`done`）、`position`（挿入位置。後ろのカードをずらす。省略時は末尾）も任意で、削除したカードを元に戻すときに使う） |
 | PUT | `/api/cards/{id}` | カード更新（全項目を置き換え。`warnDays` を省略すると 3 に戻る。所属リストと並び順は変えない） |
