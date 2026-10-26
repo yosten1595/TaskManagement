@@ -1,32 +1,30 @@
-# React + TypeScript + Vite
+# TaskBoard フロントエンド
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+React 19 + TypeScript + Vite のシングルページアプリです。全体の説明は[ルートの README](../README.md) を参照してください。
 
-Currently, two official plugins are available:
+## コマンド
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+| コマンド | 内容 |
+| --- | --- |
+| `npm run dev` | 開発サーバー（http://localhost:5173 。`/api` は `localhost:8080` のバックエンドへ転送） |
+| `npm run lint` | Oxlint。警告もエラー扱い |
+| `npm run typecheck` | `tsc -b`（型チェック） |
+| `npm run build` | 型チェック + 本番ビルド |
+| `npm run preview` | 本番ビルドの確認（5173 で起動。先に開発サーバーを止める） |
 
-## React Compiler
+ポートは固定です（`strictPort`）。使用中のときの対処はルートの README を参照してください。
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## 構成（`src/`）
 
-## Expanding the Oxlint configuration
+| 場所 | 内容 |
+| --- | --- |
+| `pages/` | 画面（`HomePage`: ボード一覧、`BoardPage`: カンバンボード） |
+| `components/` | 画面の部品（カード、モーダル、フォーム、テンプレート、バックアップなど） |
+| `api.ts` / `types.ts` | バックエンド API の呼び出しと、DTO に対応する型 |
+| `undo.tsx` / `undoContext.ts` | 「元に戻す」の通知（Provider）と、それを使うフック |
+| `checklistSync.ts` | チェックリストの編集内容を、保存時に API へ反映する差分処理 |
+| `dueStatus.ts` / `labelColor.ts` | 期限の状態の判定、ラベルの文字色の選択 |
 
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
+## Lint の設定
 
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
-```
-
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+`.oxlintrc.json`。`correctness` はエラー、`suspicious` は警告にし、React Hooks と jsx-a11y（アクセシビリティ）のルールを有効にしています。`autoFocus`（モーダルやフォームを開いた直後の入力のため）と、`role` 属性の代わりに専用タグを使う指摘は、意図があるので無効にしています。個別の例外は、その行の `oxlint-disable-next-line` コメントに理由を書いています。

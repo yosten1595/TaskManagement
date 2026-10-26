@@ -33,7 +33,7 @@
 
 ## 現在の実装状況
 
-Phase 1（基盤構築）〜Phase 2（コア機能）の途中です。カード周りは一通り動作します。
+要件定義書のすべての機能（Must・Should・Nice）が実装済みで、Phase 1〜4 は完了しています。
 
 | 項目 | 状況 |
 | --- | --- |
@@ -88,19 +88,21 @@ Phase 1（基盤構築）〜Phase 2（コア機能）の途中です。カード
 ```
 .
 ├── backend/              Spring Boot (Gradle) の REST API
+│   ├── config/checkstyle/ Checkstyle の設定
+│   ├── src/test/         API の結合テスト（PostgreSQL に接続して実行）
 │   └── src/main/java/com/taskboard/api/
 │       ├── controller/   REST コントローラ
 │       ├── service/      取得・作成・更新・削除などのロジック
 │       ├── repository/   Spring Data JPA リポジトリ
 │       ├── entity/       JPA エンティティ
-│       ├── dto/          API レスポンス用 DTO
+│       ├── dto/          API のリクエスト・レスポンス用 DTO
 │       └── seed/         動作確認用テストデータの投入
 ├── frontend/             React + TypeScript + Vite の SPA
-│   └── src/              pages / components / api.ts / types.ts
+│   └── src/              pages / components / api.ts / types.ts / undo.tsx など
 ├── docker-compose.yml    開発用 PostgreSQL
 ├── scripts/              開発補助スクリプト（ポート解放など）
 ├── requirements.html     製品要件定義書
-├── .github/              Issue / PR テンプレート、ブランチ保護の方針
+├── .github/              Issue / PR テンプレート、CI（workflows）、ブランチ保護の方針
 ├── .claude/              Claude Code 用のフック・スキル
 └── CLAUDE.md             開発ルール（Claude Code 向け）
 ```
@@ -228,12 +230,12 @@ npm run preview
 ```json
 {
   "id": "0b0f6a52-...",
-  "title": "開発タスク",
+  "title": "サンプルプロジェクト",
   "createdAt": "2026-10-21T12:00:00Z",
   "lists": [
     {
       "id": "7c1e...",
-      "title": "ToDo",
+      "title": "未着手",
       "position": 0,
       "cards": [
         {
@@ -246,7 +248,7 @@ npm run preview
           "warnDays": 3,
           "position": 0,
           "createdAt": "2026-10-21T12:00:00Z",
-          "labels": [{ "id": "5b2f...", "name": "frontend", "color": "#3b82f6" }],
+          "labels": [{ "id": "5b2f...", "name": "フロントエンド", "color": "#5b7b48" }],
           "checklist": [{ "id": "e801...", "text": "画面設計", "done": true, "position": 0 }]
         }
       ]
