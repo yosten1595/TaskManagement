@@ -167,13 +167,17 @@ powershell -NoProfile -File scripts/free-port.ps1 -Port 8080,5173
 
 ### ビルド・テスト・Lint
 
+Pull Request ごとに GitHub Actions（`.github/workflows/ci.yml`）が同じチェックを実行します。
+
 ```bash
 # バックエンド（テストは DB が起動している状態で実行する）
-cd backend && ./gradlew test
+# check = test + Checkstyle。コンパイラ警告（-Xlint:all）は警告 0 を要求する
+cd backend && ./gradlew check
 
 # フロントエンド
 cd frontend
-npm run lint
+npm run lint        # Oxlint（警告もエラー扱い）
+npm run typecheck   # tsc -b
 npm run build
 
 # 本番ビルドの確認（開発サーバーと同じ 5173 で動く。先に開発サーバーを止める）

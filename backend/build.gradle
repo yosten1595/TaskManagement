@@ -2,6 +2,7 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '4.1.1'
 	id 'io.spring.dependency-management' version '1.1.7'
+	id 'checkstyle'
 }
 
 group = 'com.taskboard'
@@ -37,4 +38,16 @@ dependencies {
 
 tasks.named('test') {
 	useJUnitPlatform()
+}
+
+// コンパイラの警告をすべて有効にする（Lombok の注釈処理による警告は除く）。警告は残さない
+tasks.withType(JavaCompile).configureEach {
+	options.compilerArgs += ['-Xlint:all,-processing', '-Werror']
+}
+
+// ./gradlew check で test と一緒に実行される。設定は config/checkstyle/checkstyle.xml
+checkstyle {
+	toolVersion = '12.1.1'
+	configFile = file('config/checkstyle/checkstyle.xml')
+	maxWarnings = 0
 }

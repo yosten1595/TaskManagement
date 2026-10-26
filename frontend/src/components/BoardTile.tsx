@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { deleteBoard, fetchBoard, importBackup, renameBoard } from '../api'
 import { boardToBackupJson } from '../backup'
 import type { BoardSummary } from '../types'
-import { useUndo } from '../undo'
+import { useUndo } from '../undoContext'
 
 interface Props {
   board: BoardSummary

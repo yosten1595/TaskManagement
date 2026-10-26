@@ -21,7 +21,7 @@ import CardItem from '../components/CardItem'
 import SortableCard from '../components/SortableCard'
 import TemplateManager from '../components/TemplateManager'
 import type { BoardDetail, Card, CardSortKey, Label, Priority } from '../types'
-import { useUndo } from '../undo'
+import { useUndo } from '../undoContext'
 
 const SEARCH_DELAY_MS = 300
 
@@ -73,7 +73,9 @@ export default function BoardPage() {
       .catch((e: Error) => setError(e.message))
   }, [])
 
-  // 検索条件が変わるたびにカードを検索する。キーワード入力は少し待ってから送る
+  // 検索条件が変わるたびにカードを検索する。キーワード入力は少し待ってから送る。
+  // reloadKey は effect の中では使わず、保存・削除のあとに検索をやり直すための合図として依存に含める
+  // oxlint-disable-next-line react/exhaustive-deps
   useEffect(() => {
     let cancelled = false
     const timer = setTimeout(() => {
@@ -154,7 +156,7 @@ export default function BoardPage() {
       if (String(over.id) !== to) {
         const overIndex = prev[to].findIndex((c) => c.id === String(over.id))
         const translated = active.rect.current.translated
-        const below = translated != null && translated.top > over.rect.top + over.rect.height / 2
+        const below = translated !== null && translated.top > over.rect.top + over.rect.height / 2
         index = overIndex + (below ? 1 : 0)
       }
       return {
