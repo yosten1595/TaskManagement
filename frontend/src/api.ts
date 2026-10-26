@@ -1,16 +1,31 @@
 import type { BoardDetail, BoardSummary, Card, CardSearchParams, CardSortKey, CardUpdate, Label, NewCard, NewTemplate, Template } from './types'
 
-async function getJson<T>(url: string): Promise<T> {
-  const res = await fetch(url)
-  if (!res.ok) {
-    throw new Error(`${res.status} ${res.statusText}: ${url}`)
-  }
-  return res.json() as Promise<T>
+// fetch を呼ぶのはここだけ。body は JSON にして送る（文字列はそのまま送る）
+function send(url: string, method: string = 'GET', body?: unknown): Promise<Response> {
+  return fetch(url, {
+    method,
+    ...(body === undefined
+      ? {}
+      : { headers: { 'Content-Type': 'application/json' }, body: typeof body === 'string' ? body : JSON.stringify(body) }),
+  })
 }
 
-export const fetchBoards = () => getJson<BoardSummary[]>('/api/boards')
+// 失敗（2xx 以外）は `状態コード 状態テキスト` のメッセージの Error にする
+async function request(url: string, method?: string, body?: unknown): Promise<Response> {
+  const res = await send(url, method, body)
+  if (!res.ok) {
+    throw new Error(`${res.status} ${res.statusText}`)
+  }
+  return res
+}
 
-export const fetchBoard = (id: string) => getJson<BoardDetail>(`/api/boards/${id}`)
+async function requestJson<T>(url: string, method?: string, body?: unknown): Promise<T> {
+  return (await request(url, method, body)).json() as Promise<T>
+}
+
+export const fetchBoards = () => requestJson<BoardSummary[]>('/api/boards')
+
+export const fetchBoard = (id: string) => requestJson<BoardDetail>(`/api/boards/${id}`)
 
 export function searchCards({ keyword, priority, listId, labelId, boardId }: CardSearchParams = {}) {
   const params = new URLSearchParams()
@@ -20,188 +35,60 @@ export function searchCards({ keyword, priority, listId, labelId, boardId }: Car
   if (labelId) params.set('labelId', labelId)
   if (boardId) params.set('boardId', boardId)
   const query = params.toString()
-  return getJson<Card[]>(`/api/cards${query ? `?${query}` : ''}`)
+  return requestJson<Card[]>(`/api/cards${query ? `?${query}` : ''}`)
 }
 
-export const fetchCard = (id: string) => getJson<Card>(`/api/cards/${id}`)
+export const fetchCard = (id: string) => requestJson<Card>(`/api/cards/${id}`)
 
-export const fetchLabels = () => getJson<Label[]>('/api/labels')
+export const fetchLabels = () => requestJson<Label[]>('/api/labels')
 
-export async function createCard(listId: string, card: NewCard): Promise<Card> {
-  const res = await fetch('/api/cards', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ listId, ...card }),
-  })
-  if (!res.ok) {
-    throw new Error(`${res.status} ${res.statusText}`)
-  }
-  return res.json() as Promise<Card>
-}
+export const createCard = (listId: string, card: NewCard) => requestJson<Card>('/api/cards', 'POST', { listId, ...card })
 
-export async function deleteCard(id: string): Promise<void> {
-  const res = await fetch(`/api/cards/${id}`, { method: 'DELETE' })
-  if (!res.ok) {
-    throw new Error(`${res.status} ${res.statusText}`)
-  }
-}
+export const deleteCard = async (id: string): Promise<void> => void (await request(`/api/cards/${id}`, 'DELETE'))
 
-export async function updateCard(id: string, card: CardUpdate): Promise<Card> {
-  const res = await fetch(`/api/cards/${id}`, {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(card),
-  })
-  if (!res.ok) {
-    throw new Error(`${res.status} ${res.statusText}`)
-  }
-  return res.json() as Promise<Card>
-}
+export const updateCard = (id: string, card: CardUpdate) => requestJson<Card>(`/api/cards/${id}`, 'PUT', card)
 
 // position は移動先リスト内での 0 始まりの挿入位置
-export async function moveCard(id: string, listId: string, position: number): Promise<Card> {
-  const res = await fetch(`/api/cards/${id}/move`, {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ listId, position }),
-  })
-  if (!res.ok) {
-    throw new Error(`${res.status} ${res.statusText}`)
-  }
-  return res.json() as Promise<Card>
-}
+export const moveCard = (id: string, listId: string, position: number) =>
+  requestJson<Card>(`/api/cards/${id}/move`, 'PUT', { listId, position })
 
 // 並べ替え結果は position に保存され、並べ替え後のカード一覧が返る
-export async function sortList(listId: string, by: CardSortKey): Promise<Card[]> {
-  const res = await fetch(`/api/lists/${listId}/sort`, {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ by }),
-  })
-  if (!res.ok) {
-    throw new Error(`${res.status} ${res.statusText}`)
-  }
-  return res.json() as Promise<Card[]>
-}
+export const sortList = (listId: string, by: CardSortKey) => requestJson<Card[]>(`/api/lists/${listId}/sort`, 'PUT', { by })
 
 // チェックリストの追加・更新は、更新後のカードが返る
-export async function addCheckItem(cardId: string, text: string): Promise<Card> {
-  const res = await fetch(`/api/cards/${cardId}/checklist`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ text }),
-  })
-  if (!res.ok) {
-    throw new Error(`${res.status} ${res.statusText}`)
-  }
-  return res.json() as Promise<Card>
-}
+export const addCheckItem = (cardId: string, text: string) =>
+  requestJson<Card>(`/api/cards/${cardId}/checklist`, 'POST', { text })
 
-export async function updateCheckItem(cardId: string, itemId: string, text: string, done: boolean): Promise<Card> {
-  const res = await fetch(`/api/cards/${cardId}/checklist/${itemId}`, {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ text, done }),
-  })
-  if (!res.ok) {
-    throw new Error(`${res.status} ${res.statusText}`)
-  }
-  return res.json() as Promise<Card>
-}
+export const updateCheckItem = (cardId: string, itemId: string, text: string, done: boolean) =>
+  requestJson<Card>(`/api/cards/${cardId}/checklist/${itemId}`, 'PUT', { text, done })
 
-export async function deleteCheckItem(cardId: string, itemId: string): Promise<void> {
-  const res = await fetch(`/api/cards/${cardId}/checklist/${itemId}`, { method: 'DELETE' })
-  if (!res.ok) {
-    throw new Error(`${res.status} ${res.statusText}`)
-  }
-}
+export const deleteCheckItem = async (cardId: string, itemId: string): Promise<void> =>
+  void (await request(`/api/cards/${cardId}/checklist/${itemId}`, 'DELETE'))
 
-export async function createBoard(title: string): Promise<BoardSummary> {
-  const res = await fetch('/api/boards', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ title }),
-  })
-  if (!res.ok) {
-    throw new Error(`${res.status} ${res.statusText}`)
-  }
-  return res.json() as Promise<BoardSummary>
-}
+export const createBoard = (title: string) => requestJson<BoardSummary>('/api/boards', 'POST', { title })
 
-export async function renameBoard(id: string, title: string): Promise<BoardSummary> {
-  const res = await fetch(`/api/boards/${id}`, {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ title }),
-  })
-  if (!res.ok) {
-    throw new Error(`${res.status} ${res.statusText}`)
-  }
-  return res.json() as Promise<BoardSummary>
-}
+export const renameBoard = (id: string, title: string) => requestJson<BoardSummary>(`/api/boards/${id}`, 'PUT', { title })
 
 // ボードに属するリスト・カードも一緒に削除される
-export async function deleteBoard(id: string): Promise<void> {
-  const res = await fetch(`/api/boards/${id}`, { method: 'DELETE' })
-  if (!res.ok) {
-    throw new Error(`${res.status} ${res.statusText}`)
-  }
-}
+export const deleteBoard = async (id: string): Promise<void> => void (await request(`/api/boards/${id}`, 'DELETE'))
 
-export const fetchTemplates = () => getJson<Template[]>('/api/templates')
+export const fetchTemplates = () => requestJson<Template[]>('/api/templates')
 
-export async function createTemplate(template: NewTemplate): Promise<Template> {
-  const res = await fetch('/api/templates', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(template),
-  })
-  if (!res.ok) {
-    throw new Error(`${res.status} ${res.statusText}`)
-  }
-  return res.json() as Promise<Template>
-}
+export const createTemplate = (template: NewTemplate) => requestJson<Template>('/api/templates', 'POST', template)
 
 // テンプレートの内容をコピーして、指定リストの末尾にカードを作る
-export async function createCardFromTemplate(templateId: string, listId: string): Promise<Card> {
-  const res = await fetch(`/api/templates/${templateId}/cards`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ listId }),
-  })
-  if (!res.ok) {
-    throw new Error(`${res.status} ${res.statusText}`)
-  }
-  return res.json() as Promise<Card>
-}
+export const createCardFromTemplate = (templateId: string, listId: string) =>
+  requestJson<Card>(`/api/templates/${templateId}/cards`, 'POST', { listId })
 
-export async function updateTemplate(id: string, template: NewTemplate): Promise<Template> {
-  const res = await fetch(`/api/templates/${id}`, {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(template),
-  })
-  if (!res.ok) {
-    throw new Error(`${res.status} ${res.statusText}`)
-  }
-  return res.json() as Promise<Template>
-}
+export const updateTemplate = (id: string, template: NewTemplate) =>
+  requestJson<Template>(`/api/templates/${id}`, 'PUT', template)
 
 // テンプレートから作成済みのカードは残る
-export async function deleteTemplate(id: string): Promise<void> {
-  const res = await fetch(`/api/templates/${id}`, { method: 'DELETE' })
-  if (!res.ok) {
-    throw new Error(`${res.status} ${res.statusText}`)
-  }
-}
+export const deleteTemplate = async (id: string): Promise<void> => void (await request(`/api/templates/${id}`, 'DELETE'))
 
 // バックアップ用。中身はサーバーが決める形式なので、画面では解釈せず、そのまま保存・送信する
 export async function exportBackup(): Promise<string> {
-  const res = await fetch('/api/export')
-  if (!res.ok) {
-    throw new Error(`${res.status} ${res.statusText}`)
-  }
-  return res.text()
+  return (await request('/api/export')).text()
 }
 
 export interface ImportResult {
@@ -210,13 +97,10 @@ export interface ImportResult {
   templates: number
 }
 
-// 既存のデータは消さず、ファイルの内容を新しいボード・テンプレートとして追加する。不正なファイルは 400 で、何も追加されない
+// 既存のデータは消さず、ファイルの内容を新しいボード・テンプレートとして追加する。不正なファイルは 400 で、何も追加されない。
+// 400 だけ専用の文言にするので、結果の確認は自分で行う
 export async function importBackup(json: string): Promise<ImportResult> {
-  const res = await fetch('/api/import', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: json,
-  })
+  const res = await send('/api/import', 'POST', json)
   if (res.status === 400) {
     throw new Error('ファイルの形式が正しくありません')
   }
