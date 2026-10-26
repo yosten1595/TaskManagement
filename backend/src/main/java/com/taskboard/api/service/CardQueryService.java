@@ -23,8 +23,8 @@ public class CardQueryService {
 
 	private final CardRepository cardRepository;
 
-	// keyword はタイトル・説明の部分一致（大文字小文字を区別しない）。null の条件は無視する
-	public List<CardDto> search(String keyword, Priority priority, UUID listId, UUID labelId) {
+	// keyword はタイトル・説明の部分一致（大文字小文字を区別しない）。boardId はそのボードのカードだけに絞る。null の条件は無視する
+	public List<CardDto> search(String keyword, Priority priority, UUID listId, UUID labelId, UUID boardId) {
 		Specification<Card> spec = (root, query, cb) -> {
 			List<Predicate> predicates = new ArrayList<>();
 			if (keyword != null && !keyword.isBlank()) {
@@ -38,6 +38,9 @@ public class CardQueryService {
 			}
 			if (listId != null) {
 				predicates.add(cb.equal(root.get("list").get("id"), listId));
+			}
+			if (boardId != null) {
+				predicates.add(cb.equal(root.get("list").get("board").get("id"), boardId));
 			}
 			if (labelId != null) {
 				predicates.add(cb.equal(root.join("labels").get("label").get("id"), labelId));

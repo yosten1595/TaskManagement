@@ -54,6 +54,7 @@ export interface CardSearchParams {
   keyword?: string
   priority?: Priority
   listId?: string
+  boardId?: string
   labelId?: string
 }
 
