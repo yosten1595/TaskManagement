@@ -37,7 +37,7 @@
 
 | 項目 | 状況 |
 | --- | --- |
-| PostgreSQL（Docker）と JPA エンティティ | 実装済み |
+| PostgreSQL（Docker）と JPA エンティティ | 実装済み。スキーマは Flyway のマイグレーションで管理（`ddl-auto=validate`） |
 | 動作確認用テストデータの自動投入 | 実装済み |
 | ボード一覧、ボード画面、カード検索（キーワード・優先度・リスト） | 実装済み |
 | カードの作成・編集・削除（期限・優先度・ラベル付き） | 実装済み |
@@ -77,7 +77,7 @@
 | バックエンド | Java（Temurin） | 25（LTS） |
 | | Spring Boot | 4.1.1 |
 | | Gradle（Wrapper） | 9.8.1 |
-| | Spring Data JPA（Hibernate） / Validation / Actuator | Spring Boot の依存管理に従う |
+| | Spring Data JPA（Hibernate） / Flyway / Validation / Actuator | Spring Boot の依存管理に従う |
 | データベース | PostgreSQL（Docker イメージ `postgres:18`） | 18 |
 | 管理 | Git / GitHub | — |
 
@@ -89,6 +89,7 @@
 .
 ├── backend/              Spring Boot (Gradle) の REST API
 │   ├── config/checkstyle/ Checkstyle の設定
+│   ├── src/main/resources/db/migration/  Flyway のマイグレーション（V1: 初期スキーマ、V2: 外部キーのインデックス）
 │   ├── src/test/         API の結合テスト（PostgreSQL に接続して実行）
 │   └── src/main/java/com/taskboard/api/
 │       ├── controller/   REST コントローラ
@@ -157,6 +158,10 @@ powershell -NoProfile -File scripts/free-port.ps1 -Port 8080,5173
    ```
 
    ブラウザで http://localhost:5173 を開きます。
+
+### スキーマの変更（Flyway）
+
+テーブルの変更は、`backend/src/main/resources/db/migration/` に `V<番号>__<説明>.sql` を追加して行います（既存のファイルは書き換えない）。Hibernate はスキーマを変更せず、エンティティとずれていると起動時に失敗します（`ddl-auto=validate`）。以前の `ddl-auto=update` で作られた既存の DB は、初回起動時にバージョン 1 として引き継がれ、データは消えません。
 
 ### 設定（環境変数）
 
