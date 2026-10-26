@@ -33,6 +33,6 @@ gh repo edit yosten1595/TaskManagement --delete-branch-on-merge \
 
 ## CI を必須チェックにする（推奨）
 
-`.github/workflows/ci.yml` が PR ごとに backend（`./gradlew check`）と frontend（lint・build）を実行する。通らない PR をマージできないようにするには、GitHub の設定で `required_status_checks` に `Backend (check)` と `Frontend (lint, build)` を追加する（初回の CI 実行後に選べる）。この設定は人が行う。
+`.github/workflows/ci.yml` が PR ごとに backend（`./gradlew check`）と frontend（lint・build）を実行する。通らない PR をマージできないようにするには、GitHub の設定で `required_status_checks` に `Backend (check)` と `Frontend (lint, test, build)` を追加する（初回の CI 実行後に選べる）。この設定は人が行う。
 
 注意: プライベートリポジトリで GitHub Free の場合、ブランチ保護は利用できない（Pro 以上、または public 化が必要）。

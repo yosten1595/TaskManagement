@@ -12,8 +12,10 @@ description: コードを変更したあと、またはPRを出す前に、フ�
 cd frontend
 npm run lint        # Oxlint。警告もエラー扱い（--deny-warnings）。0 件であること
 npm run typecheck   # tsc -b
+npm test            # Vitest。src/*.test.ts（副作用のない関数のテスト）
 npm run build       # 型チェック + 本番ビルド
 ```
+- テストは `src/` の `*.test.ts`。画面コンポーネントのテストはまだない。新しいロジック（日付・差分処理など）を足したらテストも足す。
 - 設定は `frontend/.oxlintrc.json`。`correctness` はエラー、`suspicious` は警告。react-hooks と jsx-a11y を有効にしている。
 - 例外にするときは、設定を緩めるより先にコードを直す。どうしても必要なら、その行の直前に理由付きで書く:
   `// oxlint-disable-next-line <ルール名> -- 理由`
@@ -38,7 +40,7 @@ cd backend && ./gradlew check # test + Checkstyle。javac は -Xlint:all -Werror
 gh pr checks <PR番号>
 gh run view <run-id> --log-failed
 ```
-- `Backend (check)` / `Frontend (lint, build)` の 2 ジョブ。まず手元で同じコマンドを再現する。
+- `Backend (check)` / `Frontend (lint, test, build)` の 2 ジョブ。まず手元で同じコマンドを再現する。
 - CI の DB はポート 5432（`DB_URL` で上書き）。ローカルは 5433。
 
 ## 注意
