@@ -14,9 +14,13 @@ export default function TemplatePicker({ listId, onCreated }: Props) {
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    fetchTemplates()
+    const controller = new AbortController()
+    fetchTemplates(controller.signal)
       .then(setTemplates)
-      .catch((err: Error) => setError(`テンプレートを取得できませんでした: ${err.message}`))
+      .catch((err: Error) => {
+        if (!controller.signal.aborted) setError(`テンプレートを取得できませんでした: ${err.message}`)
+      })
+    return () => controller.abort()
   }, [])
 
   const choose = async (templateId: string) => {
