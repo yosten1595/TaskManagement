@@ -13,6 +13,7 @@ import com.taskboard.api.entity.TemplateLabel;
 import com.taskboard.api.repository.BoardRepository;
 import com.taskboard.api.repository.LabelRepository;
 import com.taskboard.api.repository.TemplateRepository;
+import com.taskboard.api.util.Texts;
 import java.time.Instant;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -29,9 +30,6 @@ import org.springframework.web.server.ResponseStatusException;
 @Service
 @RequiredArgsConstructor
 public class BackupService {
-
-	// 要件定義書 3.4: 警告日数の既定値
-	private static final int DEFAULT_WARN_DAYS = 3;
 
 	private final BoardRepository boardRepository;
 	private final TemplateRepository templateRepository;
@@ -118,10 +116,10 @@ public class BackupService {
 		Card card = new Card();
 		card.setList(list);
 		card.setTitle(source.title().strip());
-		card.setDescription(blankToNull(source.description()));
+		card.setDescription(Texts.blankToNull(source.description()));
 		card.setDueDate(source.dueDate());
 		card.setPriority(source.priority());
-		card.setWarnDays(source.warnDays() == null ? DEFAULT_WARN_DAYS : source.warnDays());
+		card.setWarnDays(source.warnDays() == null ? Card.DEFAULT_WARN_DAYS : source.warnDays());
 		card.setPosition(position);
 		if (source.labels() != null) {
 			source.labels().stream().distinct().map(labelsByName::get).filter(java.util.Objects::nonNull)
@@ -142,9 +140,9 @@ public class BackupService {
 	private static Template toTemplate(BackupDto.Template source, Map<String, Label> labelsByName) {
 		Template template = new Template();
 		template.setTitle(source.title().strip());
-		template.setDescription(blankToNull(source.description()));
+		template.setDescription(Texts.blankToNull(source.description()));
 		template.setPriority(source.priority());
-		template.setWarnDays(source.warnDays() == null ? DEFAULT_WARN_DAYS : source.warnDays());
+		template.setWarnDays(source.warnDays() == null ? Card.DEFAULT_WARN_DAYS : source.warnDays());
 		if (source.labels() != null) {
 			source.labels().stream().distinct().map(labelsByName::get).filter(java.util.Objects::nonNull)
 					.forEach(label -> template.getLabels().add(new TemplateLabel(template, label)));
@@ -158,9 +156,5 @@ public class BackupService {
 			template.getChecklist().add(item);
 		}
 		return template;
-	}
-
-	private static String blankToNull(String value) {
-		return value == null || value.isBlank() ? null : value;
 	}
 }

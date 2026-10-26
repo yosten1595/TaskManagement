@@ -121,6 +121,9 @@ class BackupApiTests {
 				"{\"version\":1,\"boards\":[{\"title\":\"  \",\"lists\":[]}]}",
 				"{\"version\":1,\"boards\":[{\"title\":\"" + TITLE + "\",\"lists\":[{\"title\":\"A\",\"cards\":[{\"title\":\"x\",\"warnDays\":999}]}]}]}",
 				"{\"version\":1,\"boards\":[{\"title\":\"" + TITLE + "\",\"lists\":[{\"title\":\"A\",\"cards\":[{\"title\":\"x\",\"priority\":\"URGENT\"}]}]}]}",
+				// タイトルが 255 文字を超える、ボードが上限（100 件）を超える
+				"{\"version\":1,\"boards\":[{\"title\":\"" + "a".repeat(256) + "\",\"lists\":[]}]}",
+				"{\"version\":1,\"boards\":[" + "{\"title\":\"x\",\"lists\":[]},".repeat(100) + "{\"title\":\"x\",\"lists\":[]}]}",
 				"not json",
 		};
 		for (String json : bad) {

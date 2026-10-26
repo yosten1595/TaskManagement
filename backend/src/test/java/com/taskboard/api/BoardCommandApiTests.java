@@ -96,6 +96,8 @@ class BoardCommandApiTests {
 	@Test
 	void blankTitleReturns400() throws Exception {
 		createBoard("   ").andExpect(status().isBadRequest());
+		// DB の列は 255 文字まで。超える入力は 500 ではなく 400
+		createBoard("a".repeat(256)).andExpect(status().isBadRequest());
 		mockMvc.perform(post("/api/boards").contentType(MediaType.APPLICATION_JSON).content("{}"))
 				.andExpect(status().isBadRequest());
 

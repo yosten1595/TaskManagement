@@ -16,6 +16,7 @@ import com.taskboard.api.repository.CardRepository;
 import com.taskboard.api.repository.LabelRepository;
 import com.taskboard.api.repository.TaskListRepository;
 import com.taskboard.api.repository.TemplateRepository;
+import com.taskboard.api.util.Texts;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -27,9 +28,6 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Transactional
 public class TemplateCommandService {
-
-	// 要件定義書 3.4: 警告日数の既定値
-	private static final int DEFAULT_WARN_DAYS = 3;
 
 	private final TemplateRepository templateRepository;
 	private final LabelRepository labelRepository;
@@ -86,10 +84,9 @@ public class TemplateCommandService {
 
 	private void apply(Template template, TemplateRequest request) {
 		template.setTitle(request.title().strip());
-		template.setDescription(
-				request.description() == null || request.description().isBlank() ? null : request.description());
+		template.setDescription(Texts.blankToNull(request.description()));
 		template.setPriority(request.priority());
-		template.setWarnDays(request.warnDays() == null ? DEFAULT_WARN_DAYS : request.warnDays());
+		template.setWarnDays(request.warnDays() == null ? Card.DEFAULT_WARN_DAYS : request.warnDays());
 		Set<UUID> labelIds = request.labelIds() == null ? Set.of() : request.labelIds();
 		List<Label> labels = labelRepository.findAllById(labelIds);
 		if (labels.size() != labelIds.size()) {

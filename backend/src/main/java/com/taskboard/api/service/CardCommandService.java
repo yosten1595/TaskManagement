@@ -13,6 +13,7 @@ import com.taskboard.api.exception.ResourceNotFoundException;
 import com.taskboard.api.repository.CardRepository;
 import com.taskboard.api.repository.LabelRepository;
 import com.taskboard.api.repository.TaskListRepository;
+import com.taskboard.api.util.Texts;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -26,9 +27,6 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Transactional
 public class CardCommandService {
-
-	// 要件定義書 3.4: 警告日数の既定値
-	private static final int DEFAULT_WARN_DAYS = 3;
 
 	private final CardRepository cardRepository;
 	private final TaskListRepository taskListRepository;
@@ -46,7 +44,7 @@ public class CardCommandService {
 		if (request.warnDays() != null) {
 			card.setWarnDays(request.warnDays());
 		}
-		card.setDescription(request.description() == null || request.description().isBlank() ? null : request.description());
+		card.setDescription(Texts.blankToNull(request.description()));
 		int count = cardRepository.countByListId(list.getId());
 		int position = request.position() == null ? count : Math.min(request.position(), count);
 		if (position < count) {
@@ -78,10 +76,10 @@ public class CardCommandService {
 			throw new ResourceNotFoundException("Label not found in: " + labelIds);
 		}
 		card.setTitle(request.title().strip());
-		card.setDescription(request.description() == null || request.description().isBlank() ? null : request.description());
+		card.setDescription(Texts.blankToNull(request.description()));
 		card.setDueDate(request.dueDate());
 		card.setPriority(request.priority());
-		card.setWarnDays(request.warnDays() == null ? DEFAULT_WARN_DAYS : request.warnDays());
+		card.setWarnDays(request.warnDays() == null ? Card.DEFAULT_WARN_DAYS : request.warnDays());
 		card.getLabels().removeIf(cl -> !labelIds.contains(cl.getLabel().getId()));
 		Set<UUID> attached = card.getLabels().stream().map(cl -> cl.getLabel().getId()).collect(Collectors.toSet());
 		labels.stream()

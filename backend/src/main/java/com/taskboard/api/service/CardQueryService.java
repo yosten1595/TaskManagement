@@ -5,6 +5,7 @@ import com.taskboard.api.entity.Card;
 import com.taskboard.api.entity.Priority;
 import com.taskboard.api.exception.ResourceNotFoundException;
 import com.taskboard.api.repository.CardRepository;
+import com.taskboard.api.util.Texts;
 import jakarta.persistence.criteria.Predicate;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +21,9 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class CardQueryService {
 
+	// LIKE のエスケープ文字。Texts.escapeLike と合わせる
+	private static final char LIKE_ESCAPE = '\\';
+
 	private final CardRepository cardRepository;
 
 	// keyword はタイトル・説明の部分一致（大文字小文字を区別しない）。boardId はそのボードのカードだけに絞る。null の条件は無視する
@@ -27,10 +31,10 @@ public class CardQueryService {
 		Specification<Card> spec = (root, query, cb) -> {
 			List<Predicate> predicates = new ArrayList<>();
 			if (keyword != null && !keyword.isBlank()) {
-				String pattern = "%" + keyword.strip().toLowerCase() + "%";
+				String pattern = "%" + Texts.escapeLike(keyword.strip().toLowerCase()) + "%";
 				predicates.add(cb.or(
-						cb.like(cb.lower(root.<String>get("title")), pattern),
-						cb.like(cb.lower(cb.coalesce(root.<String>get("description"), "")), pattern)));
+						cb.like(cb.lower(root.<String>get("title")), pattern, LIKE_ESCAPE),
+						cb.like(cb.lower(cb.coalesce(root.<String>get("description"), "")), pattern, LIKE_ESCAPE)));
 			}
 			if (priority != null) {
 				predicates.add(cb.equal(root.get("priority"), priority));
